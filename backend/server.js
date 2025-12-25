@@ -283,26 +283,29 @@ const PORT = process.env.PORT || 5000;
 const startServer = async () => {
   await connectDB();
   
-  const server = app.listen(PORT, () => {
-    console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
-  });
+  // Only listen if not running in Vercel (Vercel handles listening)
+  if (process.env.NODE_ENV !== 'production' || process.env.VERCEL_ENV !== 'production') {
+      const server = app.listen(PORT, () => {
+        console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+      });
 
-  // Handle unhandled promise rejections
-  process.on('unhandledRejection', (err, promise) => {
-    console.log('Unhandled Rejection at:', promise, 'reason:', err);
-    server.close(() => {
-      process.exit(1);
-    });
-  });
-
-  // Handle uncaught exceptions
-  process.on('uncaughtException', (err) => {
-    console.log('Uncaught Exception:', err);
-    process.exit(1);
-  });
+      // Handle unhandled promise rejections
+      process.on('unhandledRejection', (err, promise) => {
+        console.log('Unhandled Rejection at:', promise, 'reason:', err);
+        server.close(() => {
+          process.exit(1);
+        });
+      });
+  }
 };
 
-startServer();
+if (require.main === module) {
+    startServer();
+} else {
+    // For Vercel, we need to connect to DB before handling requests
+    // Ideally this should be optimized, but for now:
+    connectDB();
+}
 
 module.exports = app;
 
