@@ -1,4 +1,5 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
+const chromium = require('@sparticuz/chromium');
 const path = require('path');
 
 class PDFService {
@@ -8,10 +9,44 @@ class PDFService {
 
   async initBrowser() {
     if (!this.browser) {
-      this.browser = await puppeteer.launch({
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
-      });
+      let options = {};
+
+      if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+        // Vercel / AWS Lambda environment
+        options = {
+          args: chromium.args,
+          defaultViewport: chromium.defaultViewport,
+          executablePath: await chromium.executablePath(),
+          headless: chromium.headless,
+          ignoreHTTPSErrors: true,
+        };
+      } else {
+        // Local environment - try to find local Chrome/Chromium
+        // You might need to adjust this path for your local machine or install a local chromium
+        // For now, valid local dev requires a local chrome install
+        try {
+          // Fallback for local development if full puppeteer isn't installed
+          // This assumes the user has Chrome installed
+          const { executablePath } = require('puppeteer');
+          options = {
+            headless: "new",
+            executablePath: executablePath(),
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
+          }
+        } catch (e) {
+          // If full puppeteer is not found, try to locate chrome manually or error
+          console.warn("Full puppeteer not found, trying to launch with default system chrome usually requires configuration.");
+          // In a perfect world, we'd devDepend on 'puppeteer' and prodDepend on 'puppeteer-core'
+          // For now, simpliest is to assume Vercel config.
+          options = {
+            channel: 'chrome',
+            headless: "new",
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
+          };
+        }
+      }
+
+      this.browser = await puppeteer.launch(options);
     }
     return this.browser;
   }
