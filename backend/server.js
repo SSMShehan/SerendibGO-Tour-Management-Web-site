@@ -18,7 +18,7 @@ if (!process.env.STRIPE_WEBHOOK_SECRET) {
   process.env.STRIPE_WEBHOOK_SECRET = 'whsec_test_1234567890abcdef';
 }
 if (!process.env.MONGODB_URI) {
-  process.env.MONGODB_URI = 'mongodb+srv://asbthanayamwatta2_db_user:a9tYLTCwJCXc0xjX@cluster0.gv7sbeb.mongodb.net/serendibgo?retryWrites=true&w=majority&appName=Cluster0';
+  process.env.MONGODB_URI = 'mongodb+srv://admin:admin123@serandibgo.izvdsyx.mongodb.net/serendibgo?appName=serandibgo';
 }
 
 // Debug environment variables
@@ -208,10 +208,10 @@ app.use(errorHandler);
 const connectDB = async () => {
   try {
     // Try Atlas MongoDB first (prioritize cloud over local)
-    const mongoUri = process.env.MONGODB_URI || 'mongodb+srv://asbthanayamwatta2_db_user:a9tYLTCwJCXc0xjX@cluster0.gv7sbeb.mongodb.net/serendibgo?retryWrites=true&w=majority&appName=Cluster0';
+    const mongoUri = process.env.MONGODB_URI || 'mongodb+srv://admin:admin123@serandibgo.izvdsyx.mongodb.net/serendibgo?appName=serandibgo';
     console.log('Attempting to connect to MongoDB Atlas...');
     console.log('MONGODB_URI:', mongoUri);
-    
+
     const conn = await mongoose.connect(mongoUri, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
@@ -225,7 +225,7 @@ const connectDB = async () => {
     return conn;
   } catch (atlasError) {
     console.error('Atlas connection failed:', atlasError.message);
-    
+
     // Try alternative connection method if SRV fails
     if (atlasError.code === 'ENOTFOUND' && process.env.MONGODB_URI && process.env.MONGODB_URI.includes('mongodb+srv://')) {
       console.log('SRV record failed, trying alternative connection...');
@@ -244,7 +244,7 @@ const connectDB = async () => {
         console.error('Alternative connection also failed:', altError.message);
       }
     }
-    
+
     // Fallback to local MongoDB if Atlas fails
     console.log('Atlas not available, trying local MongoDB...');
     try {
@@ -260,7 +260,7 @@ const connectDB = async () => {
       return conn;
     } catch (localError) {
       console.error('Local MongoDB also failed:', localError.message);
-      
+
       console.log('❌ All MongoDB connections failed. Starting server without database...');
       console.log('⚠️  Some features may not work without database connection.');
       console.log('');
@@ -268,7 +268,7 @@ const connectDB = async () => {
       console.log('   1. Install MongoDB locally: https://www.mongodb.com/try/download/community');
       console.log('   2. Start MongoDB service: net start MongoDB');
       console.log('   3. Or check your MongoDB Atlas connection');
-      
+
       // Don't exit in development, allow server to start without DB
       if (process.env.NODE_ENV === 'production') {
         process.exit(1);
@@ -282,29 +282,29 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   await connectDB();
-  
+
   // Only listen if not running in Vercel (Vercel handles listening)
   if (process.env.NODE_ENV !== 'production' || process.env.VERCEL_ENV !== 'production') {
-      const server = app.listen(PORT, () => {
-        console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
-      });
+    const server = app.listen(PORT, () => {
+      console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+    });
 
-      // Handle unhandled promise rejections
-      process.on('unhandledRejection', (err, promise) => {
-        console.log('Unhandled Rejection at:', promise, 'reason:', err);
-        server.close(() => {
-          process.exit(1);
-        });
+    // Handle unhandled promise rejections
+    process.on('unhandledRejection', (err, promise) => {
+      console.log('Unhandled Rejection at:', promise, 'reason:', err);
+      server.close(() => {
+        process.exit(1);
       });
+    });
   }
 };
 
 if (require.main === module) {
-    startServer();
+  startServer();
 } else {
-    // For Vercel, we need to connect to DB before handling requests
-    // Ideally this should be optimized, but for now:
-    connectDB();
+  // For Vercel, we need to connect to DB before handling requests
+  // Ideally this should be optimized, but for now:
+  connectDB();
 }
 
 module.exports = app;
