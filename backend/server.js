@@ -12,13 +12,13 @@ if (!process.env.JWT_COOKIE_EXPIRE) {
   process.env.JWT_COOKIE_EXPIRE = '30';
 }
 if (!process.env.STRIPE_SECRET_KEY) {
-  process.env.STRIPE_SECRET_KEY = 'sk_test_YOUR_STRIPE_SECRET_KEY_HERE_REPLACE_WITH_YOUR_ACTUAL_KEY';
+  process.env.STRIPE_SECRET_KEY = 'sk_test_51SIRHEGhGMqfYoq5KBkzdOMEIupPxFUYdR6rbPiHM7s3IohZfLxZD7iwyu489t7OEkTRAv7v06Fjd3y8zEyBGZy500bL41wQoy';
 }
 if (!process.env.STRIPE_WEBHOOK_SECRET) {
   process.env.STRIPE_WEBHOOK_SECRET = 'whsec_test_1234567890abcdef';
 }
 if (!process.env.MONGODB_URI) {
-  process.env.MONGODB_URI = 'mongodb+srv://YOUR_MONGODB_USERNAME:YOUR_MONGODB_PASSWORD@YOUR_CLUSTER.mongodb.net/serendibgo?retryWrites=true&w=majority&appName=Cluster0';
+  process.env.MONGODB_URI = 'mongodb+srv://asbthanayamwatta2_db_user:a9tYLTCwJCXc0xjX@cluster0.gv7sbeb.mongodb.net/serendibgo?retryWrites=true&w=majority&appName=Cluster0';
 }
 
 // Debug environment variables
@@ -208,7 +208,7 @@ app.use(errorHandler);
 const connectDB = async () => {
   try {
     // Try Atlas MongoDB first (prioritize cloud over local)
-    const mongoUri = process.env.MONGODB_URI || 'mongodb+srv://YOUR_MONGODB_USERNAME:YOUR_MONGODB_PASSWORD@YOUR_CLUSTER.mongodb.net/serendibgo?retryWrites=true&w=majority&appName=Cluster0';
+    const mongoUri = process.env.MONGODB_URI || 'mongodb+srv://asbthanayamwatta2_db_user:a9tYLTCwJCXc0xjX@cluster0.gv7sbeb.mongodb.net/serendibgo?retryWrites=true&w=majority&appName=Cluster0';
     console.log('Attempting to connect to MongoDB Atlas...');
     console.log('MONGODB_URI:', mongoUri);
     

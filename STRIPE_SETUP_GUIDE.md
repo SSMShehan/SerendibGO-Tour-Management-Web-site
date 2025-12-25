@@ -6,8 +6,8 @@ Add these variables to your `backend/.env` file:
 
 ```env
 # Stripe Configuration
-STRIPE_SECRET_KEY=sk_test_YOUR_STRIPE_SECRET_KEY_HERE
-STRIPE_PUBLISHABLE_KEY=pk_test_YOUR_STRIPE_PUBLISHABLE_KEY_HERE
+STRIPE_SECRET_KEY=sk_test_51SIRHEGhGMqfYoq5KBkzdOMEIupPxFUYdR6rbPiHM7s3IohZfLxZD7iwyu489t7OEkTRAv7v06Fjd3y8zEyBGZy500bL41wQoy
+STRIPE_PUBLISHABLE_KEY=pk_test_51SIRHEGhGMqfYoq5wR5TD8i3ZZyVcwmQ6Lyp0GXfVMCjj2ChlkVnCyv579TQe0B3J54DCAErpkRj5BBmga8urcnt00NMZy5Eli
 STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
 ```
 
@@ -16,7 +16,7 @@ STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret_here
 Add these variables to your `frontend/.env` file:
 
 ```env
-VITE_STRIPE_PUBLISHABLE_KEY=pk_test_YOUR_STRIPE_PUBLISHABLE_KEY_HERE
+VITE_STRIPE_PUBLISHABLE_KEY=pk_test_51SIRHEGhGMqfYoq5wR5TD8i3ZZyVcwmQ6Lyp0GXfVMCjj2ChlkVnCyv579TQe0B3J54DCAErpkRj5BBmga8urcnt00NMZy5Eli
 ```
 
 ## Stripe Webhook Setup

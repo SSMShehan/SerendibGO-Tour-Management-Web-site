@@ -26,7 +26,7 @@
 ```env
 PORT=5000
 NODE_ENV=development
-MONGODB_URI=mongodb+srv://YOUR_MONGODB_USERNAME:YOUR_MONGODB_PASSWORD@YOUR_CLUSTER.mongodb.net/serendibgo?retryWrites=true&w=majority&appName=Cluster0
+MONGODB_URI=mongodb+srv://asbthanayamwatta2_db_user:a9tYLTCwJCXc0xjX@cluster0.gv7sbeb.mongodb.net/serendibgo?retryWrites=true&w=majority&appName=Cluster0
 JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
 JWT_EXPIRE=7d
 FROM_EMAIL=your-email@gmail.com

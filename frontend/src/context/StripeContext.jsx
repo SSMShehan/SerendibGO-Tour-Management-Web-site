@@ -21,7 +21,7 @@ export const StripeProvider = ({ children, clientSecret: propClientSecret }) => 
 
   useEffect(() => {
     // Load Stripe.js as soon as the component mounts
-    const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_YOUR_STRIPE_PUBLISHABLE_KEY_HERE';
+    const publishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || 'pk_test_51SIRHEGhGMqfYoq5wR5TD8i3ZZyVcwmQ6Lyp0GXfVMCjj2ChlkVnCyv579TQe0B3J54DCAErpkRj5BBmga8urcnt00NMZy5Eli';
     if (publishableKey) {
       setStripePromise(loadStripe(publishableKey));
     } else {
