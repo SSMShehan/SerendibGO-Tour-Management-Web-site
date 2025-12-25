@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000/api'
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.MODE === 'production' ? '/api' : 'http://127.0.0.1:5000/api')
 
 // Create axios instance
 const api = axios.create({
@@ -41,14 +41,14 @@ api.interceptors.response.use(
       localStorage.removeItem('token')
       window.location.href = '/login'
     }
-    
+
     // Suppress console errors for expected 404 responses
     if (error.response?.status === 404) {
       // Don't log 404 errors to console as they're often expected
       // (e.g., driver profile not found, user not found, etc.)
       error.suppressConsoleError = true
     }
-    
+
     return Promise.reject(error)
   }
 )
