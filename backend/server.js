@@ -1,37 +1,28 @@
 // Load environment variables first
 require('dotenv').config();
 
-// Set environment variables if not defined
-if (!process.env.JWT_SECRET) {
-  process.env.JWT_SECRET = 'your-super-secret-jwt-key-change-this-in-production';
-}
-if (!process.env.JWT_EXPIRE) {
-  process.env.JWT_EXPIRE = '30d';
-}
-if (!process.env.JWT_COOKIE_EXPIRE) {
-  process.env.JWT_COOKIE_EXPIRE = '30';
-}
-if (!process.env.STRIPE_SECRET_KEY) {
-  process.env.STRIPE_SECRET_KEY = 'sk_test_51SIRHEGhGMqfYoq5KBkzdOMEIupPxFUYdR6rbPiHM7s3IohZfLxZD7iwyu489t7OEkTRAv7v06Fjd3y8zEyBGZy500bL41wQoy';
-}
-if (!process.env.STRIPE_WEBHOOK_SECRET) {
-  process.env.STRIPE_WEBHOOK_SECRET = 'whsec_test_1234567890abcdef';
-}
-if (!process.env.MONGODB_URI) {
-  process.env.MONGODB_URI = 'mongodb+srv://admin:admin123@serandibgo.izvdsyx.mongodb.net/serendibgo?appName=serandibgo';
+// Set NODE_ENV default
+if (!process.env.NODE_ENV) {
+  process.env.NODE_ENV = 'development';
 }
 
 // Debug environment variables
-console.log('Environment variables:');
-console.log('JWT_SECRET:', process.env.JWT_SECRET ? 'SET' : 'NOT SET');
-console.log('JWT_EXPIRE:', process.env.JWT_EXPIRE);
-console.log('JWT_COOKIE_EXPIRE:', process.env.JWT_COOKIE_EXPIRE);
-console.log('STRIPE_SECRET_KEY:', process.env.STRIPE_SECRET_KEY ? 'SET' : 'NOT SET');
-console.log('STRIPE_WEBHOOK_SECRET:', process.env.STRIPE_WEBHOOK_SECRET ? 'SET' : 'NOT SET');
-console.log('MONGODB_URI:', process.env.MONGODB_URI ? 'SET' : 'NOT SET');
-console.log('NODE_ENV:', process.env.NODE_ENV);
-if (!process.env.NODE_ENV) {
-  process.env.NODE_ENV = 'development';
+console.log('🔧 Environment Configuration:');
+console.log('   NODE_ENV:', process.env.NODE_ENV);
+console.log('   PORT:', process.env.PORT || 5000);
+console.log('   MONGODB_URI:', process.env.MONGODB_URI ? '✅ SET' : '❌ NOT SET');
+console.log('   JWT_SECRET:', process.env.JWT_SECRET ? '✅ SET' : '❌ NOT SET');
+console.log('   STRIPE_SECRET_KEY:', process.env.STRIPE_SECRET_KEY ? '✅ SET' : '❌ NOT SET');
+
+// Validate required environment variables
+if (!process.env.MONGODB_URI) {
+  console.error('\n❌ ERROR: MONGODB_URI is not set!');
+  console.error('📝 Please create a .env file based on .env.example');
+  console.error('   1. Copy .env.example to .env');
+  console.error('   2. Update MONGODB_URI with your connection string\n');
+  if (process.env.NODE_ENV === 'production') {
+    process.exit(1);
+  }
 }
 
 const express = require('express');
@@ -86,6 +77,9 @@ const revenueRoutes = require('./src/routes/vehicles/revenue');
 
 // Import middleware
 const { errorHandler } = require('./src/middleware/errorHandler');
+
+// Import database connection
+const connectDB = require('./src/config/database');
 
 const app = express();
 
@@ -150,8 +144,10 @@ app.get('/api/debug-connection', (req, res) => {
   res.status(200).json({
     status: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
     readyState: mongoose.connection.readyState,
-    dbError: global.dbError || 'No error recorded',
-    mongoUri: process.env.MONGODB_URI ? 'Set (Hidden)' : 'Using Fallback',
+    readyStateName: ['disconnected', 'connected', 'connecting', 'disconnecting'][mongoose.connection.readyState] || 'unknown',
+    database: mongoose.connection.name || 'Not connected',
+    host: mongoose.connection.host || 'Not connected',
+    mongoUri: process.env.MONGODB_URI ? '✅ Set' : '❌ Not set',
     env: process.env.NODE_ENV
   });
 });
@@ -214,81 +210,7 @@ app.all('*', (req, res) => {
 // Global error handler
 app.use(errorHandler);
 
-// Database connection
-const connectDB = async () => {
-  try {
-    // Try Atlas MongoDB first (prioritize cloud over local)
-    const mongoUri = process.env.MONGODB_URI || 'mongodb+srv://admin:admin123@serandibgo.izvdsyx.mongodb.net/serendibgo?appName=serandibgo';
-    console.log('Attempting to connect to MongoDB Atlas...');
-    console.log('MONGODB_URI:', mongoUri);
 
-    const conn = await mongoose.connect(mongoUri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 10000, // Timeout after 10s
-      socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
-      maxPoolSize: 10, // Maintain up to 10 socket connections
-      retryWrites: true,
-      w: 'majority'
-    });
-    console.log(`✅ MongoDB Connected (Atlas): ${conn.connection.host}`);
-    return conn;
-  } catch (atlasError) {
-    console.error('Atlas connection failed:', atlasError.message);
-    global.dbError = atlasError.message; // Store Atlas error
-
-    // Try alternative connection method if SRV fails
-    if (atlasError.code === 'ENOTFOUND' && process.env.MONGODB_URI && process.env.MONGODB_URI.includes('mongodb+srv://')) {
-      console.log('SRV record failed, trying alternative connection...');
-      try {
-        // Convert SRV URI to standard format
-        const altUri = process.env.MONGODB_URI.replace('mongodb+srv://', 'mongodb://');
-        const conn = await mongoose.connect(altUri, {
-          useNewUrlParser: true,
-          useUnifiedTopology: true,
-          serverSelectionTimeoutMS: 10000,
-          socketTimeoutMS: 45000,
-        });
-        console.log(`✅ MongoDB Connected (alternative): ${conn.connection.host}`);
-        return conn;
-      } catch (altError) {
-        console.error('Alternative connection also failed:', altError.message);
-      }
-    }
-
-    // Fallback to local MongoDB if Atlas fails
-    console.log('Atlas not available, trying local MongoDB...');
-    try {
-      const localMongoUri = 'mongodb://localhost:27017/serendibgo';
-      const conn = await mongoose.connect(localMongoUri, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        serverSelectionTimeoutMS: 5000, // Timeout after 5s
-        socketTimeoutMS: 45000,
-        maxPoolSize: 10,
-      });
-      console.log(`✅ MongoDB Connected (Local): ${conn.connection.host}`);
-      return conn;
-    } catch (localError) {
-      console.error('Local MongoDB also failed:', localError.message);
-
-      console.log('❌ All MongoDB connections failed. Starting server without database...');
-      console.log('⚠️  Some features may not work without database connection.');
-      console.log('');
-      console.log('To fix this:');
-      console.log('   1. Install MongoDB locally: https://www.mongodb.com/try/download/community');
-      console.log('   2. Start MongoDB service: net start MongoDB');
-      console.log('   3. Or check your MongoDB Atlas connection');
-
-      // Don't exit in development, allow server to start without DB
-      global.dbError = localError.message; // Store error for debugging
-      console.log('Continuing without DB for debugging...');
-      // if (process.env.NODE_ENV === 'production') {
-      //   process.exit(1);
-      // }
-    }
-  }
-};
 
 // Start server
 const PORT = process.env.PORT || 5000;

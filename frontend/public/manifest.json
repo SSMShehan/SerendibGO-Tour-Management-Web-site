@@ -1,0 +1,16 @@
+{
+  "name": "SerendibGo - Sri Lankan Travel Platform",
+  "short_name": "SerendibGo",
+  "description": "Discover and book amazing tours and experiences in Sri Lanka",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait-primary",
+  "icons": [],
+  "categories": ["travel", "tourism", "booking"],
+  "lang": "en",
+  "dir": "ltr"
+}
+
+
