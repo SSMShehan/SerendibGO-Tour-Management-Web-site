@@ -1,10 +1,10 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { 
-  MapPin, 
-  Calendar, 
-  Users, 
-  Star, 
+import {
+  MapPin,
+  Calendar,
+  Users,
+  Star,
   ArrowRight,
   Play,
   Shield,
@@ -76,6 +76,7 @@ const Home = () => {
             muted
             loop
             playsInline
+            preload="metadata"
           >
             <source src="/videos/homepage-background.mp4" type="video/mp4" />
             Your browser does not support the video tag.
@@ -83,7 +84,7 @@ const Home = () => {
           {/* Video Overlay */}
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-black/40"></div>
         </div>
-        
+
         {/* Hero Content */}
         <div className="relative z-10 text-center text-white px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-8 leading-tight">
@@ -128,7 +129,7 @@ const Home = () => {
       </section>
 
       {/* Features Section */}
-      <section 
+      <section
         className="py-20 relative"
         style={{
           backgroundImage: 'url(/bg1.png)',
