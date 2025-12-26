@@ -120,13 +120,38 @@ const limiter = rateLimit({
 app.use('/api/', limiter);
 
 // CORS configuration
-app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:3002', 'http://127.0.0.1:3000', 'http://127.0.0.1:3001', 'http://127.0.0.1:3002'],
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, Postman, or same-origin)
+    if (!origin) return callback(null, true);
+
+    // In production, allow all origins (or you can specify your Vercel domain)
+    if (process.env.NODE_ENV === 'production') {
+      return callback(null, true);
+    }
+
+    // In development, only allow localhost
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:3002',
+      'http://127.0.0.1:3000',
+      'http://127.0.0.1:3001',
+      'http://127.0.0.1:3002'
+    ];
+
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
   exposedHeaders: ['Content-Disposition', 'Content-Length', 'Content-Type']
-}));
+};
+app.use(cors(corsOptions));
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
@@ -248,12 +273,23 @@ const startServer = async () => {
   }
 };
 
+// Initialize database connection
+let dbConnected = false;
+const initDB = async () => {
+  if (!dbConnected) {
+    await connectDB();
+    dbConnected = true;
+  }
+};
+
 if (require.main === module) {
+  // Running locally
   startServer();
 } else {
-  // For Vercel, we need to connect to DB before handling requests
-  // Ideally this should be optimized, but for now:
-  connectDB();
+  // Running on Vercel - connect to DB immediately
+  initDB().catch(err => {
+    console.error('Failed to initialize database:', err);
+  });
 }
 
 module.exports = app;
