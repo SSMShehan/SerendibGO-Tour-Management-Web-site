@@ -8,7 +8,7 @@ const paymentService = {
   },
 
   // Create payment intent (for Stripe)
-  createPaymentIntent: async (amount, currency = 'LKR', metadata = {}) => {
+  createPaymentIntent: async (amount, currency = 'USD', metadata = {}) => {
     const response = await api.post('/payments/create-intent', {
       bookingId: metadata.bookingId,
       amount,
@@ -18,7 +18,7 @@ const paymentService = {
   },
 
   // Create guest payment intent (for unauthenticated users)
-  createGuestPaymentIntent: async (amount, currency = 'LKR', metadata = {}) => {
+  createGuestPaymentIntent: async (amount, currency = 'USD', metadata = {}) => {
     const response = await api.post('/payments/create-guest-intent', {
       bookingId: metadata.bookingId,
       amount,

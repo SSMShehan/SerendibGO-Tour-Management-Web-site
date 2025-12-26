@@ -149,6 +149,7 @@ export const PRIORITY_COLORS = {
 };
 
 export const CURRENCY_SYMBOLS = {
+  [PRICING_CURRENCIES.USD]: '$',
   [PRICING_CURRENCIES.LKR]: 'Rs.',
   [PRICING_CURRENCIES.USD]: '$',
   [PRICING_CURRENCIES.EUR]: '€',
@@ -196,26 +197,26 @@ export const getPriorityColor = (priority) => {
 };
 
 export const getCurrencySymbol = (currency) => {
-  return CURRENCY_SYMBOLS[currency] || 'Rs.';
+  return CURRENCY_SYMBOLS[currency] || '$';
 };
 
 export const formatPrice = (amount, currency = PRICING_CURRENCIES.LKR) => {
   if (amount === null || amount === undefined) return 'N/A';
-  
+
   const symbol = getCurrencySymbol(currency);
   const formattedAmount = new Intl.NumberFormat('en-US', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   }).format(amount);
-  
+
   return `${symbol}${formattedAmount}`;
 };
 
 export const calculatePrice = (basePrice, pricingRule) => {
   if (!basePrice || !pricingRule) return basePrice;
-  
+
   let calculatedPrice = basePrice;
-  
+
   switch (pricingRule.model) {
     case PRICING_MODELS.FIXED:
       calculatedPrice = pricingRule.value;
@@ -240,17 +241,17 @@ export const calculatePrice = (basePrice, pricingRule) => {
     default:
       calculatedPrice = basePrice;
   }
-  
+
   return Math.max(0, calculatedPrice);
 };
 
 export const isPricingActive = (pricingRule) => {
   if (!pricingRule) return false;
-  
+
   const now = new Date();
   const startDate = new Date(pricingRule.startDate);
   const endDate = new Date(pricingRule.endDate);
-  
+
   return (
     pricingRule.status === PRICING_STATUS.ACTIVE &&
     now >= startDate &&
@@ -260,68 +261,68 @@ export const isPricingActive = (pricingRule) => {
 
 export const getPricingRulesForDate = (pricingRules, date) => {
   if (!pricingRules || !Array.isArray(pricingRules)) return [];
-  
+
   const targetDate = new Date(date);
-  
+
   return pricingRules.filter(rule => {
     if (!isPricingActive(rule)) return false;
-    
+
     const startDate = new Date(rule.startDate);
     const endDate = new Date(rule.endDate);
-    
+
     return targetDate >= startDate && targetDate <= endDate;
   }).sort((a, b) => b.priority - a.priority);
 };
 
 export const applyPricingRules = (basePrice, pricingRules, date) => {
   if (!pricingRules || !Array.isArray(pricingRules)) return basePrice;
-  
+
   const applicableRules = getPricingRulesForDate(pricingRules, date);
   let finalPrice = basePrice;
-  
+
   applicableRules.forEach(rule => {
     finalPrice = calculatePrice(finalPrice, rule);
   });
-  
+
   return finalPrice;
 };
 
 export const validatePricingRule = (pricingRule) => {
   const errors = [];
-  
+
   if (!pricingRule.name) {
     errors.push('Name is required');
   }
-  
+
   if (!pricingRule.type) {
     errors.push('Type is required');
   }
-  
+
   if (!pricingRule.model) {
     errors.push('Model is required');
   }
-  
+
   if (pricingRule.value === null || pricingRule.value === undefined) {
     errors.push('Value is required');
   }
-  
+
   if (!pricingRule.startDate) {
     errors.push('Start date is required');
   }
-  
+
   if (!pricingRule.endDate) {
     errors.push('End date is required');
   }
-  
+
   if (pricingRule.startDate && pricingRule.endDate) {
     const startDate = new Date(pricingRule.startDate);
     const endDate = new Date(pricingRule.endDate);
-    
+
     if (startDate >= endDate) {
       errors.push('End date must be after start date');
     }
   }
-  
+
   return errors;
 };
 
@@ -335,13 +336,13 @@ export const getPricingSummary = (pricingRules) => {
     expired: 0,
     suspended: 0
   };
-  
+
   if (!pricingRules || !Array.isArray(pricingRules)) return summary;
-  
+
   pricingRules.forEach(rule => {
     summary.total++;
     summary[rule.status]++;
   });
-  
+
   return summary;
 };

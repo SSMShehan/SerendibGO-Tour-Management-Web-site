@@ -1074,7 +1074,7 @@ const CustomTripApprovalForm = () => {
             </div>
             <div>
               <p className="text-sm text-gray-600">Budget</p>
-              <p className="font-semibold">LKR {selectedTrip.budget?.toLocaleString() || 'Not specified'}</p>
+              <p className="font-semibold">$ {selectedTrip.budget?.toLocaleString() || 'Not specified'}</p>
             </div>
           </div>
         </div>
@@ -1207,12 +1207,12 @@ const CustomTripApprovalForm = () => {
                     <option key="guide-empty" value="">Choose a guide...</option>
                     {availableGuides.map(guide => (
                       <option key={guide.id} value={guide.id}>
-                        {guide.name} - LKR {guide.price || 0}/day ({guide.specialties?.join(', ') || 'General'})
+                        {guide.name} - ${guide.price || 0}/day ({guide.specialties?.join(', ') || 'General'})
                       </option>
                     ))}
                     {typeof approvalForm.assignedGuide === 'object' && approvalForm.assignedGuide.isCustom && (
                       <option key="custom-guide" value="custom">
-                        {approvalForm.assignedGuide.name} - LKR {approvalForm.assignedGuide.pricePerDay}/day (Custom)
+                        {approvalForm.assignedGuide.name} - ${approvalForm.assignedGuide.pricePerDay}/day (Custom)
                       </option>
                     )}
                     <option key="manual-guide" value="manual">+ Add Custom Guide</option>
@@ -1221,7 +1221,7 @@ const CustomTripApprovalForm = () => {
                 {approvalForm.assignedGuide && (
                   <div className="bg-blue-50 p-4 rounded-lg">
                     <p className="text-sm text-blue-800">
-                      <strong>Guide Fee:</strong> LKR {
+                      <strong>Guide Fee:</strong> ${
                         typeof approvalForm.assignedGuide === 'string' 
                           ? availableGuides.find(g => g.id === approvalForm.assignedGuide)?.price || 0
                           : approvalForm.assignedGuide.pricePerDay || 0
@@ -1525,7 +1525,7 @@ const CustomTripApprovalForm = () => {
                           <option key="vehicle-empty" value="">Select vehicle...</option>
                           {availableVehicles.map(v => (
                             <option key={v._id} value={v._id}>
-                              {v.make} {v.model} ({v.vehicleType}) - LKR {v.pricing?.dailyRate || 0}/day
+                              {v.make} {v.model} ({v.vehicleType}) - ${v.pricing?.dailyRate || 0}/day
                             </option>
                           ))}
                         </select>
@@ -1900,7 +1900,7 @@ const CustomTripApprovalForm = () => {
                             .filter(hotel => !hotelCityFilter || hotel.location?.city === hotelCityFilter)
                             .map(hotel => (
                             <option key={hotel._id} value={hotel._id}>
-                              {hotel.name} - {hotel.location?.city} ({hotel.starRating}★) - LKR {hotel.roomTypes?.[0]?.basePrice || hotel.averageRoomPrice || 0}/night
+                              {hotel.name} - {hotel.location?.city} ({hotel.starRating}★) - ${hotel.roomTypes?.[0]?.basePrice || hotel.averageRoomPrice || 0}/night
                             </option>
                           ))}
                         </select>
@@ -1934,7 +1934,7 @@ const CustomTripApprovalForm = () => {
                             if (selectedHotel?.roomTypes && selectedHotel.roomTypes.length > 0) {
                               return selectedHotel.roomTypes.map((roomType, roomIndex) => (
                                 <option key={`${roomIndex}-${roomType.name}`} value={roomType.name}>
-                                  {roomType.name} - LKR {roomType.basePrice}/night
+                                  {roomType.name} - ${roomType.basePrice}/night
                                 </option>
                               ))
                             } else {
@@ -2191,15 +2191,15 @@ const CustomTripApprovalForm = () => {
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Guide Fees:</span>
-                    <span className="font-semibold">LKR {approvalForm.totalBudget.guideFees.toLocaleString()}</span>
+                    <span className="font-semibold">$ {approvalForm.totalBudget.guideFees.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Vehicle Costs:</span>
-                    <span className="font-semibold">LKR {approvalForm.totalBudget.vehicleCosts.toLocaleString()}</span>
+                    <span className="font-semibold">$ {approvalForm.totalBudget.vehicleCosts.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Hotel Costs:</span>
-                    <span className="font-semibold">LKR {approvalForm.totalBudget.hotelCosts.toLocaleString()}</span>
+                    <span className="font-semibold">$ {approvalForm.totalBudget.hotelCosts.toLocaleString()}</span>
                   </div>
                 </div>
                 
@@ -2244,7 +2244,7 @@ const CustomTripApprovalForm = () => {
               <div className="mt-4 pt-4 border-t border-gray-200">
                 <div className="flex justify-between text-lg font-bold text-gray-900">
                   <span>Total Amount:</span>
-                  <span>LKR {approvalForm.totalBudget.totalAmount.toLocaleString()}</span>
+                  <span>$ {approvalForm.totalBudget.totalAmount.toLocaleString()}</span>
                 </div>
               </div>
             </div>

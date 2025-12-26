@@ -104,426 +104,426 @@ function App() {
             <NotificationProvider>
               <ChatbotProvider>
                 <div className="min-h-screen bg-base-100" data-theme="serendibgo">
-              <Routes>
-                {/* Public Routes */}
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-              
-              
-              {/* Protected Routes with Layout */}
-              <Route path="/" element={<Layout />}>
-                <Route index element={<Home />} />
-                <Route path="tours" element={<Tours />} />
-                <Route path="tours/:id" element={<TourDetails />} />
-                <Route path="guides" element={<Guides />} />
-                <Route path="guides/:id" element={<GuideDetail />} />
-                
-                {/* Staff Dashboard Route */}
-                <Route path="staff" element={
-                  <StaffProtectedRoute allowedRoles={['staff', 'admin', 'super_admin', 'manager', 'support_staff']}>
-                    <StaffDashboard />
-                  </StaffProtectedRoute>
-                } />
-                <Route path="guide/dashboard" element={
-                  <ProtectedRoute allowedRoles={['guide']}>
-                    <GuideDashboard />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="guide" element={
-                  <ProtectedRoute allowedRoles={['guide']}>
-                    <GuideDashboard />
-                  </ProtectedRoute>
-                } />
-                <Route path="guide-support" element={
-                  <ProtectedRoute allowedRoles={['guide']}>
-                    <GuideSupport />
-                  </ProtectedRoute>
-                } />
-                <Route path="guide-notifications" element={
-                  <ProtectedRoute allowedRoles={['guide']}>
-                    <GuideNotifications />
-                  </ProtectedRoute>
-                } />
-                <Route path="guide/settings" element={
-                  <ProtectedRoute allowedRoles={['guide']}>
-                    <GuideSettings />
-                  </ProtectedRoute>
-                } />
-                <Route path="guide/schedule" element={
-                  <ProtectedRoute allowedRoles={['guide']}>
-                    <GuideSchedule />
-                  </ProtectedRoute>
-                } />
-                <Route path="guide/reviews" element={
-                  <ProtectedRoute allowedRoles={['guide']}>
-                    <GuideReviews />
-                  </ProtectedRoute>
-                } />
-                <Route path="guide/profile" element={
-                  <ProtectedRoute allowedRoles={['guide']}>
-                    <GuideProfile />
-                  </ProtectedRoute>
-                } />
-                <Route path="guide/earnings" element={
-                  <ProtectedRoute allowedRoles={['guide']}>
-                    <GuideEarnings />
-                  </ProtectedRoute>
-                } />
-                <Route path="guide/analytics" element={
-                  <ProtectedRoute allowedRoles={['guide']}>
-                    <GuideAnalytics />
-                  </ProtectedRoute>
-                } />
-                <Route path="hotels" element={<HotelSearch />} />
-                <Route path="hotels/:id" element={<HotelDetails />} />
-                <Route path="hotels/:hotelId/rooms/:roomId" element={<RoomDetails />} />
-                <Route path="hotels/:id/booking" element={<HotelBooking />} />
-                <Route path="hotel-payment/:bookingId" element={<HotelPayment />} />
-                <Route path="booking-confirmation/:bookingId" element={<BookingConfirmation />} />
-                <Route path="hotels/:id/reviews" element={<HotelReviews />} />
-                
-                {/* Admin Routes */}
-                <Route path="admin/dashboard" element={
-                  <ProtectedRoute allowedRoles={['admin']}>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                } />
-                <Route path="admin/staff" element={
-                  <ProtectedRoute allowedRoles={['admin']}>
-                    <StaffManagement />
-                  </ProtectedRoute>
-                } />
-                <Route path="admin/analytics" element={
-                  <ProtectedRoute allowedRoles={['admin']}>
-                    <AnalyticsDashboard />
-                  </ProtectedRoute>
-                } />
-                <Route path="admin/notifications" element={
-                  <ProtectedRoute allowedRoles={['admin']}>
-                    <NotificationManagement />
-                  </ProtectedRoute>
-                } />
-                <Route path="admin/hotels" element={
-                  <ProtectedRoute allowedRoles={['admin']}>
-                    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                      <div className="bg-white p-8 rounded-lg shadow-sm border">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-4">Hotel Management</h2>
-                        <p className="text-gray-600">Hotel approval and management features coming soon...</p>
-                      </div>
-                    </div>
-                  </ProtectedRoute>
-                } />
-                <Route path="admin/vehicles" element={
-                  <ProtectedRoute allowedRoles={['admin']}>
-                    <AdminVehicleManagement />
-                  </ProtectedRoute>
-                } />
-                <Route path="admin/settings" element={
-                  <ProtectedRoute allowedRoles={['admin']}>
-                    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-                      <div className="bg-white p-8 rounded-lg shadow-sm border">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-4">Platform Settings</h2>
-                        <p className="text-gray-600">Platform configuration features coming soon...</p>
-                      </div>
-                    </div>
-                  </ProtectedRoute>
-                } />
-                <Route path="earnings" element={
-                  <ProtectedRoute allowedRoles={['hotel_owner']}>
-                    <EarningsDashboard />
-                  </ProtectedRoute>
-                } />
-                <Route path="pricing" element={
-                  <ProtectedRoute allowedRoles={['hotel_owner']}>
-                    <PricingManagement />
-                  </ProtectedRoute>
-                } />
-                <Route path="vehicles" element={<Vehicles />} />
-                <Route path="vehicles/:vehicleId" element={<VehicleDetails />} />
-                
-                {/* User Dashboard */}
-                <Route path="dashboard" element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } />
-                
-                {/* Profile */}
-                <Route path="profile" element={
-                  <ProtectedRoute>
-                    <Profile />
-                  </ProtectedRoute>
-                } />
-                
-                {/* My Bookings */}
-                <Route path="my-bookings" element={
-                  <ProtectedRoute>
-                    <MyBookings />
-                  </ProtectedRoute>
-                } />
-                
-                {/* Notifications */}
-                <Route path="notifications" element={
-                  <ProtectedRoute>
-                    <Notifications />
-                  </ProtectedRoute>
-                } />
-                
-                {/* Contact/Support */}
-                <Route path="contact" element={<Contact />} />
-                
-                {/* Booking Flow */}
-                <Route path="booking/:tourId" element={
-                  <ProtectedRoute>
-                    <Booking />
-                  </ProtectedRoute>
-                } />
-                
-                {/* Vehicle Booking */}
-                <Route path="booking" element={
-                  <ProtectedRoute>
-                    <Booking />
-                  </ProtectedRoute>
-                } />
-                
-                 <Route path="payment" element={
-                   <ProtectedRoute>
-                     <Payment />
-                   </ProtectedRoute>
-                 } />
-                 
-                 <Route path="payment/:bookingId" element={
-                   <ProtectedRoute>
-                     <Payment />
-                   </ProtectedRoute>
-                 } />
-                
-                <Route path="payment-success" element={
-                  <ProtectedRoute>
-                    <PaymentSuccess />
-                  </ProtectedRoute>
-                } />
-                
-                {/* Custom Trip */}
-                <Route path="custom-trip" element={<CustomTrip />} />
-                
-                {/* Admin Routes */}
-                <Route path="admin" element={
-                  <ProtectedRoute allowedRoles={['admin']}>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="admin/tours" element={
-                  <ProtectedRoute allowedRoles={['admin', 'guide']}>
-                    <AdminTours />
-                  </ProtectedRoute>
-                } />
-                
-                
-                <Route path="admin/bookings" element={
-                  <ProtectedRoute allowedRoles={['admin', 'staff']}>
-                    <AdminBookings />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="admin/refunds" element={
-                  <ProtectedRoute allowedRoles={['admin']}>
-                    <AdminRefundManagement />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="staff/custom-trips/:tripId/approve" element={
-                  <ProtectedRoute allowedRoles={['staff', 'admin']}>
-                    <CustomTripApprovalForm />
-                  </ProtectedRoute>
-                } />
-                
-                {/* Hotel Owner Routes */}
-                <Route path="hotel-owner/register" element={
-                  <ProtectedRoute allowedRoles={['hotel_owner']}>
-                    <HotelOwnerRegistration />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="hotel-owner/dashboard" element={
-                  <ProtectedRoute allowedRoles={['hotel_owner']}>
-                    <HotelOwnerDashboard />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="hotel-owner" element={
-                  <ProtectedRoute allowedRoles={['hotel_owner']}>
-                    <HotelOwnerDashboard />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="hotel-owner/hotels/:hotelId/rooms" element={
-                  <ProtectedRoute allowedRoles={['hotel_owner']}>
-                    <ManageRooms />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="hotel-owner/hotels/:hotelId/bookings" element={
-                  <ProtectedRoute allowedRoles={['hotel_owner']}>
-                    <ManageBookings />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="hotel-owner/rooms/:roomId/availability" element={
-                  <ProtectedRoute allowedRoles={['hotel_owner']}>
-                    <RoomAvailabilityCalendar />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="hotel-owner/hotels/:hotelId/edit" element={
-                  <ProtectedRoute allowedRoles={['hotel_owner']}>
-                    <EditHotel />
-                  </ProtectedRoute>
-                } />
-                
-                {/* Vehicle Owner Routes */}
-                <Route path="vehicle-owner/register" element={
-                  <ProtectedRoute allowedRoles={['vehicle_owner']}>
-                    <VehicleOwnerRegistration />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="vehicle-owner/dashboard" element={
-                  <ProtectedRoute allowedRoles={['vehicle_owner']}>
-                    <VehicleOwnerDashboard />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="vehicle-owner" element={
-                  <ProtectedRoute allowedRoles={['vehicle_owner']}>
-                    <VehicleOwnerDashboard />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="vehicle-owner/add-vehicle" element={
-                  <ProtectedRoute allowedRoles={['vehicle_owner']}>
-                    <AddVehicle />
-                  </ProtectedRoute>
-                } />
-                
-                    <Route path="vehicle-owner/vehicles/:vehicleId" element={
-                      <ProtectedRoute allowedRoles={['vehicle_owner']}>
-                        <VehicleDetails />
-                      </ProtectedRoute>
-                    } />
-                    
-                    <Route path="vehicle-owner/vehicles/:vehicleId/availability" element={
-                      <ProtectedRoute allowedRoles={['vehicle_owner']}>
-                        <VehicleAvailabilityManagement />
-                      </ProtectedRoute>
-                    } />
-                    
-                    <Route path="vehicle-owner/vehicles/:vehicleId/pricing" element={
-                      <ProtectedRoute allowedRoles={['vehicle_owner']}>
-                        <VehiclePricingManagement />
-                      </ProtectedRoute>
-                    } />
-                    
-        <Route path="vehicle-owner/vehicles/:vehicleId/integrations" element={
-          <ProtectedRoute allowedRoles={['vehicle_owner']}>
-            <VehicleIntegrationManagement />
-          </ProtectedRoute>
-        } />
+                  <Routes>
+                    {/* Public Routes */}
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
 
-        <Route path="vehicle-owner/booking-requests" element={
-          <ProtectedRoute allowedRoles={['vehicle_owner']}>
-            <VehicleBookingRequests />
-          </ProtectedRoute>
-        } />
 
-        <Route path="customer/booking-requests" element={
-          <ProtectedRoute allowedRoles={['customer']}>
-            <VehicleBookingRequests />
-          </ProtectedRoute>
-        } />
+                    {/* Protected Routes with Layout */}
+                    <Route path="/" element={<Layout />}>
+                      <Route index element={<Home />} />
+                      <Route path="tours" element={<Tours />} />
+                      <Route path="tours/:id" element={<TourDetails />} />
+                      <Route path="guides" element={<Guides />} />
+                      <Route path="guides/:id" element={<GuideDetail />} />
 
-        <Route path="trips" element={
-          <ProtectedRoute allowedRoles={['customer', 'vehicle_owner', 'driver']}>
-            <TripManagement />
-          </ProtectedRoute>
-        } />
+                      {/* Staff Dashboard Route */}
+                      <Route path="staff" element={
+                        <StaffProtectedRoute allowedRoles={['staff', 'admin', 'super_admin', 'manager', 'support_staff']}>
+                          <StaffDashboard />
+                        </StaffProtectedRoute>
+                      } />
+                      <Route path="guide/dashboard" element={
+                        <ProtectedRoute allowedRoles={['guide']}>
+                          <GuideDashboard />
+                        </ProtectedRoute>
+                      } />
 
-        <Route path="drivers" element={
-          <ProtectedRoute allowedRoles={['admin', 'vehicle_owner']}>
-            <DriverManagement />
-          </ProtectedRoute>
-        } />
+                      <Route path="guide" element={
+                        <ProtectedRoute allowedRoles={['guide']}>
+                          <GuideDashboard />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="guide-support" element={
+                        <ProtectedRoute allowedRoles={['guide']}>
+                          <GuideSupport />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="guide-notifications" element={
+                        <ProtectedRoute allowedRoles={['guide']}>
+                          <GuideNotifications />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="guide/settings" element={
+                        <ProtectedRoute allowedRoles={['guide']}>
+                          <GuideSettings />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="guide/schedule" element={
+                        <ProtectedRoute allowedRoles={['guide']}>
+                          <GuideSchedule />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="guide/reviews" element={
+                        <ProtectedRoute allowedRoles={['guide']}>
+                          <GuideReviews />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="guide/profile" element={
+                        <ProtectedRoute allowedRoles={['guide']}>
+                          <GuideProfile />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="guide/earnings" element={
+                        <ProtectedRoute allowedRoles={['guide']}>
+                          <GuideEarnings />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="guide/analytics" element={
+                        <ProtectedRoute allowedRoles={['guide']}>
+                          <GuideAnalytics />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="hotels" element={<Hotels />} />
+                      <Route path="hotels/:id" element={<HotelDetails />} />
+                      <Route path="hotels/:hotelId/rooms/:roomId" element={<RoomDetails />} />
+                      <Route path="hotels/:id/booking" element={<HotelBooking />} />
+                      <Route path="hotel-payment/:bookingId" element={<HotelPayment />} />
+                      <Route path="booking-confirmation/:bookingId" element={<BookingConfirmation />} />
+                      <Route path="hotels/:id/reviews" element={<HotelReviews />} />
 
-        <Route path="driver/register" element={
-          <ProtectedRoute allowedRoles={['customer', 'tourist']}>
-            <DriverRegistration />
-          </ProtectedRoute>
-        } />
+                      {/* Admin Routes */}
+                      <Route path="admin/dashboard" element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                          <AdminDashboard />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="admin/staff" element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                          <StaffManagement />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="admin/analytics" element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                          <AnalyticsDashboard />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="admin/notifications" element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                          <NotificationManagement />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="admin/hotels" element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                          <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                            <div className="bg-white p-8 rounded-lg shadow-sm border">
+                              <h2 className="text-2xl font-bold text-gray-900 mb-4">Hotel Management</h2>
+                              <p className="text-gray-600">Hotel approval and management features coming soon...</p>
+                            </div>
+                          </div>
+                        </ProtectedRoute>
+                      } />
+                      <Route path="admin/vehicles" element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                          <AdminVehicleManagement />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="admin/settings" element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                          <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                            <div className="bg-white p-8 rounded-lg shadow-sm border">
+                              <h2 className="text-2xl font-bold text-gray-900 mb-4">Platform Settings</h2>
+                              <p className="text-gray-600">Platform configuration features coming soon...</p>
+                            </div>
+                          </div>
+                        </ProtectedRoute>
+                      } />
+                      <Route path="earnings" element={
+                        <ProtectedRoute allowedRoles={['hotel_owner']}>
+                          <EarningsDashboard />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="pricing" element={
+                        <ProtectedRoute allowedRoles={['hotel_owner']}>
+                          <PricingManagement />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="vehicles" element={<Vehicles />} />
+                      <Route path="vehicles/:vehicleId" element={<VehicleDetails />} />
 
-        <Route path="driver/dashboard" element={
-          <ProtectedRoute allowedRoles={['driver']}>
-            <DriverDashboard />
-          </ProtectedRoute>
-        } />
+                      {/* User Dashboard */}
+                      <Route path="dashboard" element={
+                        <ProtectedRoute>
+                          <Dashboard />
+                        </ProtectedRoute>
+                      } />
 
-        <Route path="driver" element={
-          <ProtectedRoute allowedRoles={['driver']}>
-            <DriverDashboard />
-          </ProtectedRoute>
-        } />
+                      {/* Profile */}
+                      <Route path="profile" element={
+                        <ProtectedRoute>
+                          <Profile />
+                        </ProtectedRoute>
+                      } />
 
-        <Route path="driver/vehicle-registration" element={
-          <ProtectedRoute allowedRoles={['driver']}>
-            <DriverVehicleRegistration />
-          </ProtectedRoute>
-        } />
+                      {/* My Bookings */}
+                      <Route path="my-bookings" element={
+                        <ProtectedRoute>
+                          <MyBookings />
+                        </ProtectedRoute>
+                      } />
 
-        <Route path="driver/vehicles/:vehicleId" element={
-          <ProtectedRoute allowedRoles={['driver']}>
-            <VehicleDetails />
-          </ProtectedRoute>
-        } />
+                      {/* Notifications */}
+                      <Route path="notifications" element={
+                        <ProtectedRoute>
+                          <Notifications />
+                        </ProtectedRoute>
+                      } />
 
-        <Route path="driver/vehicles/:vehicleId/edit" element={
-          <ProtectedRoute allowedRoles={['driver']}>
-            <VehicleEdit />
-          </ProtectedRoute>
-        } />
+                      {/* Contact/Support */}
+                      <Route path="contact" element={<Contact />} />
 
-        <Route path="search" element={<VehicleSearchInterface />} />
+                      {/* Booking Flow */}
+                      <Route path="booking/:tourId" element={
+                        <ProtectedRoute>
+                          <Booking />
+                        </ProtectedRoute>
+                      } />
 
-        <Route path="vehicles/:vehicleId/book" element={
-          <ProtectedRoute allowedRoles={['customer']}>
-            <VehicleBookingFlow />
-          </ProtectedRoute>
-        } />
+                      {/* Vehicle Booking */}
+                      <Route path="booking" element={
+                        <ProtectedRoute>
+                          <Booking />
+                        </ProtectedRoute>
+                      } />
 
-        <Route path="trips/:tripId/tracking" element={
-          <ProtectedRoute allowedRoles={['customer', 'vehicle_owner', 'driver']}>
-            <GPSTracking />
-          </ProtectedRoute>
-        } />
+                      <Route path="payment" element={
+                        <ProtectedRoute>
+                          <Payment />
+                        </ProtectedRoute>
+                      } />
 
-        <Route path="maintenance" element={
-          <ProtectedRoute allowedRoles={['vehicle_owner', 'admin']}>
-            <MaintenanceTracking />
-          </ProtectedRoute>
-        } />
+                      <Route path="payment/:bookingId" element={
+                        <ProtectedRoute>
+                          <Payment />
+                        </ProtectedRoute>
+                      } />
 
-        <Route path="revenue" element={
-          <ProtectedRoute allowedRoles={['vehicle_owner', 'admin']}>
-            <RevenueManagement />
-          </ProtectedRoute>
-        } />
-              </Route>
-              
-              {/* 404 Route */}
-              <Route path="*" element={<NotFound />} />
-              </Routes>
-            </div>
-            </ChatbotProvider>
+                      <Route path="payment-success" element={
+                        <ProtectedRoute>
+                          <PaymentSuccess />
+                        </ProtectedRoute>
+                      } />
+
+                      {/* Custom Trip */}
+                      <Route path="custom-trip" element={<CustomTrip />} />
+
+                      {/* Admin Routes */}
+                      <Route path="admin" element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                          <AdminDashboard />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="admin/tours" element={
+                        <ProtectedRoute allowedRoles={['admin', 'guide']}>
+                          <AdminTours />
+                        </ProtectedRoute>
+                      } />
+
+
+                      <Route path="admin/bookings" element={
+                        <ProtectedRoute allowedRoles={['admin', 'staff']}>
+                          <AdminBookings />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="admin/refunds" element={
+                        <ProtectedRoute allowedRoles={['admin']}>
+                          <AdminRefundManagement />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="staff/custom-trips/:tripId/approve" element={
+                        <ProtectedRoute allowedRoles={['staff', 'admin']}>
+                          <CustomTripApprovalForm />
+                        </ProtectedRoute>
+                      } />
+
+                      {/* Hotel Owner Routes */}
+                      <Route path="hotel-owner/register" element={
+                        <ProtectedRoute allowedRoles={['hotel_owner']}>
+                          <HotelOwnerRegistration />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="hotel-owner/dashboard" element={
+                        <ProtectedRoute allowedRoles={['hotel_owner']}>
+                          <HotelOwnerDashboard />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="hotel-owner" element={
+                        <ProtectedRoute allowedRoles={['hotel_owner']}>
+                          <HotelOwnerDashboard />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="hotel-owner/hotels/:hotelId/rooms" element={
+                        <ProtectedRoute allowedRoles={['hotel_owner']}>
+                          <ManageRooms />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="hotel-owner/hotels/:hotelId/bookings" element={
+                        <ProtectedRoute allowedRoles={['hotel_owner']}>
+                          <ManageBookings />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="hotel-owner/rooms/:roomId/availability" element={
+                        <ProtectedRoute allowedRoles={['hotel_owner']}>
+                          <RoomAvailabilityCalendar />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="hotel-owner/hotels/:hotelId/edit" element={
+                        <ProtectedRoute allowedRoles={['hotel_owner']}>
+                          <EditHotel />
+                        </ProtectedRoute>
+                      } />
+
+                      {/* Vehicle Owner Routes */}
+                      <Route path="vehicle-owner/register" element={
+                        <ProtectedRoute allowedRoles={['vehicle_owner']}>
+                          <VehicleOwnerRegistration />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="vehicle-owner/dashboard" element={
+                        <ProtectedRoute allowedRoles={['vehicle_owner']}>
+                          <VehicleOwnerDashboard />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="vehicle-owner" element={
+                        <ProtectedRoute allowedRoles={['vehicle_owner']}>
+                          <VehicleOwnerDashboard />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="vehicle-owner/add-vehicle" element={
+                        <ProtectedRoute allowedRoles={['vehicle_owner']}>
+                          <AddVehicle />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="vehicle-owner/vehicles/:vehicleId" element={
+                        <ProtectedRoute allowedRoles={['vehicle_owner']}>
+                          <VehicleDetails />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="vehicle-owner/vehicles/:vehicleId/availability" element={
+                        <ProtectedRoute allowedRoles={['vehicle_owner']}>
+                          <VehicleAvailabilityManagement />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="vehicle-owner/vehicles/:vehicleId/pricing" element={
+                        <ProtectedRoute allowedRoles={['vehicle_owner']}>
+                          <VehiclePricingManagement />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="vehicle-owner/vehicles/:vehicleId/integrations" element={
+                        <ProtectedRoute allowedRoles={['vehicle_owner']}>
+                          <VehicleIntegrationManagement />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="vehicle-owner/booking-requests" element={
+                        <ProtectedRoute allowedRoles={['vehicle_owner']}>
+                          <VehicleBookingRequests />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="customer/booking-requests" element={
+                        <ProtectedRoute allowedRoles={['customer']}>
+                          <VehicleBookingRequests />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="trips" element={
+                        <ProtectedRoute allowedRoles={['customer', 'vehicle_owner', 'driver']}>
+                          <TripManagement />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="drivers" element={
+                        <ProtectedRoute allowedRoles={['admin', 'vehicle_owner']}>
+                          <DriverManagement />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="driver/register" element={
+                        <ProtectedRoute allowedRoles={['customer', 'tourist']}>
+                          <DriverRegistration />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="driver/dashboard" element={
+                        <ProtectedRoute allowedRoles={['driver']}>
+                          <DriverDashboard />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="driver" element={
+                        <ProtectedRoute allowedRoles={['driver']}>
+                          <DriverDashboard />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="driver/vehicle-registration" element={
+                        <ProtectedRoute allowedRoles={['driver']}>
+                          <DriverVehicleRegistration />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="driver/vehicles/:vehicleId" element={
+                        <ProtectedRoute allowedRoles={['driver']}>
+                          <VehicleDetails />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="driver/vehicles/:vehicleId/edit" element={
+                        <ProtectedRoute allowedRoles={['driver']}>
+                          <VehicleEdit />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="search" element={<VehicleSearchInterface />} />
+
+                      <Route path="vehicles/:vehicleId/book" element={
+                        <ProtectedRoute allowedRoles={['customer']}>
+                          <VehicleBookingFlow />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="trips/:tripId/tracking" element={
+                        <ProtectedRoute allowedRoles={['customer', 'vehicle_owner', 'driver']}>
+                          <GPSTracking />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="maintenance" element={
+                        <ProtectedRoute allowedRoles={['vehicle_owner', 'admin']}>
+                          <MaintenanceTracking />
+                        </ProtectedRoute>
+                      } />
+
+                      <Route path="revenue" element={
+                        <ProtectedRoute allowedRoles={['vehicle_owner', 'admin']}>
+                          <RevenueManagement />
+                        </ProtectedRoute>
+                      } />
+                    </Route>
+
+                    {/* 404 Route */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </div>
+              </ChatbotProvider>
             </NotificationProvider>
           </VehicleProvider>
         </HotelProvider>

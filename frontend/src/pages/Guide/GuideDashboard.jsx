@@ -445,9 +445,9 @@ const GuideDashboard = () => {
       if (!profile.profile.pricePerDay || profile.profile.pricePerDay === 0) {
         newErrors.pricePerDay = 'Price per day is required'
       } else if (profile.profile.pricePerDay < 1000) {
-        newErrors.pricePerDay = 'Price must be at least LKR 1,000'
+        newErrors.pricePerDay = 'Price must be at least $1,000'
       } else if (profile.profile.pricePerDay > 100000) {
-        newErrors.pricePerDay = 'Price cannot exceed LKR 100,000'
+        newErrors.pricePerDay = 'Price cannot exceed $100,000'
       }
     } else if (formType === 'services') {
       // No validation needed for services (placeholder form)
@@ -1253,7 +1253,7 @@ const GuideDashboard = () => {
                       <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
                         <DollarSign className="h-6 w-6 text-blue-600" />
                       </div>
-                      <span className="text-2xl font-bold text-slate-900">LKR {guideStats.totalEarnings.toLocaleString()}</span>
+                      <span className="text-2xl font-bold text-slate-900">$ {guideStats.totalEarnings.toLocaleString()}</span>
                     </div>
                     <h3 className="font-semibold text-slate-900 mb-1">Total Earnings</h3>
                     <p className="text-sm text-slate-600">All-time earnings</p>
@@ -1580,7 +1580,7 @@ const GuideDashboard = () => {
                             <div className="ml-6 flex flex-col items-end">
                               <div className="mt-2 flex items-center text-lg font-semibold text-gray-900">
                                 <DollarSign className="h-4 w-4 mr-1" />
-                                LKR {booking.totalAmount?.toLocaleString() || '0'}
+                                ${booking.totalAmount?.toLocaleString() || '0'}
                               </div>
                               <div className="mt-1 text-xs text-gray-500">
                                 Booking created: {new Date(booking.createdAt).toLocaleDateString()}
@@ -1759,7 +1759,7 @@ const GuideDashboard = () => {
                           <div className="ml-6 flex flex-col items-end">
                             <div className="mt-2 flex items-center text-lg font-semibold text-red-600">
                               <DollarSign className="h-4 w-4 mr-1" />
-                              LKR {booking.totalAmount?.toLocaleString() || '0'}
+                              ${booking.totalAmount?.toLocaleString() || '0'}
                             </div>
                             <div className="mt-1 text-xs text-gray-500">
                               Booking cancelled: {new Date(booking.updatedAt).toLocaleDateString()}
@@ -2250,7 +2250,7 @@ const GuideDashboard = () => {
                     <span className="text-lg font-semibold text-green-800">Current Pricing</span>
                   </div>
                   <div className="text-3xl font-bold text-green-600">
-                    LKR {profile.profile.pricePerDay.toLocaleString()}
+                    ${profile.profile.pricePerDay.toLocaleString()}
                   </div>
                   <p className="text-green-700">per day</p>
                 </div>
@@ -2550,7 +2550,7 @@ const GuideDashboard = () => {
                       <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
                         <DollarSign className="h-6 w-6 text-green-600" />
                       </div>
-                      <span className="text-2xl font-bold text-slate-900">LKR {guideStats.totalEarnings.toLocaleString()}</span>
+                      <span className="text-2xl font-bold text-slate-900">$ {guideStats.totalEarnings.toLocaleString()}</span>
                     </div>
                     <h3 className="font-semibold text-slate-900 mb-1">Total Earnings</h3>
                     <p className="text-sm text-slate-600">All-time earnings</p>

@@ -8,19 +8,19 @@ const roomSchema = new mongoose.Schema({
     trim: true,
     maxlength: [100, 'Room name cannot exceed 100 characters']
   },
-  
+
   description: {
     type: String,
     maxlength: [1000, 'Description cannot exceed 1000 characters']
   },
-  
+
   // Hotel Reference
   hotel: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Hotel',
     required: [true, 'Hotel reference is required']
   },
-  
+
   // Room Type
   roomType: {
     type: String,
@@ -31,7 +31,7 @@ const roomSchema = new mongoose.Schema({
       'Villa', 'Bungalow', 'Chalet', 'Cottage'
     ]
   },
-  
+
   // Occupancy
   maxOccupancy: {
     adults: {
@@ -53,14 +53,14 @@ const roomSchema = new mongoose.Schema({
       max: [4, 'Maximum infant occupancy is 4']
     }
   },
-  
+
   // Room Size
   size: {
     type: Number, // in square meters
     min: [10, 'Minimum room size is 10 sqm'],
     max: [500, 'Maximum room size is 500 sqm']
   },
-  
+
   // Bed Configuration
   bedConfiguration: [{
     type: {
@@ -78,7 +78,7 @@ const roomSchema = new mongoose.Schema({
       enum: ['90cm', '120cm', '135cm', '150cm', '180cm', '200cm']
     }
   }],
-  
+
   // Pricing
   pricing: {
     basePrice: {
@@ -88,8 +88,8 @@ const roomSchema = new mongoose.Schema({
     },
     currency: {
       type: String,
-      default: 'LKR',
-      enum: ['LKR', 'USD', 'EUR', 'GBP']
+      default: 'USD',
+      enum: ['USD', 'LKR', 'EUR', 'GBP']
     },
     seasonalRates: [{
       name: {
@@ -132,7 +132,7 @@ const roomSchema = new mongoose.Schema({
       }
     }]
   },
-  
+
   // Amenities
   amenities: {
     // Basic Amenities
@@ -145,7 +145,7 @@ const roomSchema = new mongoose.Schema({
     safe: { type: Boolean, default: false },
     telephone: { type: Boolean, default: false },
     alarmClock: { type: Boolean, default: false },
-    
+
     // Bathroom Amenities
     privateBathroom: { type: Boolean, default: false },
     hotWater: { type: Boolean, default: false },
@@ -154,7 +154,7 @@ const roomSchema = new mongoose.Schema({
     toiletries: { type: Boolean, default: false },
     hairdryer: { type: Boolean, default: false },
     towels: { type: Boolean, default: false },
-    
+
     // Room Features
     balcony: { type: Boolean, default: false },
     seaView: { type: Boolean, default: false },
@@ -166,19 +166,19 @@ const roomSchema = new mongoose.Schema({
     seatingArea: { type: Boolean, default: false },
     diningArea: { type: Boolean, default: false },
     kitchenette: { type: Boolean, default: false },
-    
+
     // Accessibility
     wheelchairAccessible: { type: Boolean, default: false },
     accessibleBathroom: { type: Boolean, default: false },
     accessibleElevator: { type: Boolean, default: false },
-    
+
     // Additional Services
     roomService: { type: Boolean, default: false },
     housekeeping: { type: Boolean, default: false },
     laundryService: { type: Boolean, default: false },
     wakeUpService: { type: Boolean, default: false }
   },
-  
+
   // Images
   images: [{
     url: {
@@ -199,7 +199,7 @@ const roomSchema = new mongoose.Schema({
       default: 0
     }
   }],
-  
+
   // Availability
   availability: {
     totalRooms: {
@@ -223,7 +223,7 @@ const roomSchema = new mongoose.Schema({
       min: [0, 'Maintenance rooms cannot be negative']
     }
   },
-  
+
   // Policies
   policies: {
     checkInTime: {
@@ -260,20 +260,20 @@ const roomSchema = new mongoose.Schema({
       }
     }
   },
-  
+
   // Status
   status: {
     type: String,
     enum: ['active', 'inactive', 'maintenance', 'renovation'],
     default: 'active'
   },
-  
+
   // General Availability
   isAvailable: {
     type: Boolean,
     default: true
   },
-  
+
   // Ratings
   ratings: {
     overall: {
@@ -287,18 +287,18 @@ const roomSchema = new mongoose.Schema({
     location: { type: Number, default: 0, min: 0, max: 5 },
     value: { type: Number, default: 0, min: 0, max: 5 }
   },
-  
+
   reviewCount: {
     type: Number,
     default: 0
   },
-  
+
   // Timestamps
   createdAt: {
     type: Date,
     default: Date.now
   },
-  
+
   updatedAt: {
     type: Date,
     default: Date.now
@@ -315,66 +315,66 @@ roomSchema.index({ 'pricing.basePrice': 1 });
 roomSchema.index({ 'ratings.overall': -1 });
 
 // Virtual for current price (considering seasonal rates)
-roomSchema.virtual('currentPrice').get(function() {
+roomSchema.virtual('currentPrice').get(function () {
   const now = new Date();
-  const seasonalRate = this.pricing.seasonalRates.find(rate => 
-    rate.isActive && 
-    now >= rate.startDate && 
+  const seasonalRate = this.pricing.seasonalRates.find(rate =>
+    rate.isActive &&
+    now >= rate.startDate &&
     now <= rate.endDate
   );
-  
+
   if (seasonalRate) {
     return this.pricing.basePrice * seasonalRate.priceMultiplier;
   }
-  
+
   return this.pricing.basePrice;
 });
 
 // Virtual for primary image
-roomSchema.virtual('primaryImage').get(function() {
+roomSchema.virtual('primaryImage').get(function () {
   const primaryImg = this.images.find(img => img.isPrimary);
   return primaryImg ? primaryImg.url : (this.images.length > 0 ? this.images[0].url : null);
 });
 
 // Method to check availability for date range
-roomSchema.methods.checkAvailability = function(startDate, endDate, quantity = 1) {
+roomSchema.methods.checkAvailability = function (startDate, endDate, quantity = 1) {
   // This would check against bookings for the date range
   // Implementation would query the Booking model
   return this.availability.availableRooms >= quantity;
 };
 
 // Method to calculate price for date range
-roomSchema.methods.calculatePrice = function(startDate, endDate, quantity = 1) {
+roomSchema.methods.calculatePrice = function (startDate, endDate, quantity = 1) {
   const nights = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
   let totalPrice = 0;
-  
+
   for (let i = 0; i < nights; i++) {
     const currentDate = new Date(startDate.getTime() + (i * 24 * 60 * 60 * 1000));
-    const seasonalRate = this.pricing.seasonalRates.find(rate => 
-      rate.isActive && 
-      currentDate >= rate.startDate && 
+    const seasonalRate = this.pricing.seasonalRates.find(rate =>
+      rate.isActive &&
+      currentDate >= rate.startDate &&
       currentDate <= rate.endDate
     );
-    
-    const dailyPrice = seasonalRate ? 
-      this.pricing.basePrice * seasonalRate.priceMultiplier : 
+
+    const dailyPrice = seasonalRate ?
+      this.pricing.basePrice * seasonalRate.priceMultiplier :
       this.pricing.basePrice;
-    
+
     totalPrice += dailyPrice;
   }
-  
+
   return totalPrice * quantity;
 };
 
 // Pre-save middleware
-roomSchema.pre('save', function(next) {
+roomSchema.pre('save', function (next) {
   this.updatedAt = Date.now();
-  
+
   // Ensure available rooms don't exceed total rooms
   if (this.availability.availableRooms > this.availability.totalRooms) {
     this.availability.availableRooms = this.availability.totalRooms;
   }
-  
+
   next();
 });
 

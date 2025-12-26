@@ -74,7 +74,7 @@ const DriverVehicleRegistration = () => {
       perKmRate: '',
       hourlyRate: '',
       dailyRate: '',
-      currency: 'LKR'
+      currency: 'USD'
     },
     
     // Documents
@@ -395,7 +395,7 @@ const DriverVehicleRegistration = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Daily Rate (LKR)</span>
+                    <span className="label-text">Daily Rate (USD)</span>
                   </label>
                   <input
                     type="number"
@@ -408,7 +408,7 @@ const DriverVehicleRegistration = () => {
                 </div>
                 <div className="form-control">
                   <label className="label">
-                    <span className="label-text">Hourly Rate (LKR)</span>
+                    <span className="label-text">Hourly Rate (USD)</span>
                   </label>
                   <input
                     type="number"

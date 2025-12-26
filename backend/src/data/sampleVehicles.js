@@ -12,7 +12,7 @@ const sampleVehicles = [
     seatingCapacity: 4,
     fuelType: 'Petrol',
     pricing: {
-      currency: 'LKR',
+      currency: 'USD',
       dailyRate: 8000,
       hourlyRate: 1000,
       perKmRate: 50
@@ -45,7 +45,7 @@ const sampleVehicles = [
     seatingCapacity: 12,
     fuelType: 'Diesel',
     pricing: {
-      currency: 'LKR',
+      currency: 'USD',
       dailyRate: 12000,
       hourlyRate: 1500,
       perKmRate: 60
@@ -78,7 +78,7 @@ const sampleVehicles = [
     seatingCapacity: 5,
     fuelType: 'Petrol',
     pricing: {
-      currency: 'LKR',
+      currency: 'USD',
       dailyRate: 9000,
       hourlyRate: 1200,
       perKmRate: 55

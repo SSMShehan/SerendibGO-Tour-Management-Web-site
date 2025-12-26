@@ -31,7 +31,7 @@ class EmailService {
 
   async sendVerificationEmail(email, token) {
     const verificationUrl = `${process.env.FRONTEND_URL}/verify-email/${token}`;
-    
+
     const html = `
       <!DOCTYPE html>
       <html>
@@ -95,7 +95,7 @@ class EmailService {
 
   async sendPasswordResetEmail(email, token) {
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${token}`;
-    
+
     const html = `
       <!DOCTYPE html>
       <html>
@@ -165,10 +165,10 @@ class EmailService {
 
   async sendBookingConfirmationEmail(bookingData) {
     const { booking, customTrip, tour, user, guide } = bookingData;
-    
+
     // Determine if it's a custom trip or regular booking
     const isCustomTrip = !!customTrip;
-    
+
     // Format dates
     const formatDate = (date) => {
       return new Date(date).toLocaleDateString('en-US', {
@@ -180,7 +180,7 @@ class EmailService {
 
     // Format currency
     const formatCurrency = (amount) => {
-      return `LKR ${amount?.toLocaleString() || '0'}`;
+      return `$${amount?.toLocaleString() || '0'}`;
     };
 
     let html, subject, text;
@@ -194,7 +194,7 @@ class EmailService {
       const hotelBookings = staffAssignment?.hotelBookings || [];
 
       subject = `Custom Trip Confirmation - ${tripDetails?.destination || 'Sri Lanka'} | Serendib GO`;
-      
+
       html = `
         <!DOCTYPE html>
         <html>
@@ -827,7 +827,7 @@ class EmailService {
     } else {
       // Regular Tour Booking Email Template
       subject = `Tour Booking Confirmation - ${tour?.title || 'Serendib GO Tour'} | Serendib GO`;
-      
+
       html = `
         <!DOCTYPE html>
         <html>
@@ -1277,6 +1277,235 @@ class EmailService {
 
     await this.sendEmail({
       email: user?.email,
+      subject,
+      html,
+      text
+    });
+  }
+
+  async sendHotelBookingConfirmationEmail(bookingData) {
+    const { hotelBooking, user, hotel, room } = bookingData;
+
+    const formatDate = (date) => {
+      return new Date(date).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    };
+
+    const formatCurrency = (amount) => {
+      return `LKR ${amount?.toLocaleString() || '0'}`;
+    };
+
+    const checkInDate = formatDate(hotelBooking.checkInDate);
+    const checkOutDate = formatDate(hotelBooking.checkOutDate);
+    const nights = Math.ceil((new Date(hotelBooking.checkOutDate) - new Date(hotelBooking.checkInDate)) / (1000 * 60 * 60 * 24));
+
+    const subject = `Hotel Booking Confirmation - ${hotel?.name || 'Your Hotel'} | Serendib GO`;
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+            .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+            .section { margin-bottom: 20px; }
+            .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e0e0e0; }
+            .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>🏨 Hotel Booking Confirmed!</h1>
+              <p>Your reservation is confirmed</p>
+            </div>
+            <div class="content">
+              <p>Dear ${user.firstName} ${user.lastName},</p>
+              <p>Thank you for booking with Serendib GO! Your hotel reservation has been confirmed.</p>
+              
+              <div class="section">
+                <h3>Hotel Details</h3>
+                <div class="info-row"><span>Hotel:</span><span>${hotel?.name || 'N/A'}</span></div>
+                <div class="info-row"><span>Location:</span><span>${hotel?.location?.city || 'N/A'}</span></div>
+                <div class="info-row"><span>Room Type:</span><span>${room?.name || hotelBooking.roomType || 'N/A'}</span></div>
+              </div>
+
+              <div class="section">
+                <h3>Booking Information</h3>
+                <div class="info-row"><span>Booking ID:</span><span>${hotelBooking._id}</span></div>
+                <div class="info-row"><span>Check-in:</span><span>${checkInDate}</span></div>
+                <div class="info-row"><span>Check-out:</span><span>${checkOutDate}</span></div>
+                <div class="info-row"><span>Nights:</span><span>${nights}</span></div>
+                <div class="info-row"><span>Guests:</span><span>${hotelBooking.numberOfGuests || 1}</span></div>
+              </div>
+
+              <div class="section">
+                <h3>Payment Summary</h3>
+                <div class="info-row"><span>Total Amount:</span><span style="font-weight: bold; font-size: 18px;">${formatCurrency(hotelBooking.totalAmount)}</span></div>
+              </div>
+
+              <p style="margin-top: 30px;">We look forward to welcoming you!</p>
+            </div>
+            <div class="footer">
+              <p>For any questions, contact us at info@serendibgo.com or +94 11 234 5678</p>
+              <p>&copy; 2024 Serendib GO. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+
+    const text = `
+      Hotel Booking Confirmation - Serendib GO
+      
+      Dear ${user.firstName} ${user.lastName},
+      
+      Your hotel reservation has been confirmed!
+      
+      Hotel: ${hotel?.name || 'N/A'}
+      Location: ${hotel?.location?.city || 'N/A'}
+      Room Type: ${room?.name || hotelBooking.roomType || 'N/A'}
+      
+      Check-in: ${checkInDate}
+      Check-out: ${checkOutDate}
+      Nights: ${nights}
+      Guests: ${hotelBooking.numberOfGuests || 1}
+      
+      Total Amount: ${formatCurrency(hotelBooking.totalAmount)}
+      
+      We look forward to welcoming you!
+      
+      For questions, contact us at info@serendibgo.com or +94 11 234 5678
+    `;
+
+    await this.sendEmail({
+      email: user.email,
+      subject,
+      html,
+      text
+    });
+  }
+
+  async sendVehicleBookingConfirmationEmail(bookingData) {
+    const { vehicleBooking, user, vehicle, driver } = bookingData;
+
+    const formatDate = (date) => {
+      return new Date(date).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    };
+
+    const formatCurrency = (amount) => {
+      return `LKR ${amount?.toLocaleString() || '0'}`;
+    };
+
+    const pickupDate = formatDate(vehicleBooking.pickupDateTime);
+    const dropoffDate = formatDate(vehicleBooking.dropoffDateTime);
+    const days = Math.ceil((new Date(vehicleBooking.dropoffDateTime) - new Date(vehicleBooking.pickupDateTime)) / (1000 * 60 * 60 * 24));
+
+    const subject = `Vehicle Booking Confirmation - ${vehicle?.type || 'Your Vehicle'} | Serendib GO`;
+
+    const html = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+            .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+            .section { margin-bottom: 20px; }
+            .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e0e0e0; }
+            .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>🚗 Vehicle Booking Confirmed!</h1>
+              <p>Your reservation is confirmed</p>
+            </div>
+            <div class="content">
+              <p>Dear ${user.firstName} ${user.lastName},</p>
+              <p>Thank you for booking with Serendib GO! Your vehicle rental has been confirmed.</p>
+              
+              <div class="section">
+                <h3>Vehicle Details</h3>
+                <div class="info-row"><span>Vehicle:</span><span>${vehicle?.type || 'N/A'} - ${vehicle?.model || ''}</span></div>
+                <div class="info-row"><span>Capacity:</span><span>${vehicle?.capacity || 'N/A'} passengers</span></div>
+              </div>
+
+              <div class="section">
+                <h3>Booking Information</h3>
+                <div class="info-row"><span>Booking ID:</span><span>${vehicleBooking._id}</span></div>
+                <div class="info-row"><span>Pickup Location:</span><span>${vehicleBooking.pickupLocation || 'N/A'}</span></div>
+                <div class="info-row"><span>Dropoff Location:</span><span>${vehicleBooking.dropoffLocation || 'N/A'}</span></div>
+                <div class="info-row"><span>Pickup Time:</span><span>${pickupDate}</span></div>
+                <div class="info-row"><span>Dropoff Time:</span><span>${dropoffDate}</span></div>
+                <div class="info-row"><span>Duration:</span><span>${days} day(s)</span></div>
+              </div>
+
+              ${driver ? `
+              <div class="section">
+                <h3>Driver Information</h3>
+                <div class="info-row"><span>Driver Name:</span><span>${driver.firstName} ${driver.lastName}</span></div>
+                <div class="info-row"><span>Contact:</span><span>${driver.phone || 'N/A'}</span></div>
+              </div>
+              ` : ''}
+
+              <div class="section">
+                <h3>Payment Summary</h3>
+                <div class="info-row"><span>Total Amount:</span><span style="font-weight: bold; font-size: 18px;">${formatCurrency(vehicleBooking.totalAmount)}</span></div>
+              </div>
+
+              <p style="margin-top: 30px;">We look forward to serving you!</p>
+           </div>
+            <div class="footer">
+              <p>For any questions, contact us at info@serendibgo.com or +94 11 234 5678</p>
+              <p>&copy; 2024 Serendib GO. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+
+    const text = `
+      Vehicle Booking Confirmation - Serendib GO
+      
+      Dear ${user.firstName} ${user.lastName},
+      
+      Your vehicle rental has been confirmed!
+      
+      Vehicle: ${vehicle?.type || 'N/A'} - ${vehicle?.model || ''}
+      Capacity: ${vehicle?.capacity || 'N/A'} passengers
+      
+      Pickup Location: ${vehicleBooking.pickupLocation || 'N/A'}
+      Dropoff Location: ${vehicleBooking.dropoffLocation || 'N/A'}
+      Pickup Time: ${pickupDate}
+      Dropoff Time: ${dropoffDate}
+      Duration: ${days} day(s)
+      
+      ${driver ? `Driver: ${driver.firstName} ${driver.lastName}\nDriver Contact: ${driver.phone || 'N/A'}\n\n` : ''}
+      Total Amount: ${formatCurrency(vehicleBooking.totalAmount)}
+      
+      We look forward to serving you!
+      
+      For questions, contact us at info@serendibgo.com or +94 11 234 5678
+    `;
+
+    await this.sendEmail({
+      email: user.email,
       subject,
       html,
       text

@@ -7,43 +7,43 @@ const hotelBookingSchema = new mongoose.Schema({
     ref: 'Hotel',
     required: [true, 'Hotel reference is required']
   },
-  
+
   room: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Room',
     required: [true, 'Room reference is required']
   },
-  
+
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: [true, 'User reference is required']
   },
-  
+
   // Booking Details
   bookingReference: {
     type: String,
     unique: true,
     required: true
   },
-  
+
   checkInDate: {
     type: Date,
     required: [true, 'Check-in date is required']
   },
-  
+
   checkOutDate: {
     type: Date,
     required: [true, 'Check-out date is required']
   },
-  
+
   numberOfRooms: {
     type: Number,
     required: [true, 'Number of rooms is required'],
     min: [1, 'Minimum number of rooms is 1'],
     default: 1
   },
-  
+
   // Guest Information
   guests: {
     adults: {
@@ -65,7 +65,7 @@ const hotelBookingSchema = new mongoose.Schema({
       max: [4, 'Maximum 4 infants per room']
     }
   },
-  
+
   // Guest Contact Details
   guestDetails: {
     firstName: {
@@ -98,7 +98,7 @@ const hotelBookingSchema = new mongoose.Schema({
       trim: true
     }
   },
-  
+
   // Pricing
   pricing: {
     basePrice: {
@@ -123,50 +123,50 @@ const hotelBookingSchema = new mongoose.Schema({
     },
     currency: {
       type: String,
-      enum: ['LKR', 'USD', 'EUR', 'GBP'],
-      default: 'LKR'
+      enum: ['USD', 'LKR', 'EUR', 'GBP'],
+      default: 'USD'
     }
   },
-  
+
   // Status
   bookingStatus: {
     type: String,
     enum: ['pending', 'confirmed', 'cancelled', 'completed', 'no-show'],
     default: 'pending'
   },
-  
+
   paymentStatus: {
     type: String,
     enum: ['pending', 'paid', 'partially_paid', 'refunded', 'failed'],
     default: 'pending'
   },
-  
+
   // Additional Information
   specialRequests: {
     type: String,
     trim: true,
     maxlength: [500, 'Special requests cannot exceed 500 characters']
   },
-  
+
   cancellationReason: {
     type: String,
     trim: true
   },
-  
+
   // Timestamps
   bookedAt: {
     type: Date,
     default: Date.now
   },
-  
+
   confirmedAt: {
     type: Date
   },
-  
+
   cancelledAt: {
     type: Date
   },
-  
+
   updatedAt: {
     type: Date,
     default: Date.now
@@ -176,7 +176,7 @@ const hotelBookingSchema = new mongoose.Schema({
 });
 
 // Generate booking reference before saving
-hotelBookingSchema.pre('save', function(next) {
+hotelBookingSchema.pre('save', function (next) {
   if (this.isNew && !this.bookingReference) {
     const timestamp = Date.now().toString().slice(-6);
     const random = Math.random().toString(36).substr(2, 4).toUpperCase();
@@ -192,26 +192,26 @@ hotelBookingSchema.index({ user: 1, bookedAt: -1 });
 hotelBookingSchema.index({ bookingReference: 1 });
 
 // Virtual for guest full name
-hotelBookingSchema.virtual('guestFullName').get(function() {
+hotelBookingSchema.virtual('guestFullName').get(function () {
   return `${this.guestDetails.firstName} ${this.guestDetails.lastName}`;
 });
 
 // Virtual for number of nights
-hotelBookingSchema.virtual('numberOfNights').get(function() {
+hotelBookingSchema.virtual('numberOfNights').get(function () {
   const diffTime = Math.abs(this.checkOutDate - this.checkInDate);
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 });
 
 // Method to check if booking is active
-hotelBookingSchema.methods.isActive = function() {
+hotelBookingSchema.methods.isActive = function () {
   const now = new Date();
-  return this.bookingStatus === 'confirmed' && 
-         this.checkInDate <= now && 
-         this.checkOutDate > now;
+  return this.bookingStatus === 'confirmed' &&
+    this.checkInDate <= now &&
+    this.checkOutDate > now;
 };
 
 // Method to check if booking can be cancelled
-hotelBookingSchema.methods.canBeCancelled = function() {
+hotelBookingSchema.methods.canBeCancelled = function () {
   const now = new Date();
   const hoursUntilCheckIn = (this.checkInDate - now) / (1000 * 60 * 60);
   return this.bookingStatus === 'confirmed' && hoursUntilCheckIn > 24;

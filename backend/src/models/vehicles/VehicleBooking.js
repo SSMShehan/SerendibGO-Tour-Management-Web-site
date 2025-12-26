@@ -7,20 +7,20 @@ const vehicleBookingSchema = new mongoose.Schema({
     required: true,
     unique: true
   },
-  
+
   // Vehicle and User References
   vehicle: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Vehicle',
     required: [true, 'Vehicle is required']
   },
-  
+
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: [true, 'User is required']
   },
-  
+
   // Trip Details
   tripDetails: {
     pickupLocation: {
@@ -41,7 +41,7 @@ const vehicleBookingSchema = new mongoose.Schema({
         longitude: Number
       }
     },
-    
+
     dropoffLocation: {
       address: {
         type: String,
@@ -60,38 +60,38 @@ const vehicleBookingSchema = new mongoose.Schema({
         longitude: Number
       }
     },
-    
+
     startDate: {
       type: Date,
       required: [true, 'Start date is required']
     },
-    
+
     endDate: {
       type: Date,
       required: [true, 'End date is required']
     },
-    
+
     startTime: {
       type: String,
       required: [true, 'Start time is required']
     },
-    
+
     endTime: {
       type: String,
       required: [true, 'End time is required']
     },
-    
+
     duration: {
       type: Number, // in hours
       required: true
     },
-    
+
     distance: {
       type: Number, // in kilometers
       default: 0
     }
   },
-  
+
   // Passenger Details
   passengers: {
     adults: {
@@ -110,7 +110,7 @@ const vehicleBookingSchema = new mongoose.Schema({
       min: [0, 'Infants count cannot be negative']
     }
   },
-  
+
   // Guest Details
   guestDetails: {
     firstName: {
@@ -132,13 +132,13 @@ const vehicleBookingSchema = new mongoose.Schema({
     nationality: String,
     passportNumber: String
   },
-  
+
   // Special Requests
   specialRequests: {
     type: String,
     maxlength: [500, 'Special requests cannot exceed 500 characters']
   },
-  
+
   // Pricing
   pricing: {
     basePrice: {
@@ -167,24 +167,24 @@ const vehicleBookingSchema = new mongoose.Schema({
     },
     currency: {
       type: String,
-      default: 'LKR'
+      default: 'USD'
     }
   },
-  
+
   // Booking Status
   bookingStatus: {
     type: String,
     enum: ['pending', 'confirmed', 'in_progress', 'completed', 'cancelled', 'no_show'],
     default: 'pending'
   },
-  
+
   // Payment Status
   paymentStatus: {
     type: String,
     enum: ['pending', 'paid', 'refunded', 'failed', 'partial'],
     default: 'pending'
   },
-  
+
   // Payment Details
   paymentDetails: {
     method: {
@@ -197,7 +197,7 @@ const vehicleBookingSchema = new mongoose.Schema({
     refundAmount: Number,
     refundReason: String
   },
-  
+
   // Driver Assignment
   driver: {
     assignedDriver: {
@@ -207,7 +207,7 @@ const vehicleBookingSchema = new mongoose.Schema({
     assignedAt: Date,
     driverNotes: String
   },
-  
+
   // Trip Status Updates
   statusUpdates: [{
     status: {
@@ -224,7 +224,7 @@ const vehicleBookingSchema = new mongoose.Schema({
       ref: 'User'
     }
   }],
-  
+
   // Cancellation Details
   cancellationDetails: {
     cancelledBy: {
@@ -239,7 +239,7 @@ const vehicleBookingSchema = new mongoose.Schema({
       enum: ['pending', 'processed', 'failed']
     }
   },
-  
+
   // Reviews and Ratings
   review: {
     rating: {
@@ -259,7 +259,7 @@ const vehicleBookingSchema = new mongoose.Schema({
       value: { type: Number, min: 1, max: 5 }
     }
   },
-  
+
   // Communication
   messages: [{
     sender: {
@@ -281,13 +281,13 @@ const vehicleBookingSchema = new mongoose.Schema({
       default: false
     }
   }],
-  
+
   // Timestamps
   bookedAt: {
     type: Date,
     default: Date.now
   },
-  
+
   updatedAt: {
     type: Date,
     default: Date.now
@@ -306,40 +306,40 @@ vehicleBookingSchema.index({ 'tripDetails.startDate': 1 });
 vehicleBookingSchema.index({ 'tripDetails.endDate': 1 });
 
 // Virtual for total passengers
-vehicleBookingSchema.virtual('totalPassengers').get(function() {
+vehicleBookingSchema.virtual('totalPassengers').get(function () {
   return this.passengers.adults + this.passengers.children + this.passengers.infants;
 });
 
 // Virtual for trip duration in days
-vehicleBookingSchema.virtual('tripDurationDays').get(function() {
+vehicleBookingSchema.virtual('tripDurationDays').get(function () {
   const start = new Date(this.tripDetails.startDate);
   const end = new Date(this.tripDetails.endDate);
   return Math.ceil((end - start) / (1000 * 60 * 60 * 24));
 });
 
 // Method to check if booking is active
-vehicleBookingSchema.methods.isActive = function() {
+vehicleBookingSchema.methods.isActive = function () {
   const now = new Date();
-  return this.bookingStatus === 'confirmed' || 
-         this.bookingStatus === 'in_progress' ||
-         (this.bookingStatus === 'pending' && this.tripDetails.startDate > now);
+  return this.bookingStatus === 'confirmed' ||
+    this.bookingStatus === 'in_progress' ||
+    (this.bookingStatus === 'pending' && this.tripDetails.startDate > now);
 };
 
 // Method to check if booking can be cancelled
-vehicleBookingSchema.methods.canBeCancelled = function() {
+vehicleBookingSchema.methods.canBeCancelled = function () {
   const now = new Date();
   const hoursUntilTrip = (this.tripDetails.startDate - now) / (1000 * 60 * 60);
-  
-  return this.bookingStatus === 'pending' || 
-         this.bookingStatus === 'confirmed' ||
-         (this.bookingStatus === 'in_progress' && hoursUntilTrip > 2);
+
+  return this.bookingStatus === 'pending' ||
+    this.bookingStatus === 'confirmed' ||
+    (this.bookingStatus === 'in_progress' && hoursUntilTrip > 2);
 };
 
 // Method to calculate cancellation fee
-vehicleBookingSchema.methods.calculateCancellationFee = function() {
+vehicleBookingSchema.methods.calculateCancellationFee = function () {
   const now = new Date();
   const hoursUntilTrip = (this.tripDetails.startDate - now) / (1000 * 60 * 60);
-  
+
   if (hoursUntilTrip > 24) {
     return 0; // Free cancellation
   } else if (hoursUntilTrip > 2) {
@@ -350,30 +350,30 @@ vehicleBookingSchema.methods.calculateCancellationFee = function() {
 };
 
 // Pre-save middleware
-vehicleBookingSchema.pre('save', function(next) {
+vehicleBookingSchema.pre('save', function (next) {
   this.updatedAt = Date.now();
-  
+
   // Generate booking reference if not provided
   if (!this.bookingReference) {
     this.bookingReference = `VB${Date.now()}${Math.random().toString(36).substr(2, 5).toUpperCase()}`;
   }
-  
+
   // Calculate duration if not provided
   if (!this.tripDetails.duration) {
     const start = new Date(this.tripDetails.startDate);
     const end = new Date(this.tripDetails.endDate);
     this.tripDetails.duration = Math.ceil((end - start) / (1000 * 60 * 60));
   }
-  
+
   // Calculate total price if not provided
   if (!this.pricing.totalPrice) {
-    this.pricing.totalPrice = this.pricing.basePrice + 
-                             this.pricing.distancePrice + 
-                             this.pricing.durationPrice + 
-                             this.pricing.taxes + 
-                             this.pricing.serviceCharge;
+    this.pricing.totalPrice = this.pricing.basePrice +
+      this.pricing.distancePrice +
+      this.pricing.durationPrice +
+      this.pricing.taxes +
+      this.pricing.serviceCharge;
   }
-  
+
   next();
 });
 

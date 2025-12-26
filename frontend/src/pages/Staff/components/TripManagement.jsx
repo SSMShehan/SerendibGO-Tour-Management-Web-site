@@ -747,7 +747,7 @@ const TripManagement = () => {
                           </div>
                           <div className="flex items-center space-x-1">
                             <DollarSign className="h-4 w-4" />
-                            <span>LKR {trip.price?.toLocaleString()}</span>
+                            <span>$ {trip.price?.toLocaleString()}</span>
                           </div>
                           <div className="flex items-center space-x-1">
                             <Users className="h-4 w-4" />
@@ -833,7 +833,7 @@ const TripManagement = () => {
                         <DollarSign className="h-5 w-5 text-gray-400" />
                         <div>
                           <p className="text-sm text-gray-500">Price</p>
-                          <p className="font-medium text-gray-900">LKR {selectedTrip.price?.toLocaleString()}</p>
+                          <p className="font-medium text-gray-900">$ {selectedTrip.price?.toLocaleString()}</p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-3">
@@ -980,7 +980,7 @@ const TripManagement = () => {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Price (LKR) *</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Price (USD) *</label>
                       <input
                         type="number"
                         value={newTrip.price}
@@ -1380,7 +1380,7 @@ const TripManagement = () => {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Price (LKR) *</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">Price (USD) *</label>
                       <input
                         type="number"
                         value={newTrip.price}

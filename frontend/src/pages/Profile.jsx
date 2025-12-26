@@ -668,7 +668,7 @@ const Profile = () => {
                   <div>
                     <h3 className="font-semibold text-base-content">Financial</h3>
                     <p className="text-sm text-base-content/70">
-                      Base Rate: LKR {driverFormData.financial.baseRate} | 
+                      Base Rate: ${driverFormData.financial.baseRate} | 
                       Payment: {driverFormData.financial.paymentMethod}
                     </p>
                   </div>

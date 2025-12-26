@@ -22,7 +22,7 @@ const SettingsSchema = new mongoose.Schema({
     },
     currency: {
       type: String,
-      default: 'LKR'
+      default: 'USD'
     },
     language: {
       type: String,
@@ -167,7 +167,7 @@ const SettingsSchema = new mongoose.Schema({
 });
 
 // Ensure only one settings document exists
-SettingsSchema.statics.getSettings = async function() {
+SettingsSchema.statics.getSettings = async function () {
   let settings = await this.findOne();
   if (!settings) {
     settings = await this.create({});

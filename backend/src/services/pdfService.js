@@ -109,7 +109,7 @@ class PDFService {
 
     // Format currency
     const formatCurrency = (amount) => {
-      return `LKR ${amount?.toLocaleString() || '0'}`;
+      return `$${amount?.toLocaleString() || '0'}`;
     };
 
     return `
@@ -704,7 +704,7 @@ class PDFService {
     };
 
     const formatCurrency = (amount) => {
-      return `LKR ${amount?.toLocaleString() || '0'}`;
+      return `$${amount?.toLocaleString() || '0'}`;
     };
 
     return `
@@ -1039,8 +1039,360 @@ class PDFService {
               For any questions or support, contact us at info@serendibgo.com or +94 11 234 5678
             </div>
             <div class="contact-info" style="margin-top: 10px;">
-              This confirmation was generated on ${formatDate(new Date())} | Booking #${booking?.bookingReference || booking?._id || 'N/A'}
+            This confirmation was generated on ${formatDate(new Date())} | Booking #${booking?.bookingReference || booking?._id || 'N/A'}
             </div>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  async generateHotelBookingPDF(bookingData) {
+    const browser = await this.initBrowser();
+    const page = await browser.newPage();
+
+    try {
+      const htmlContent = this.generateHotelBookingHTML(bookingData);
+      await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+
+      const pdfBuffer = await page.pdf({
+        format: 'A4',
+        printBackground: true,
+        margin: {
+          top: '20mm',
+          right: '15mm',
+          bottom: '20mm',
+          left: '15mm'
+        },
+        displayHeaderFooter: true,
+        headerTemplate: this.getHeaderTemplate(),
+        footerTemplate: this.getFooterTemplate()
+      });
+
+      return pdfBuffer;
+    } finally {
+      await page.close();
+    }
+  }
+
+  generateHotelBookingHTML(bookingData) {
+    const { hotelBooking, user, hotel, room } = bookingData;
+
+    const formatDate = (date) => {
+      return new Date(date).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    };
+
+    const formatCurrency = (amount) => {
+      return `LKR ${amount?.toLocaleString() || '0'}`;
+    };
+
+    const checkInDate = formatDate(hotelBooking.checkInDate);
+    const checkOutDate = formatDate(hotelBooking.checkOutDate);
+    const nights = Math.ceil((new Date(hotelBooking.checkOutDate) - new Date(hotelBooking.checkInDate)) / (1000 * 60 * 60 * 24));
+
+    return `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Hotel Booking Confirmation - Serendib GO</title>
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background: #fff; }
+          .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+          .header { text-align: center; margin-bottom: 40px; border-bottom: 3px solid #2563eb; padding-bottom: 20px; }
+          .logo { font-size: 32px; font-weight: bold; color: #2563eb; margin-bottom: 10px; }
+          .title { text-align: center; font-size: 28px; font-weight: bold; color: #1f2937; margin: 30px 0; }
+          .section { margin-bottom: 30px; background: #f8fafc; padding: 20px; border-radius: 8px; }
+          .section-title { font-size: 20px; font-weight: bold; color: #2563eb; margin-bottom: 15px; }
+          .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e5e7eb; }
+          .info-label { font-weight: bold; color: #374151; }
+          .info-value { color: #1f2937; }
+          .total { font-size: 24px; font-weight: bold; color: #2563eb; text-align: right; margin-top: 20px; }
+          .footer { margin-top: 50px; text-align: center; padding: 20px; background: #f8fafc; border-radius: 8px; color: #6b7280; font-size: 14px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <div class="logo">🌴 Serendib GO</div>
+            <div>Email: info@serendibgo.com | Phone: +94 11 234 5678</div>
+          </div>
+
+          <div class="title">Hotel Booking Confirmation</div>
+
+          <div class="section">
+            <div class="section-title">Booking Information</div>
+            <div class="info-row">
+              <span class="info-label">Booking ID:</span>
+              <span class="info-value">${hotelBooking._id}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Booking Status:</span>
+              <span class="info-value">${hotelBooking.bookingStatus || 'Confirmed'}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Payment Status:</span>
+              <span class="info-value">${hotelBooking.paymentStatus || 'Paid'}</span>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Guest Information</div>
+            <div class="info-row">
+              <span class="info-label">Name:</span>
+              <span class="info-value">${user.firstName} ${user.lastName}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Email:</span>
+              <span class="info-value">${user.email}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Phone:</span>
+              <span class="info-value">${user.phone || 'N/A'}</span>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Hotel Details</div>
+            <div class="info-row">
+              <span class="info-label">Hotel:</span>
+              <span class="info-value">${hotel?.name || 'N/A'}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Location:</span>
+              <span class="info-value">${hotel?.location?.city || 'N/A'}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Room Type:</span>
+              <span class="info-value">${room?.name || hotelBooking.roomType || 'N/A'}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Check-in:</span>
+              <span class="info-value">${checkInDate}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Check-out:</span>
+              <span class="info-value">${checkOutDate}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Nights:</span>
+              <span class="info-value">${nights}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Guests:</span>
+              <span class="info-value">${hotelBooking.numberOfGuests || 1}</span>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Payment Summary</div>
+            <div class="info-row">
+              <span class="info-label">Room Rate (per night):</span>
+              <span class="info-value">${formatCurrency(hotelBooking.pricePerNight || room?.price)}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Number of Nights:</span>
+              <span class="info-value">${nights}</span>
+            </div>
+            <div class="total">Total: ${formatCurrency(hotelBooking.totalAmount)}</div>
+          </div>
+
+          <div class="footer">
+            Thank you for choosing Serendib GO!<br>
+            For any questions, contact us at info@serendibgo.com
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  async generateVehicleBookingPDF(bookingData) {
+    const browser = await this.initBrowser();
+    const page = await browser.newPage();
+
+    try {
+      const htmlContent = this.generateVehicleBookingHTML(bookingData);
+      await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+
+      const pdfBuffer = await page.pdf({
+        format: 'A4',
+        printBackground: true,
+        margin: {
+          top: '20mm',
+          right: '15mm',
+          bottom: '20mm',
+          left: '15mm'
+        },
+        displayHeaderFooter: true,
+        headerTemplate: this.getHeaderTemplate(),
+        footerTemplate: this.getFooterTemplate()
+      });
+
+      return pdfBuffer;
+    } finally {
+      await page.close();
+    }
+  }
+
+  generateVehicleBookingHTML(bookingData) {
+    const { vehicleBooking, user, vehicle, driver } = bookingData;
+
+    const formatDate = (date) => {
+      return new Date(date).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    };
+
+    const formatCurrency = (amount) => {
+      return `LKR ${amount?.toLocaleString() || '0'}`;
+    };
+
+    const pickupDate = formatDate(vehicleBooking.pickupDateTime);
+    const dropoffDate = formatDate(vehicleBooking.dropoffDateTime);
+    const days = Math.ceil((new Date(vehicleBooking.dropoffDateTime) - new Date(vehicleBooking.pickupDateTime)) / (1000 * 60 * 60 * 24));
+
+    return `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Vehicle Booking Confirmation - Serendib GO</title>
+        <style>
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; background: #fff; }
+          .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+          .header { text-align: center; margin-bottom: 40px; border-bottom: 3px solid: #2563eb; padding-bottom: 20px; }
+          .logo { font-size: 32px; font-weight: bold; color: #2563eb; margin-bottom: 10px; }
+          .title { text-align: center; font-size: 28px; font-weight: bold; color: #1f2937; margin: 30px 0; }
+          .section { margin-bottom: 30px; background: #f8fafc; padding: 20px; border-radius: 8px; }
+          .section-title { font-size: 20px; font-weight: bold; color: #2563eb; margin-bottom: 15px; }
+          .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e5e7eb; }
+          .info-label { font-weight: bold; color: #374151; }
+          .info-value { color: #1f2937; }
+          .total { font-size: 24px; font-weight: bold; color: #2563eb; text-align: right; margin-top: 20px; }
+          .footer { margin-top: 50px; text-align: center; padding: 20px; background: #f8fafc; border-radius: 8px; color: #6b7280; font-size: 14px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <div class="logo">🌴 Serendib GO</div>
+            <div>Email: info@serendibgo.com | Phone: +94 11 234 5678</div>
+          </div>
+
+          <div class="title">Vehicle Booking Confirmation</div>
+
+          <div class="section">
+            <div class="section-title">Booking Information</div>
+            <div class="info-row">
+              <span class="info-label">Booking ID:</span>
+              <span class="info-value">${vehicleBooking._id}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Booking Status:</span>
+              <span class="info-value">${vehicleBooking.bookingStatus || 'Confirmed'}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Payment Status:</span>
+              <span class="info-value">${vehicleBooking.paymentStatus || 'Paid'}</span>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Customer Information</div>
+            <div class="info-row">
+              <span class="info-label">Name:</span>
+              <span class="info-value">${user.firstName} ${user.lastName}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Email:</span>
+              <span class="info-value">${user.email}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Phone:</span>
+              <span class="info-value">${user.phone || 'N/A'}</span>
+            </div>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Vehicle Details</div>
+            <div class="info-row">
+              <span class="info-label">Vehicle:</span>
+              <span class="info-value">${vehicle?.type || 'N/A'} - ${vehicle?.model || ''}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Capacity:</span>
+              <span class="info-value">${vehicle?.capacity || 'N/A'} passengers</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Pickup Location:</span>
+              <span class="info-value">${vehicleBooking.pickupLocation || 'N/A'}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Dropoff Location:</span>
+              <span class="info-value">${vehicleBooking.dropoffLocation || 'N/A'}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Pickup Date & Time:</span>
+              <span class="info-value">${pickupDate}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Dropoff Date & Time:</span>
+              <span class="info-value">${dropoffDate}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Duration:</span>
+              <span class="info-value">${days} day(s)</span>
+            </div>
+          </div>
+
+          ${driver ? `
+          <div class="section">
+            <div class="section-title">Driver Information</div>
+            <div class="info-row">
+              <span class="info-label">Driver Name:</span>
+              <span class="info-value">${driver.firstName} ${driver.lastName}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Contact:</span>
+              <span class="info-value">${driver.phone || 'N/A'}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">License Number:</span>
+              <span class="info-value">${driver.licenseNumber || 'N/A'}</span>
+            </div>
+          </div>
+          ` : ''}
+
+          <div class="section">
+            <div class="section-title">Payment Summary</div>
+            <div class="info-row">
+              <span class="info-label">Daily Rate:</span>
+              <span class="info-value">${formatCurrency(vehicle?.pricePerDay || vehicleBooking.pricePerDay)}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Number of Days:</span>
+              <span class="info-value">${days}</span>
+            </div>
+            <div class="total">Total: ${formatCurrency(vehicleBooking.totalAmount)}</div>
+          </div>
+
+          <div class="footer">
+            Thank you for choosing Serendib GO!<br>
+            For any questions, contact us at info@serendibgo.com
           </div>
         </div>
       </body>

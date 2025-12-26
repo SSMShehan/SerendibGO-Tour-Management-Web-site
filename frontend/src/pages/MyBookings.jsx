@@ -44,16 +44,16 @@ const MyBookings = () => {
     try {
       setLoading(true)
       setError(null)
-      
+
       // Check if user is authenticated
       const token = localStorage.getItem('token')
       if (!token) {
         setError('Please login to view your bookings')
         return
       }
-      
+
       console.log('Fetching bookings for user:', user?.email)
-      
+
       // Fetch hotel bookings
       try {
         const hotelResponse = await bookingAPI.getMyBookings()
@@ -64,34 +64,34 @@ const MyBookings = () => {
       } catch (hotelError) {
         console.error('Hotel bookings error:', hotelError)
       }
-      
+
       // Fetch custom trips and guide bookings using the same API service
       try {
-          const customResponse = await fetch('/api/bookings/user', {
+        const customResponse = await fetch('/api/bookings/user', {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('token')}`,
             'Content-Type': 'application/json'
           }
         })
-        
+
         console.log('Custom trips response status:', customResponse.status)
-        
+
         if (customResponse.ok) {
           const customData = await customResponse.json()
           console.log('Custom trips data:', customData)
           if (customData.success) {
             const customTrips = customData.data.bookings.filter(booking => booking.type === 'custom')
             setCustomTrips(customTrips)
-            
+
             // Filter guide bookings (bookings with type 'guide')
-            const guideBookings = customData.data.bookings.filter(booking => 
+            const guideBookings = customData.data.bookings.filter(booking =>
               booking.type === 'guide'
             )
             setGuideBookings(guideBookings)
             console.log('Guide bookings:', guideBookings)
-            
+
             // Filter tour bookings (bookings with type 'tour')
-            const tourBookings = customData.data.bookings.filter(booking => 
+            const tourBookings = customData.data.bookings.filter(booking =>
               booking.type === 'tour'
             )
             setTourBookings(tourBookings)
@@ -103,7 +103,7 @@ const MyBookings = () => {
       } catch (customError) {
         console.error('Custom trips fetch error:', customError)
       }
-      
+
       // Fetch vehicle bookings
       try {
         const vehicleResponse = await fetch('/api/vehicle-bookings/user', {
@@ -112,9 +112,9 @@ const MyBookings = () => {
             'Content-Type': 'application/json'
           }
         })
-        
+
         console.log('Vehicle bookings response status:', vehicleResponse.status)
-        
+
         if (vehicleResponse.ok) {
           const vehicleData = await vehicleResponse.json()
           console.log('Vehicle bookings data:', vehicleData)
@@ -177,9 +177,9 @@ const MyBookings = () => {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
       })
-      
+
       const data = await response.json()
-      
+
       if (data.success) {
         // Navigate to payment page
         navigate('/payment', {
@@ -308,10 +308,10 @@ const MyBookings = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center h-64">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#E59B2C]"></div>
           </div>
         </div>
       </div>
@@ -320,16 +320,16 @@ const MyBookings = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center py-12">
             <AlertCircle className="mx-auto h-12 w-12 text-red-400" />
-            <h3 className="mt-2 text-sm font-medium text-gray-900">Error loading bookings</h3>
-            <p className="mt-1 text-sm text-gray-500">{error}</p>
+            <h3 className="mt-2 text-sm font-serif font-medium text-slate-900">Error loading bookings</h3>
+            <p className="mt-1 text-sm text-slate-500">{error}</p>
             <div className="mt-6">
               <button
                 onClick={fetchBookings}
-                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-slate-900 hover:bg-[#E59B2C]"
               >
                 Try Again
               </button>
@@ -341,10 +341,10 @@ const MyBookings = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-white py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">My Bookings</h1>
+          <h1 className="text-3xl font-serif font-bold text-slate-900">My Bookings</h1>
           <p className="mt-2 text-gray-600">Manage your tour bookings and custom trips</p>
         </div>
 
@@ -355,11 +355,10 @@ const MyBookings = () => {
               <button
                 key="bookings-tab"
                 onClick={() => setActiveTab('bookings')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'bookings'
-                    ? 'border-primary text-primary'
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'bookings'
+                    ? 'border-[#E59B2C] text-[#E59B2C]'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
+                  }`}
               >
                 <Bed className="h-4 w-4 inline mr-2" />
                 Hotel Bookings ({bookings.length})
@@ -367,11 +366,10 @@ const MyBookings = () => {
               <button
                 key="tours-tab"
                 onClick={() => setActiveTab('tours')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'tours'
-                    ? 'border-primary text-primary'
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'tours'
+                    ? 'border-[#E59B2C] text-[#E59B2C]'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
+                  }`}
               >
                 <Calendar className="h-4 w-4 inline mr-2" />
                 Tour Bookings ({tourBookings.length})
@@ -379,11 +377,10 @@ const MyBookings = () => {
               <button
                 key="custom-tab"
                 onClick={() => setActiveTab('custom')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'custom'
-                    ? 'border-primary text-primary'
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'custom'
+                    ? 'border-[#E59B2C] text-[#E59B2C]'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
+                  }`}
               >
                 <Sparkles className="h-4 w-4 inline mr-2" />
                 Custom Trips ({customTrips.length})
@@ -391,11 +388,10 @@ const MyBookings = () => {
               <button
                 key="vehicles-tab"
                 onClick={() => setActiveTab('vehicles')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'vehicles'
-                    ? 'border-primary text-primary'
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'vehicles'
+                    ? 'border-[#E59B2C] text-[#E59B2C]'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
+                  }`}
               >
                 <Car className="h-4 w-4 inline mr-2" />
                 Vehicle Rentals ({vehicleBookings.length})
@@ -403,11 +399,10 @@ const MyBookings = () => {
               <button
                 key="guides-tab"
                 onClick={() => setActiveTab('guides')}
-                className={`py-2 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === 'guides'
-                    ? 'border-primary text-primary'
+                className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === 'guides'
+                    ? 'border-[#E59B2C] text-[#E59B2C]'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                }`}
+                  }`}
               >
                 <User className="h-4 w-4 inline mr-2" />
                 Guide Bookings ({guideBookings.length})
@@ -486,13 +481,12 @@ const MyBookings = () => {
                                 <span className="ml-1">{booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}</span>
                               </span>
                               {booking.paymentStatus && (
-                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                  booking.paymentStatus === 'paid'
+                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${booking.paymentStatus === 'paid'
                                     ? 'bg-green-100 text-green-800'
                                     : booking.paymentStatus === 'pending'
-                                    ? 'bg-yellow-100 text-yellow-800'
-                                    : 'bg-red-100 text-red-800'
-                                }`}>
+                                      ? 'bg-yellow-100 text-yellow-800'
+                                      : 'bg-red-100 text-red-800'
+                                  }`}>
                                   <CreditCard className="h-3 w-3 mr-1" />
                                   <span className="ml-1">{booking.paymentStatus.charAt(0).toUpperCase() + booking.paymentStatus.slice(1)}</span>
                                 </span>
@@ -517,7 +511,7 @@ const MyBookings = () => {
                             </button>
                           )}
                           {booking.status === 'confirmed' && booking.paymentStatus === 'pending' && (
-                            <button 
+                            <button
                               onClick={() => handleConfirmHotelBooking(booking)}
                               className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                             >
@@ -605,13 +599,12 @@ const MyBookings = () => {
                                 <span className="ml-1">{booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}</span>
                               </span>
                               {booking.paymentStatus && (
-                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                  booking.paymentStatus === 'paid'
+                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${booking.paymentStatus === 'paid'
                                     ? 'bg-green-100 text-green-800'
                                     : booking.paymentStatus === 'pending'
-                                    ? 'bg-yellow-100 text-yellow-800'
-                                    : 'bg-red-100 text-red-800'
-                                }`}>
+                                      ? 'bg-yellow-100 text-yellow-800'
+                                      : 'bg-red-100 text-red-800'
+                                  }`}>
                                   <CreditCard className="h-3 w-3 mr-1" />
                                   <span className="ml-1">{booking.paymentStatus.charAt(0).toUpperCase() + booking.paymentStatus.slice(1)}</span>
                                 </span>
@@ -627,7 +620,7 @@ const MyBookings = () => {
                           </div>
                         </div>
                         <div className="mt-4 flex justify-end space-x-3">
-                          <button 
+                          <button
                             onClick={() => handleViewDetails(booking)}
                             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                           >
@@ -640,7 +633,7 @@ const MyBookings = () => {
                             </button>
                           )}
                           {booking.status === 'confirmed' && booking.paymentStatus === 'pending' && (
-                            <button 
+                            <button
                               onClick={() => handleConfirmTourBooking(booking)}
                               className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                             >
@@ -649,7 +642,7 @@ const MyBookings = () => {
                             </button>
                           )}
                           {booking.status === 'completed' && (
-                            <button 
+                            <button
                               onClick={() => handleWriteReview(booking)}
                               className="px-4 py-2 text-sm font-medium text-white bg-purple-600 border border-transparent rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
                             >
@@ -740,13 +733,12 @@ const MyBookings = () => {
                                 <span className="ml-1">{trip.status.charAt(0).toUpperCase() + trip.status.slice(1)}</span>
                               </span>
                               {trip.paymentStatus && (
-                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                  trip.paymentStatus === 'paid' 
-                                    ? 'bg-green-100 text-green-800' 
+                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${trip.paymentStatus === 'paid'
+                                    ? 'bg-green-100 text-green-800'
                                     : trip.paymentStatus === 'pending'
-                                    ? 'bg-yellow-100 text-yellow-800'
-                                    : 'bg-red-100 text-red-800'
-                                }`}>
+                                      ? 'bg-yellow-100 text-yellow-800'
+                                      : 'bg-red-100 text-red-800'
+                                  }`}>
                                   <CreditCard className="h-3 w-3 mr-1" />
                                   <span className="ml-1">{trip.paymentStatus.charAt(0).toUpperCase() + trip.paymentStatus.slice(1)}</span>
                                 </span>
@@ -754,12 +746,12 @@ const MyBookings = () => {
                             </div>
                             <div className="mt-2 flex items-center text-lg font-semibold text-gray-900">
                               <CreditCard className="h-4 w-4 mr-1" />
-                              LKR {trip.totalAmount.toLocaleString()}
+                              ${trip.totalAmount.toLocaleString()}
                             </div>
                           </div>
                         </div>
                         <div className="mt-4 flex justify-end space-x-3">
-                          <button 
+                          <button
                             onClick={() => handleViewDetails(trip)}
                             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                           >
@@ -767,7 +759,7 @@ const MyBookings = () => {
                             View Details
                           </button>
                           {trip.status === 'approved' && trip.paymentStatus !== 'paid' && (
-                            <button 
+                            <button
                               onClick={() => handleConfirmCustomTrip(trip)}
                               className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                             >
@@ -866,7 +858,7 @@ const MyBookings = () => {
                           </div>
                         </div>
                         <div className="mt-4 flex justify-end space-x-3">
-                          <button 
+                          <button
                             onClick={() => handleViewVehicleDetails(booking)}
                             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                           >
@@ -879,7 +871,7 @@ const MyBookings = () => {
                             </button>
                           )}
                           {booking.bookingStatus === 'confirmed' && booking.paymentStatus === 'pending' && (
-                            <button 
+                            <button
                               onClick={() => handleConfirmVehicleBooking(booking)}
                               className="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                             >
@@ -965,7 +957,7 @@ const MyBookings = () => {
                             </span>
                             <div className="mt-2 flex items-center text-lg font-semibold text-gray-900">
                               <CreditCard className="h-4 w-4 mr-1" />
-                              LKR {booking.totalAmount?.toLocaleString() || '0'}
+                              ${booking.totalAmount?.toLocaleString() || '0'}
                             </div>
                             <div className="mt-1 text-xs text-gray-500">
                               Payment: {booking.paymentStatus?.charAt(0).toUpperCase() + booking.paymentStatus?.slice(1)}
@@ -973,7 +965,7 @@ const MyBookings = () => {
                           </div>
                         </div>
                         <div className="mt-4 flex justify-end space-x-3">
-                          <button 
+                          <button
                             onClick={() => handleViewGuideDetails(booking)}
                             className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                           >
@@ -981,7 +973,7 @@ const MyBookings = () => {
                             View Details
                           </button>
                           {booking.status === 'completed' && (
-                            <button 
+                            <button
                               onClick={() => handleWriteReview(booking)}
                               className="px-4 py-2 text-sm font-medium text-white bg-purple-600 border border-transparent rounded-md hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
                             >
@@ -1027,13 +1019,13 @@ const MyBookings = () => {
                     <Sparkles className="h-6 w-6 text-primary mr-2" />
                   )}
                   <h3 className="text-lg font-semibold text-gray-900">
-                    {selectedTrip.vehicle 
-                      ? 'Vehicle Booking Details' 
+                    {selectedTrip.vehicle
+                      ? 'Vehicle Booking Details'
                       : selectedTrip.guide
-                      ? 'Guide Booking Details'
-                      : selectedTrip.status === 'pending' 
-                        ? 'Trip Request Details' 
-                        : 'Approved Trip Details'
+                        ? 'Guide Booking Details'
+                        : selectedTrip.status === 'pending'
+                          ? 'Trip Request Details'
+                          : 'Approved Trip Details'
                     }
                   </h3>
                 </div>
@@ -1169,13 +1161,12 @@ const MyBookings = () => {
                     )}
 
                     {/* Status Information */}
-                    <div className={`border rounded-lg p-4 ${
-                      selectedTrip.bookingStatus === 'confirmed' 
-                        ? 'bg-green-50 border-green-200' 
+                    <div className={`border rounded-lg p-4 ${selectedTrip.bookingStatus === 'confirmed'
+                        ? 'bg-green-50 border-green-200'
                         : selectedTrip.bookingStatus === 'pending'
-                        ? 'bg-yellow-50 border-yellow-200'
-                        : 'bg-gray-50 border-gray-200'
-                    }`}>
+                          ? 'bg-yellow-50 border-yellow-200'
+                          : 'bg-gray-50 border-gray-200'
+                      }`}>
                       <div className="flex">
                         {selectedTrip.bookingStatus === 'confirmed' ? (
                           <CheckCircle className="h-5 w-5 text-green-400 mr-2" />
@@ -1185,32 +1176,30 @@ const MyBookings = () => {
                           <AlertCircle className="h-5 w-5 text-gray-400 mr-2" />
                         )}
                         <div>
-                          <h4 className={`text-sm font-medium ${
-                            selectedTrip.bookingStatus === 'confirmed' 
-                              ? 'text-green-800' 
+                          <h4 className={`text-sm font-medium ${selectedTrip.bookingStatus === 'confirmed'
+                              ? 'text-green-800'
                               : selectedTrip.bookingStatus === 'pending'
-                              ? 'text-yellow-800'
-                              : 'text-gray-800'
-                          }`}>
-                            {selectedTrip.bookingStatus === 'confirmed' 
-                              ? 'Booking Confirmed' 
+                                ? 'text-yellow-800'
+                                : 'text-gray-800'
+                            }`}>
+                            {selectedTrip.bookingStatus === 'confirmed'
+                              ? 'Booking Confirmed'
                               : selectedTrip.bookingStatus === 'pending'
-                              ? 'Booking Pending'
-                              : 'Booking Status'
+                                ? 'Booking Pending'
+                                : 'Booking Status'
                             }
                           </h4>
-                          <p className={`text-sm mt-1 ${
-                            selectedTrip.bookingStatus === 'confirmed' 
-                              ? 'text-green-700' 
+                          <p className={`text-sm mt-1 ${selectedTrip.bookingStatus === 'confirmed'
+                              ? 'text-green-700'
                               : selectedTrip.bookingStatus === 'pending'
-                              ? 'text-yellow-700'
-                              : 'text-gray-700'
-                          }`}>
-                            {selectedTrip.bookingStatus === 'confirmed' 
-                              ? 'Your vehicle booking has been confirmed. You will receive a confirmation email shortly.' 
+                                ? 'text-yellow-700'
+                                : 'text-gray-700'
+                            }`}>
+                            {selectedTrip.bookingStatus === 'confirmed'
+                              ? 'Your vehicle booking has been confirmed. You will receive a confirmation email shortly.'
                               : selectedTrip.bookingStatus === 'pending'
-                              ? 'Your vehicle booking is being processed. We will contact you within 24 hours.'
-                              : 'Please contact support for more information about your booking.'
+                                ? 'Your vehicle booking is being processed. We will contact you within 24 hours.'
+                                : 'Please contact support for more information about your booking.'
                             }
                           </p>
                         </div>
@@ -1274,15 +1263,14 @@ const MyBookings = () => {
                       <div className="space-y-2 text-sm text-blue-800">
                         <div className="flex justify-between">
                           <span><strong>Total Amount:</strong></span>
-                          <span>LKR {selectedTrip.totalAmount?.toLocaleString() || 'N/A'}</span>
+                          <span>$ {selectedTrip.totalAmount?.toLocaleString() || 'N/A'}</span>
                         </div>
                         <div className="flex justify-between">
                           <span><strong>Payment Status:</strong></span>
-                          <span className={`font-medium ${
-                            selectedTrip.paymentStatus === 'paid' ? 'text-green-600' : 
-                            selectedTrip.paymentStatus === 'pending' ? 'text-yellow-600' : 
-                            'text-red-600'
-                          }`}>
+                          <span className={`font-medium ${selectedTrip.paymentStatus === 'paid' ? 'text-green-600' :
+                              selectedTrip.paymentStatus === 'pending' ? 'text-yellow-600' :
+                                'text-red-600'
+                            }`}>
                             {selectedTrip.paymentStatus?.charAt(0).toUpperCase() + selectedTrip.paymentStatus?.slice(1) || 'N/A'}
                           </span>
                         </div>
@@ -1324,13 +1312,12 @@ const MyBookings = () => {
                     </div>
 
                     {/* Status Information */}
-                    <div className={`border rounded-lg p-4 ${
-                      selectedTrip.status === 'confirmed' 
-                        ? 'bg-green-50 border-green-200' 
+                    <div className={`border rounded-lg p-4 ${selectedTrip.status === 'confirmed'
+                        ? 'bg-green-50 border-green-200'
                         : selectedTrip.status === 'pending'
-                        ? 'bg-yellow-50 border-yellow-200'
-                        : 'bg-gray-50 border-gray-200'
-                    }`}>
+                          ? 'bg-yellow-50 border-yellow-200'
+                          : 'bg-gray-50 border-gray-200'
+                      }`}>
                       <div className="flex">
                         {selectedTrip.status === 'confirmed' ? (
                           <CheckCircle className="h-5 w-5 text-green-400 mr-2" />
@@ -1340,32 +1327,30 @@ const MyBookings = () => {
                           <AlertCircle className="h-5 w-5 text-gray-400 mr-2" />
                         )}
                         <div>
-                          <h4 className={`text-sm font-medium ${
-                            selectedTrip.status === 'confirmed' 
-                              ? 'text-green-800' 
+                          <h4 className={`text-sm font-medium ${selectedTrip.status === 'confirmed'
+                              ? 'text-green-800'
                               : selectedTrip.status === 'pending'
-                              ? 'text-yellow-800'
-                              : 'text-gray-800'
-                          }`}>
-                            {selectedTrip.status === 'confirmed' 
-                              ? 'Booking Confirmed' 
+                                ? 'text-yellow-800'
+                                : 'text-gray-800'
+                            }`}>
+                            {selectedTrip.status === 'confirmed'
+                              ? 'Booking Confirmed'
                               : selectedTrip.status === 'pending'
-                              ? 'Booking Pending'
-                              : 'Booking Status'
+                                ? 'Booking Pending'
+                                : 'Booking Status'
                             }
                           </h4>
-                          <p className={`text-sm mt-1 ${
-                            selectedTrip.status === 'confirmed' 
-                              ? 'text-green-700' 
+                          <p className={`text-sm mt-1 ${selectedTrip.status === 'confirmed'
+                              ? 'text-green-700'
                               : selectedTrip.status === 'pending'
-                              ? 'text-yellow-700'
-                              : 'text-gray-700'
-                          }`}>
-                            {selectedTrip.status === 'confirmed' 
-                              ? 'Your guide booking has been confirmed. Your guide will contact you soon.' 
+                                ? 'text-yellow-700'
+                                : 'text-gray-700'
+                            }`}>
+                            {selectedTrip.status === 'confirmed'
+                              ? 'Your guide booking has been confirmed. Your guide will contact you soon.'
                               : selectedTrip.status === 'pending'
-                              ? 'Your guide booking is being processed. We will contact you within 24 hours.'
-                              : 'Please contact support for more information about your booking.'
+                                ? 'Your guide booking is being processed. We will contact you within 24 hours.'
+                                : 'Please contact support for more information about your booking.'
                             }
                           </p>
                         </div>
@@ -1402,7 +1387,7 @@ const MyBookings = () => {
                       <div>
                         <h4 className="font-semibold text-gray-900 mb-2">Preferences</h4>
                         <div className="space-y-2 text-sm">
-                          <div><strong>Budget:</strong> LKR {selectedTrip.requestDetails?.budget || 'Not specified'}</div>
+                          <div><strong>Budget:</strong> ${selectedTrip.requestDetails?.budget || 'Not specified'}</div>
                           <div><strong>Accommodation:</strong> {selectedTrip.requestDetails?.accommodation || 'Not specified'}</div>
                           {selectedTrip.requestDetails?.interests && selectedTrip.requestDetails.interests.length > 0 && (
                             <div><strong>Interests:</strong> {selectedTrip.requestDetails.interests.join(', ')}</div>
@@ -1413,7 +1398,7 @@ const MyBookings = () => {
                         </div>
                       </div>
                     </div>
-                    
+
                     {(selectedTrip.requestDetails?.specialRequests || selectedTrip.requestDetails?.dietaryRequirements || selectedTrip.requestDetails?.accessibility) && (
                       <div>
                         <h4 className="font-semibold text-gray-900 mb-2">Special Requirements</h4>
@@ -1454,7 +1439,7 @@ const MyBookings = () => {
                           <div className="flex items-center">
                             <Calendar className="h-4 w-4 mr-2 text-gray-500" />
                             <span><strong>Dates:</strong> {
-                              selectedTrip.requestDetails?.startDate && selectedTrip.requestDetails?.endDate 
+                              selectedTrip.requestDetails?.startDate && selectedTrip.requestDetails?.endDate
                                 ? `${new Date(selectedTrip.requestDetails.startDate).toLocaleDateString()} - ${new Date(selectedTrip.requestDetails.endDate).toLocaleDateString()}`
                                 : 'Dates not specified'
                             }</span>
@@ -1484,17 +1469,17 @@ const MyBookings = () => {
                         <div className="space-y-2 text-sm">
                           <div className="flex items-center">
                             <CreditCard className="h-4 w-4 mr-2 text-gray-500" />
-                            <span><strong>Total Cost:</strong> LKR {selectedTrip.staffAssignment?.totalBudget?.totalAmount?.toLocaleString() || 'TBD'}</span>
+                            <span><strong>Total Cost:</strong> ${selectedTrip.staffAssignment?.totalBudget?.totalAmount?.toLocaleString() || 'TBD'}</span>
                           </div>
                           {selectedTrip.staffAssignment?.totalBudget && (
                             <div>
                               <strong>Cost Breakdown:</strong>
                               <ul className="ml-4 mt-1 space-y-1">
-                                {selectedTrip.staffAssignment.totalBudget.guideFees > 0 && <li>Guide Fees: LKR {selectedTrip.staffAssignment.totalBudget.guideFees.toLocaleString()}</li>}
-                                {selectedTrip.staffAssignment.totalBudget.vehicleCosts > 0 && <li>Vehicle Costs: LKR {selectedTrip.staffAssignment.totalBudget.vehicleCosts.toLocaleString()}</li>}
-                                {selectedTrip.staffAssignment.totalBudget.hotelCosts > 0 && <li>Hotel Costs: LKR {selectedTrip.staffAssignment.totalBudget.hotelCosts.toLocaleString()}</li>}
-                                {selectedTrip.staffAssignment.totalBudget.activityCosts > 0 && <li>Activity Costs: LKR {selectedTrip.staffAssignment.totalBudget.activityCosts.toLocaleString()}</li>}
-                                {selectedTrip.staffAssignment.totalBudget.additionalFees > 0 && <li>Additional Fees: LKR {selectedTrip.staffAssignment.totalBudget.additionalFees.toLocaleString()}</li>}
+                                {selectedTrip.staffAssignment.totalBudget.guideFees > 0 && <li>Guide Fees: ${selectedTrip.staffAssignment.totalBudget.guideFees.toLocaleString()}</li>}
+                                {selectedTrip.staffAssignment.totalBudget.vehicleCosts > 0 && <li>Vehicle Costs: ${selectedTrip.staffAssignment.totalBudget.vehicleCosts.toLocaleString()}</li>}
+                                {selectedTrip.staffAssignment.totalBudget.hotelCosts > 0 && <li>Hotel Costs: ${selectedTrip.staffAssignment.totalBudget.hotelCosts.toLocaleString()}</li>}
+                                {selectedTrip.staffAssignment.totalBudget.activityCosts > 0 && <li>Activity Costs: ${selectedTrip.staffAssignment.totalBudget.activityCosts.toLocaleString()}</li>}
+                                {selectedTrip.staffAssignment.totalBudget.additionalFees > 0 && <li>Additional Fees: ${selectedTrip.staffAssignment.totalBudget.additionalFees.toLocaleString()}</li>}
                               </ul>
                             </div>
                           )}
@@ -1506,7 +1491,7 @@ const MyBookings = () => {
                     {selectedTrip.staffAssignment && (
                       <div className="space-y-4">
                         <h4 className="font-semibold text-gray-900 mb-3">Assigned Resources</h4>
-                        
+
                         {/* Assigned Guide */}
                         {selectedTrip.staffAssignment.assignedGuide && (
                           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -1545,7 +1530,7 @@ const MyBookings = () => {
                                         <p><strong>Check-out:</strong> {new Date(booking.checkOutDate).toLocaleDateString()}</p>
                                         <p><strong>Nights:</strong> {booking.nights}</p>
                                         <p><strong>Rooms:</strong> {booking.rooms}</p>
-                                        <p><strong>Total Price:</strong> LKR {booking.totalPrice?.toLocaleString() || booking.pricePerNight * booking.nights * booking.rooms || 'Price not calculated'}</p>
+                                        <p><strong>Total Price:</strong> ${booking.totalPrice?.toLocaleString() || booking.pricePerNight * booking.nights * booking.rooms || 'Price not calculated'}</p>
                                         {booking.specialRequests && (
                                           <p><strong>Special Requests:</strong> {booking.specialRequests}</p>
                                         )}
@@ -1571,7 +1556,7 @@ const MyBookings = () => {
                                       <div className="space-y-1 text-sm text-purple-800">
                                         <p><strong>Vehicle:</strong> {vehicle.vehicleId?.type || vehicle.vehicleType || 'Vehicle type'} - {vehicle.vehicleId?.model || vehicle.model || 'Model not specified'}</p>
                                         <p><strong>Capacity:</strong> {vehicle.vehicleId?.capacity || vehicle.capacity || 'Capacity not specified'} passengers</p>
-                                        <p><strong>Daily Rate:</strong> LKR {vehicle.dailyRate?.toLocaleString()}</p>
+                                        <p><strong>Daily Rate:</strong> ${vehicle.dailyRate?.toLocaleString()}</p>
                                         <p><strong>Total Days:</strong> {vehicle.totalDays}</p>
                                         {vehicle.driver && (
                                           <div className="mt-2 pt-2 border-t border-purple-200">

@@ -66,7 +66,7 @@ const DriverRegistration = () => {
     // Financial Information
     financial: {
       baseRate: 0,
-      currency: 'LKR',
+      currency: 'USD',
       paymentMethod: 'bank_transfer'
     },
     

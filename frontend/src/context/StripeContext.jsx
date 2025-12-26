@@ -17,7 +17,7 @@ export const StripeProvider = ({ children, clientSecret: propClientSecret }) => 
   const [clientSecret, setClientSecret] = useState(propClientSecret || '');
   const [paymentIntentId, setPaymentIntentId] = useState('');
   const [amount, setAmount] = useState(0);
-  const [currency, setCurrency] = useState('LKR');
+  const [currency, setCurrency] = useState('USD');
 
   useEffect(() => {
     // Load Stripe.js as soon as the component mounts

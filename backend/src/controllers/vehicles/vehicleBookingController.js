@@ -101,12 +101,12 @@ const createBooking = asyncHandler(async (req, res) => {
   const perKmRate = pricing.perKmRate || 0;
   const hourlyRate = pricing.hourlyRate || 0;
   const dailyRate = pricing.dailyRate || 0;
-  
+
   // Calculate duration price (use daily rate if more than 8 hours, otherwise hourly)
   const durationPrice = duration > 8 ? dailyRate : (duration * hourlyRate);
   const distancePrice = distance * perKmRate;
   const subtotal = basePrice + distancePrice + durationPrice;
-  
+
   const taxes = subtotal * 0.1; // 10% tax
   const serviceCharge = subtotal * 0.05; // 5% service charge
   const totalPrice = subtotal + taxes + serviceCharge;
@@ -136,7 +136,7 @@ const createBooking = asyncHandler(async (req, res) => {
         taxes,
         serviceCharge,
         totalPrice,
-        currency: vehicleExists.pricing.currency || 'LKR'
+        currency: vehicleExists.pricing.currency || 'USD'
       }
     });
 
@@ -185,7 +185,7 @@ const createBooking = asyncHandler(async (req, res) => {
         taxes,
         serviceCharge,
         totalPrice,
-        currency: vehicleExists.pricing.currency || 'LKR'
+        currency: vehicleExists.pricing.currency || 'USD'
       },
       bookingStatus: 'pending',
       paymentStatus: 'pending',
@@ -261,7 +261,7 @@ const getMyBookings = asyncHandler(async (req, res) => {
   const { status, vehicle, page = 1, limit = 10 } = req.query;
 
   // Get user's vehicles (both owned and driven)
-  const userVehicles = await Vehicle.find({ 
+  const userVehicles = await Vehicle.find({
     $or: [
       { owner: req.user.id },
       { driver: req.user.id }
@@ -342,9 +342,9 @@ const getBooking = asyncHandler(async (req, res) => {
   }
 
   // Check if user has access to this booking
-  if (booking.user._id.toString() !== req.user.id && 
-      req.user.role !== 'admin' && 
-      req.user.role !== 'vehicle_owner') {
+  if (booking.user._id.toString() !== req.user.id &&
+    req.user.role !== 'admin' &&
+    req.user.role !== 'vehicle_owner') {
     return res.status(403).json({
       status: 'error',
       message: 'Access denied'
@@ -389,7 +389,7 @@ const updateBookingStatus = asyncHandler(async (req, res) => {
 
   // Update booking status
   booking.bookingStatus = status;
-  
+
   // Add status update
   booking.statusUpdates.push({
     status,

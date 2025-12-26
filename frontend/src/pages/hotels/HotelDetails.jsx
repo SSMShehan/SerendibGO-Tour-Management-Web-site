@@ -4,20 +4,20 @@ import { useHotel } from '../../context/hotels/HotelContext';
 import { hotelAPI, roomAPI, hotelUtils } from '../../services/hotels/hotelService';
 import hotelReviewService from '../../services/hotels/hotelReviewService';
 import { useAuth } from '../../context/AuthContext';
-import { 
-  Star, 
-  MapPin, 
-  Phone, 
-  Mail, 
-  Globe, 
-  Wifi, 
-  Car, 
-  Coffee, 
-  Tv, 
-  Wind, 
-  Waves, 
-  Utensils, 
-  Dumbbell, 
+import {
+  Star,
+  MapPin,
+  Phone,
+  Mail,
+  Globe,
+  Wifi,
+  Car,
+  Coffee,
+  Tv,
+  Wind,
+  Waves,
+  Utensils,
+  Dumbbell,
   Sparkles,
   Users,
   Bed,
@@ -42,7 +42,7 @@ const HotelDetails = () => {
   const navigate = useNavigate();
   const { hotelActions } = useHotel();
   const { user, isAuthenticated } = useAuth();
-  
+
   const [hotel, setHotel] = useState(null);
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -58,7 +58,7 @@ const HotelDetails = () => {
     infants: 0,
     specialRequests: ''
   });
-  
+
   // Review-related state
   const [reviews, setReviews] = useState([]);
   const [reviewsLoading, setReviewsLoading] = useState(false);
@@ -136,11 +136,11 @@ const HotelDetails = () => {
 
   const handleImageNavigation = (direction) => {
     if (direction === 'next') {
-      setSelectedImageIndex((prev) => 
+      setSelectedImageIndex((prev) =>
         prev === hotel.images.length - 1 ? 0 : prev + 1
       );
     } else {
-      setSelectedImageIndex((prev) => 
+      setSelectedImageIndex((prev) =>
         prev === 0 ? hotel.images.length - 1 : prev - 1
       );
     }
@@ -258,18 +258,18 @@ const HotelDetails = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#E59B2C]"></div>
       </div>
     );
   }
 
   if (!hotel) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Hotel not found</h2>
-          <Link to="/hotels" className="text-blue-600 hover:text-blue-800">
+          <h2 className="text-2xl font-serif font-bold text-slate-900 mb-4">Hotel not found</h2>
+          <Link to="/hotels" className="text-[#E59B2C] hover:text-slate-900 font-semibold">
             Back to Hotels
           </Link>
         </div>
@@ -278,7 +278,7 @@ const HotelDetails = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -310,19 +310,18 @@ const HotelDetails = () => {
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between">
             <div className="flex-1">
               <div className="flex items-center space-x-2 mb-2">
-                <h1 className="text-3xl font-bold text-gray-900">{hotel.name}</h1>
+                <h1 className="text-3xl font-serif font-bold text-slate-900">{hotel.name}</h1>
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`w-5 h-5 ${
-                        i < hotel.starRating ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                      }`}
+                      className={`w-5 h-5 ${i < hotel.starRating ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                        }`}
                     />
                   ))}
                 </div>
               </div>
-              
+
               <div className="flex items-center text-gray-600 mb-4">
                 <MapPin className="w-4 h-4 mr-1" />
                 <span>{hotel.location.address}, {hotel.location.city}, {hotel.location.district}</span>
@@ -353,7 +352,7 @@ const HotelDetails = () => {
                       <div className="text-sm text-gray-600">per night</div>
                       <button
                         onClick={() => setShowBookingForm(true)}
-                        className="mt-3 w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                        className="mt-3 w-full bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-[#E59B2C] transition-all"
                       >
                         Check Availability
                       </button>
@@ -368,7 +367,7 @@ const HotelDetails = () => {
         {/* Image Gallery */}
         {hotel.images && hotel.images.length > 0 && (
           <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-            <h2 className="text-xl font-semibold mb-4">Photos</h2>
+            <h2 className="text-xl font-serif font-semibold mb-4">Photos</h2>
             <div className="relative">
               <div className="aspect-video rounded-lg overflow-hidden bg-gray-200">
                 <img
@@ -377,7 +376,7 @@ const HotelDetails = () => {
                   className="w-full h-full object-cover"
                 />
               </div>
-              
+
               {hotel.images.length > 1 && (
                 <>
                   <button
@@ -407,9 +406,8 @@ const HotelDetails = () => {
                   <button
                     key={index}
                     onClick={() => setSelectedImageIndex(index)}
-                    className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 ${
-                      index === selectedImageIndex ? 'border-blue-600' : 'border-gray-200'
-                    }`}
+                    className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 ${index === selectedImageIndex ? 'border-blue-600' : 'border-gray-200'
+                      }`}
                   >
                     <img
                       src={image.url}
@@ -425,7 +423,7 @@ const HotelDetails = () => {
 
         {/* Amenities */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4">Amenities</h2>
+          <h2 className="text-xl font-serif font-semibold mb-4">Amenities</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {Object.entries(hotel.amenities).map(([amenity, available]) => (
               available && (
@@ -440,7 +438,7 @@ const HotelDetails = () => {
 
         {/* Contact Information */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-8">
-          <h2 className="text-xl font-semibold mb-4">Contact Information</h2>
+          <h2 className="text-xl font-serif font-semibold mb-4">Contact Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex items-center space-x-3">
               <Phone className="w-5 h-5 text-gray-600" />
@@ -468,8 +466,8 @@ const HotelDetails = () => {
 
         {/* Rooms */}
         <div className="bg-white rounded-lg shadow-sm p-6">
-          <h2 className="text-xl font-semibold mb-4">Available Rooms</h2>
-          
+          <h2 className="text-xl font-serif font-semibold mb-4">Available Rooms</h2>
+
           {roomsLoading ? (
             <div className="flex justify-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -496,7 +494,7 @@ const HotelDetails = () => {
                           </div>
                         )}
                       </div>
-                      
+
                       {/* Room Images */}
                       {room.images && room.images.length > 0 && (
                         <div className="mb-4">
@@ -512,9 +510,9 @@ const HotelDetails = () => {
                           </div>
                         </div>
                       )}
-                      
+
                       <p className="text-gray-600 mb-4">{room.description}</p>
-                      
+
                       <div className="flex items-center space-x-6 text-sm text-gray-600 mb-4">
                         <div className="flex items-center">
                           <Users className="w-4 h-4 mr-1" />
@@ -546,7 +544,7 @@ const HotelDetails = () => {
                     <div className="mt-4 lg:mt-0 lg:ml-6">
                       <button
                         onClick={() => handleRoomSelect(room)}
-                        className="w-full bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                        className="w-full bg-slate-900 text-white px-6 py-2 rounded-lg hover:bg-[#E59B2C] transition-all"
                       >
                         Select Room
                       </button>
@@ -561,7 +559,7 @@ const HotelDetails = () => {
         {/* Reviews Section */}
         <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold">Guest Reviews</h2>
+            <h2 className="text-xl font-serif font-semibold">Guest Reviews</h2>
             <div className="flex items-center space-x-4">
               <div className="flex items-center">
                 <Star className="w-5 h-5 text-yellow-400 fill-current" />
@@ -571,7 +569,7 @@ const HotelDetails = () => {
               {isAuthenticated && canUserReview && (
                 <button
                   onClick={() => setShowReviewForm(true)}
-                  className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  className="flex items-center space-x-2 bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-[#E59B2C] transition-all"
                 >
                   <MessageSquare className="w-4 h-4" />
                   <span>Write Review</span>
@@ -637,9 +635,8 @@ const HotelDetails = () => {
                             {[...Array(5)].map((_, i) => (
                               <Star
                                 key={i}
-                                className={`w-4 h-4 ${
-                                  i < review.rating.overall ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                                }`}
+                                className={`w-4 h-4 ${i < review.rating.overall ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                                  }`}
                               />
                             ))}
                           </div>
@@ -667,9 +664,8 @@ const HotelDetails = () => {
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
-                            className={`w-3 h-3 ${
-                              i < review.rating.cleanliness ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                            }`}
+                            className={`w-3 h-3 ${i < review.rating.cleanliness ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                              }`}
                           />
                         ))}
                       </div>
@@ -680,9 +676,8 @@ const HotelDetails = () => {
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
-                            className={`w-3 h-3 ${
-                              i < review.rating.location ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                            }`}
+                            className={`w-3 h-3 ${i < review.rating.location ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                              }`}
                           />
                         ))}
                       </div>
@@ -693,9 +688,8 @@ const HotelDetails = () => {
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
-                            className={`w-3 h-3 ${
-                              i < review.rating.service ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                            }`}
+                            className={`w-3 h-3 ${i < review.rating.service ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                              }`}
                           />
                         ))}
                       </div>
@@ -706,9 +700,8 @@ const HotelDetails = () => {
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
-                            className={`w-3 h-3 ${
-                              i < review.rating.value ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                            }`}
+                            className={`w-3 h-3 ${i < review.rating.value ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                              }`}
                           />
                         ))}
                       </div>
@@ -719,9 +712,8 @@ const HotelDetails = () => {
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
-                            className={`w-3 h-3 ${
-                              i < review.rating.amenities ? 'text-yellow-400 fill-current' : 'text-gray-300'
-                            }`}
+                            className={`w-3 h-3 ${i < review.rating.amenities ? 'text-yellow-400 fill-current' : 'text-gray-300'
+                              }`}
                           />
                         ))}
                       </div>
@@ -779,7 +771,7 @@ const HotelDetails = () => {
                 <X className="w-6 h-6" />
               </button>
             </div>
-            
+
             {/* Import and use the existing hotel ReviewForm component */}
             <div className="text-center py-8">
               <MessageSquare className="w-12 h-12 mx-auto mb-4 text-gray-300" />
@@ -797,7 +789,7 @@ const HotelDetails = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg max-w-md w-full p-6">
             <h3 className="text-lg font-semibold mb-4">Check Availability</h3>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -806,7 +798,7 @@ const HotelDetails = () => {
                 <input
                   type="date"
                   value={bookingData.checkIn}
-                  onChange={(e) => setBookingData({...bookingData, checkIn: e.target.value})}
+                  onChange={(e) => setBookingData({ ...bookingData, checkIn: e.target.value })}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -818,7 +810,7 @@ const HotelDetails = () => {
                 <input
                   type="date"
                   value={bookingData.checkOut}
-                  onChange={(e) => setBookingData({...bookingData, checkOut: e.target.value})}
+                  onChange={(e) => setBookingData({ ...bookingData, checkOut: e.target.value })}
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -832,7 +824,7 @@ const HotelDetails = () => {
                     type="number"
                     min="1"
                     value={bookingData.adults}
-                    onChange={(e) => setBookingData({...bookingData, adults: parseInt(e.target.value)})}
+                    onChange={(e) => setBookingData({ ...bookingData, adults: parseInt(e.target.value) })}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -844,7 +836,7 @@ const HotelDetails = () => {
                     type="number"
                     min="0"
                     value={bookingData.children}
-                    onChange={(e) => setBookingData({...bookingData, children: parseInt(e.target.value)})}
+                    onChange={(e) => setBookingData({ ...bookingData, children: parseInt(e.target.value) })}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -856,7 +848,7 @@ const HotelDetails = () => {
                     type="number"
                     min="0"
                     value={bookingData.infants}
-                    onChange={(e) => setBookingData({...bookingData, infants: parseInt(e.target.value)})}
+                    onChange={(e) => setBookingData({ ...bookingData, infants: parseInt(e.target.value) })}
                     className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -868,7 +860,7 @@ const HotelDetails = () => {
                 </label>
                 <textarea
                   value={bookingData.specialRequests}
-                  onChange={(e) => setBookingData({...bookingData, specialRequests: e.target.value})}
+                  onChange={(e) => setBookingData({ ...bookingData, specialRequests: e.target.value })}
                   rows="3"
                   className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Any special requests or requirements..."

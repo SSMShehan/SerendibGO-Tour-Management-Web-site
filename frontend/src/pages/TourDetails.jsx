@@ -81,7 +81,7 @@ const TourDetails = () => {
       const response = await api.get(`/tours/${id}`)
       console.log('🔍 TourDetails: API Response:', response)
       console.log('🔍 TourDetails: Response data:', response.data)
-      
+
       if (response.data.success) {
         const tourData = response.data.data
         console.log('🔍 TourDetails: Tour data:', tourData)
@@ -103,7 +103,7 @@ const TourDetails = () => {
 
   const handleBookingSubmit = async (e) => {
     e.preventDefault()
-    
+
     // Check if user is authenticated
     if (!isAuthenticated || !user) {
       toast.error('Please login to book a tour')
@@ -119,11 +119,11 @@ const TourDetails = () => {
 
     try {
       setBookingLoading(true)
-      
-      console.log('🎯 Creating tour booking:', { 
-        tourId: tour._id, 
+
+      console.log('🎯 Creating tour booking:', {
+        tourId: tour._id,
         tourTitle: tour.title,
-        bookingData 
+        bookingData
       })
 
       // Calculate dates
@@ -144,13 +144,13 @@ const TourDetails = () => {
 
       // Create the booking
       const response = await api.post('/bookings', bookingPayload)
-      
+
       if (response.data.success) {
         const booking = response.data.data
         const totalAmount = tour.price * bookingData.groupSize
-        
+
         console.log('✅ Tour booking created:', booking._id)
-        
+
         // Navigate to payment page with booking data
         navigate('/payment', {
           state: {
@@ -167,7 +167,7 @@ const TourDetails = () => {
             bookingReference: booking.bookingReference
           }
         })
-        
+
         // Close modal and reset form
         setShowBookingModal(false)
         setBookingData({
@@ -176,7 +176,7 @@ const TourDetails = () => {
           groupSize: 1,
           specialRequests: ''
         })
-        
+
         toast.success('Booking created successfully! Redirecting to payment...')
       } else {
         toast.error(response.data.message || 'Failed to create booking')
@@ -184,7 +184,7 @@ const TourDetails = () => {
     } catch (error) {
       console.error('❌ Error creating tour booking:', error)
       console.error('Error response:', error.response?.data)
-      
+
       if (error.response?.status === 401) {
         toast.error('Your session has expired. Please login again.')
         navigate('/login')
@@ -212,11 +212,11 @@ const TourDetails = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <h2 className="text-2xl font-bold text-slate-900 mb-2">Loading Tour Details...</h2>
-          <p className="text-slate-600">Please wait while we fetch the tour information</p>
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-[#E59B2C] mx-auto mb-4"></div>
+          <h2 className="text-2xl font-serif font-bold text-slate-900 mb-2">Loading Tour Details...</h2>
+          <p className="text-slate-500">Please wait while we fetch the tour information</p>
         </div>
       </div>
     )
@@ -224,14 +224,14 @@ const TourDetails = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="text-red-600 text-6xl mb-4">⚠️</div>
-          <h2 className="text-2xl font-bold text-slate-900 mb-2">Error Loading Tour</h2>
-          <p className="text-slate-600 mb-6">{error}</p>
-          <button 
-            onClick={() => navigate('/tours')} 
-            className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-200 font-semibold"
+          <div className="text-red-500 text-6xl mb-4">⚠️</div>
+          <h2 className="text-2xl font-serif font-bold text-slate-900 mb-2">Error Loading Tour</h2>
+          <p className="text-slate-500 mb-6">{error}</p>
+          <button
+            onClick={() => navigate('/tours')}
+            className="px-6 py-3 bg-slate-900 text-white rounded-xl hover:bg-[#E59B2C] transition-all duration-200 font-semibold"
           >
             Back to Tours
           </button>
@@ -241,15 +241,15 @@ const TourDetails = () => {
   }
 
   if (!tour) {
-  return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50 flex items-center justify-center">
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="text-slate-400 text-6xl mb-4">🔍</div>
-          <h2 className="text-2xl font-bold text-slate-900 mb-2">Tour Not Found</h2>
-          <p className="text-slate-600 mb-6">The tour you're looking for doesn't exist.</p>
-          <button 
-            onClick={() => navigate('/tours')} 
-            className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-200 font-semibold"
+          <div className="text-slate-300 text-6xl mb-4">🔍</div>
+          <h2 className="text-2xl font-serif font-bold text-slate-900 mb-2">Tour Not Found</h2>
+          <p className="text-slate-500 mb-6">The tour you're looking for doesn't exist.</p>
+          <button
+            onClick={() => navigate('/tours')}
+            className="px-6 py-3 bg-slate-900 text-white rounded-xl hover:bg-[#E59B2C] transition-all duration-200 font-semibold"
           >
             Back to Tours
           </button>
@@ -259,12 +259,12 @@ const TourDetails = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50">
+    <div className="min-h-screen bg-white">
       {/* Back Button */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         <button
           onClick={() => navigate('/tours')}
-          className="flex items-center gap-2 text-slate-600 hover:text-blue-600 transition-colors duration-200 font-medium"
+          className="flex items-center gap-2 text-slate-500 hover:text-[#E59B2C] transition-colors duration-200 font-medium"
         >
           <ArrowLeft className="w-5 h-5" />
           Back to Tours
@@ -303,13 +303,13 @@ const TourDetails = () => {
                     }}
                   />
                 ) : null}
-                <div 
+                <div
                   className="w-full h-full flex items-center justify-center"
                   style={{ display: (tour.images && tour.images.length > 0) ? 'none' : 'flex' }}
                 >
                   <MapPin className="w-24 h-24 text-blue-500/30" />
                 </div>
-                
+
                 {/* Image Navigation */}
                 {tour.images.length > 1 && (
                   <>
@@ -335,9 +335,8 @@ const TourDetails = () => {
                       <button
                         key={index}
                         onClick={() => setCurrentImageIndex(index)}
-                        className={`w-3 h-3 rounded-full transition-colors ${
-                          index === currentImageIndex ? 'bg-white' : 'bg-white/50'
-                        }`}
+                        className={`w-3 h-3 rounded-full transition-colors ${index === currentImageIndex ? 'bg-white' : 'bg-white/50'
+                          }`}
                       />
                     ))}
                   </div>
@@ -379,8 +378,8 @@ const TourDetails = () => {
                 </div>
               </div>
 
-              <h1 className="text-4xl font-bold text-slate-900 mb-4">{tour.title}</h1>
-              
+              <h1 className="text-4xl font-serif font-bold text-slate-900 mb-4">{tour.title}</h1>
+
               <div className="flex items-center gap-6 mb-6">
                 <div className="flex items-center gap-2">
                   <MapPin className="w-5 h-5 text-blue-500" />
@@ -400,9 +399,9 @@ const TourDetails = () => {
               <div className="flex items-center gap-4 mb-6">
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
-                    <Star 
-                      key={i} 
-                      className={`h-6 w-6 ${i < Math.floor(tour.rating.average) ? 'text-yellow-400 fill-current' : 'text-slate-300'}`} 
+                    <Star
+                      key={i}
+                      className={`h-6 w-6 ${i < Math.floor(tour.rating.average) ? 'text-yellow-400 fill-current' : 'text-slate-300'}`}
                     />
                   ))}
                 </div>
@@ -426,11 +425,10 @@ const TourDetails = () => {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-2 px-6 py-4 font-semibold transition-colors ${
-                      activeTab === tab.id
-                        ? 'text-blue-600 border-b-2 border-blue-600'
-                        : 'text-slate-600 hover:text-slate-900'
-                    }`}
+                    className={`flex items-center gap-2 px-6 py-4 font-semibold transition-colors ${activeTab === tab.id
+                      ? 'text-blue-600 border-b-2 border-blue-600'
+                      : 'text-slate-600 hover:text-slate-900'
+                      }`}
                   >
                     <tab.icon className="w-5 h-5" />
                     {tab.label}
@@ -498,7 +496,7 @@ const TourDetails = () => {
                     {tour.itinerary.map((day, index) => (
                       <div key={index} className="bg-white rounded-2xl shadow-lg p-6 border border-slate-100">
                         <h3 className="text-xl font-bold text-slate-900 mb-4">Day {day.day}: {day.title}</h3>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div>
                             <h4 className="font-semibold text-slate-700 mb-3 flex items-center gap-2">
@@ -514,7 +512,7 @@ const TourDetails = () => {
                               ))}
                             </ul>
                           </div>
-                          
+
                           <div>
                             <h4 className="font-semibold text-slate-700 mb-3 flex items-center gap-2">
                               <Award className="w-5 h-5 text-purple-500" />
@@ -589,9 +587,9 @@ const TourDetails = () => {
                         <div className="text-3xl font-bold text-slate-900">{tour.rating.average}</div>
                         <div className="flex items-center">
                           {[...Array(5)].map((_, i) => (
-                            <Star 
-                              key={i} 
-                              className={`h-5 w-5 ${i < Math.floor(tour.rating.average) ? 'text-yellow-400 fill-current' : 'text-slate-300'}`} 
+                            <Star
+                              key={i}
+                              className={`h-5 w-5 ${i < Math.floor(tour.rating.average) ? 'text-yellow-400 fill-current' : 'text-slate-300'}`}
                             />
                           ))}
                         </div>
@@ -618,9 +616,9 @@ const TourDetails = () => {
                                 </div>
                                 <div className="flex items-center gap-2">
                                   {[...Array(5)].map((_, i) => (
-                                    <Star 
-                                      key={i} 
-                                      className={`h-4 w-4 ${i < review.rating ? 'text-yellow-400 fill-current' : 'text-slate-300'}`} 
+                                    <Star
+                                      key={i}
+                                      className={`h-4 w-4 ${i < review.rating ? 'text-yellow-400 fill-current' : 'text-slate-300'}`}
                                     />
                                   ))}
                                   <span className="text-slate-600 text-sm">{review.date}</span>
@@ -654,7 +652,7 @@ const TourDetails = () => {
                 {/* Book Now Button */}
                 <button
                   onClick={() => setShowBookingModal(true)}
-                  className="w-full px-6 py-4 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-2xl hover:from-blue-700 hover:to-cyan-600 transition-all duration-300 font-bold shadow-xl hover:shadow-2xl transform hover:-translate-y-1 flex items-center justify-center gap-2"
+                  className="w-full px-6 py-4 bg-slate-900 text-white rounded-xl hover:bg-[#E59B2C] transition-all duration-300 font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center gap-2"
                 >
                   <BookOpen className="w-5 h-5" />
                   Book Now
@@ -676,29 +674,29 @@ const TourDetails = () => {
                   </div>
                 </div>
 
-                       {/* Guide Info */}
-                       <div className="mt-6 pt-6 border-t border-slate-200">
-                         <h4 className="font-semibold text-slate-900 mb-3">Your Guide</h4>
-                         <div className="flex items-center gap-3">
-                           <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center">
-                             <span className="text-white font-bold">
-                               {tour.guide ? (tour.guide.firstName + ' ' + tour.guide.lastName).split(' ').map(n => n[0]).join('') : 'G'}
-                             </span>
-                           </div>
-                           <div>
-                             <div className="font-semibold text-slate-900">
-                               {tour.guide ? `${tour.guide.firstName} ${tour.guide.lastName}` : 'Professional Guide'}
-                             </div>
-                             <div className="text-sm text-slate-600">
-                               {tour.guide?.profile?.experience || 'Experienced'} guide
-                             </div>
-                             <div className="flex items-center gap-1">
-                               <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                               <span className="text-sm font-medium">4.8</span>
-                             </div>
-                           </div>
-                         </div>
-                       </div>
+                {/* Guide Info */}
+                <div className="mt-6 pt-6 border-t border-slate-200">
+                  <h4 className="font-semibold text-slate-900 mb-3">Your Guide</h4>
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center">
+                      <span className="text-white font-bold">
+                        {tour.guide ? (tour.guide.firstName + ' ' + tour.guide.lastName).split(' ').map(n => n[0]).join('') : 'G'}
+                      </span>
+                    </div>
+                    <div>
+                      <div className="font-semibold text-slate-900">
+                        {tour.guide ? `${tour.guide.firstName} ${tour.guide.lastName}` : 'Professional Guide'}
+                      </div>
+                      <div className="text-sm text-slate-600">
+                        {tour.guide?.profile?.experience || 'Experienced'} guide
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                        <span className="text-sm font-medium">4.8</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -710,12 +708,12 @@ const TourDetails = () => {
         <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 z-50 overflow-y-auto">
           <div className="bg-white rounded-3xl max-w-md w-full sm:max-w-lg shadow-2xl border border-slate-200 my-4 transform transition-all duration-300 scale-100 max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
-            <div className="bg-gradient-to-r from-blue-600 to-cyan-500 text-white p-6 rounded-t-3xl relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-600/90 to-cyan-500/90"></div>
+            <div className="bg-slate-900 text-white p-6 rounded-t-3xl relative overflow-hidden">
+              <div className="absolute inset-0 bg-slate-900/95"></div>
               <div className="relative flex justify-between items-center">
                 <div>
-                  <h2 className="text-2xl font-bold mb-1">Book Your Adventure</h2>
-                  <p className="text-blue-100 font-medium">{tour.title}</p>
+                  <h2 className="text-2xl font-serif font-bold mb-1">Book Your Adventure</h2>
+                  <p className="text-slate-300 font-medium">{tour.title}</p>
                 </div>
                 <button
                   onClick={() => setShowBookingModal(false)}
@@ -749,7 +747,7 @@ const TourDetails = () => {
                     <input
                       type="date"
                       value={bookingData.date}
-                      onChange={(e) => setBookingData({...bookingData, date: e.target.value})}
+                      onChange={(e) => setBookingData({ ...bookingData, date: e.target.value })}
                       className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-slate-900 font-medium transition-all duration-200 hover:border-slate-300"
                       required
                     />
@@ -765,7 +763,7 @@ const TourDetails = () => {
                   <div className="flex items-center gap-3">
                     <button
                       type="button"
-                      onClick={() => setBookingData({...bookingData, groupSize: Math.max(1, bookingData.groupSize - 1)})}
+                      onClick={() => setBookingData({ ...bookingData, groupSize: Math.max(1, bookingData.groupSize - 1) })}
                       className="p-3 border-2 border-slate-200 rounded-xl hover:bg-slate-50 hover:border-slate-300 text-slate-700 transition-all duration-200 flex items-center justify-center"
                     >
                       <Minus className="w-5 h-5" />
@@ -774,7 +772,7 @@ const TourDetails = () => {
                       <input
                         type="number"
                         value={bookingData.groupSize}
-                        onChange={(e) => setBookingData({...bookingData, groupSize: parseInt(e.target.value) || 1})}
+                        onChange={(e) => setBookingData({ ...bookingData, groupSize: parseInt(e.target.value) || 1 })}
                         min="1"
                         max={tour.maxParticipants}
                         className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-center text-slate-900 font-bold text-lg transition-all duration-200 hover:border-slate-300"
@@ -782,7 +780,7 @@ const TourDetails = () => {
                     </div>
                     <button
                       type="button"
-                      onClick={() => setBookingData({...bookingData, groupSize: Math.min(tour.maxParticipants, bookingData.groupSize + 1)})}
+                      onClick={() => setBookingData({ ...bookingData, groupSize: Math.min(tour.maxParticipants, bookingData.groupSize + 1) })}
                       className="p-3 border-2 border-slate-200 rounded-xl hover:bg-slate-50 hover:border-slate-300 text-slate-700 transition-all duration-200 flex items-center justify-center"
                     >
                       <Plus className="w-5 h-5" />
@@ -802,7 +800,7 @@ const TourDetails = () => {
                   </label>
                   <textarea
                     value={bookingData.specialRequests}
-                    onChange={(e) => setBookingData({...bookingData, specialRequests: e.target.value})}
+                    onChange={(e) => setBookingData({ ...bookingData, specialRequests: e.target.value })}
                     rows="3"
                     placeholder="Any special requirements, dietary restrictions, or preferences..."
                     className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none text-slate-900 placeholder-slate-400 transition-all duration-200 hover:border-slate-300"
@@ -838,7 +836,7 @@ const TourDetails = () => {
                   <button
                     type="submit"
                     disabled={bookingLoading}
-                    className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-2xl hover:from-blue-700 hover:to-cyan-600 transition-all duration-300 font-bold shadow-xl hover:shadow-2xl transform hover:-translate-y-1 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                    className="flex-1 px-4 py-3 bg-slate-900 text-white rounded-xl hover:bg-[#E59B2C] transition-all duration-300 font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-1 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                   >
                     {bookingLoading ? (
                       <>

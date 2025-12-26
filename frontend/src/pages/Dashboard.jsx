@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { 
-  Calendar, 
-  MapPin, 
-  Star, 
-  Users, 
-  Car, 
-  Building, 
-  Sparkles, 
-  TrendingUp, 
-  Clock, 
-  CheckCircle, 
+import {
+  Calendar,
+  MapPin,
+  Star,
+  Users,
+  Car,
+  Building,
+  Sparkles,
+  TrendingUp,
+  Clock,
+  CheckCircle,
   AlertCircle,
   Heart,
   ArrowRight
@@ -23,7 +23,7 @@ const Dashboard = () => {
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  
+
   // Real data from database
   const [dashboardData, setDashboardData] = useState({
     recentBookings: [],
@@ -36,7 +36,7 @@ const Dashboard = () => {
     },
     upcomingTrips: []
   })
-  
+
   useEffect(() => {
     if (user) {
       fetchDashboardData()
@@ -45,11 +45,11 @@ const Dashboard = () => {
 
   const fetchDashboardData = async () => {
     let bookingsResponse, toursResponse, hotelsResponse, vehiclesResponse
-    
+
     try {
       setLoading(true)
       setError(null)
-      
+
       // Fetch all dashboard data in parallel
       const responses = await Promise.all([
         api.get('/bookings/user'),
@@ -57,7 +57,7 @@ const Dashboard = () => {
         api.get('/hotels?featured=true&limit=3'),
         api.get('/vehicles?featured=true&limit=3')
       ])
-      
+
       // Destructure the responses
       bookingsResponse = responses[0]
       toursResponse = responses[1]
@@ -81,10 +81,10 @@ const Dashboard = () => {
         date: booking.startDate || booking.checkInDate || booking.createdAt,
         status: booking.status || 'pending',
         price: booking.totalAmount || booking.pricing?.totalPrice || 0,
-        image: booking.tour?.images?.[0]?.url || 
-               booking.hotel?.images?.[0]?.url || 
-               booking.vehicle?.images?.[0]?.url || 
-               'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=200&fit=crop'
+        image: booking.tour?.images?.[0]?.url ||
+          booking.hotel?.images?.[0]?.url ||
+          booking.vehicle?.images?.[0]?.url ||
+          'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=300&h=200&fit=crop'
       }))
 
       // Process upcoming trips
@@ -112,7 +112,7 @@ const Dashboard = () => {
 
       // Process recommendations
       const recommendations = []
-      
+
       // Add featured tours
       if (toursResponse.data.success && toursResponse.data.data && toursResponse.data.data.tours) {
         toursResponse.data.data.tours.forEach(tour => {
@@ -174,7 +174,7 @@ const Dashboard = () => {
         vehiclesResponse: vehiclesResponse?.data
       })
       setError('Failed to load dashboard data')
-      
+
       // Fallback to empty data
       setDashboardData({
         recentBookings: [],
@@ -195,20 +195,20 @@ const Dashboard = () => {
   const getFavoriteDestination = (bookings) => {
     const destinations = {}
     bookings.forEach(booking => {
-      const destination = booking.tour?.destination || 
-                        booking.hotel?.location?.city || 
-                        booking.vehicle?.location?.city || 
-                        'Unknown'
+      const destination = booking.tour?.destination ||
+        booking.hotel?.location?.city ||
+        booking.vehicle?.location?.city ||
+        'Unknown'
       destinations[destination] = (destinations[destination] || 0) + 1
     })
-    
-    const favorite = Object.keys(destinations).reduce((a, b) => 
+
+    const favorite = Object.keys(destinations).reduce((a, b) =>
       destinations[a] > destinations[b] ? a : b, 'N/A'
     )
-    
+
     return favorite === 'Unknown' ? 'N/A' : favorite
   }
-  
+
   useEffect(() => {
     // Redirect users to their appropriate dashboards
     if (user?.role === 'hotel_owner') {
@@ -225,7 +225,7 @@ const Dashboard = () => {
       navigate('/vehicle-owner', { replace: true })
     }
   }, [user, navigate])
-  
+
   // Show loading or redirect message for non-tourist users
   if (user?.role !== 'tourist') {
     return (
@@ -285,10 +285,10 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your dashboard...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E59B2C] mx-auto mb-4"></div>
+          <p className="text-slate-600">Loading your dashboard...</p>
         </div>
       </div>
     )
@@ -296,14 +296,14 @@ const Dashboard = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Error Loading Dashboard</h3>
-          <p className="text-gray-600 mb-4">{error}</p>
+          <h3 className="text-lg font-serif font-semibold text-slate-900 mb-2">Error Loading Dashboard</h3>
+          <p className="text-slate-600 mb-4">{error}</p>
           <button
             onClick={fetchDashboardData}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="px-4 py-2 bg-slate-900 text-white rounded-md hover:bg-[#E59B2C] transition-all"
           >
             Try Again
           </button>
@@ -313,14 +313,14 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
           <div className="flex justify-between items-start">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">
+              <h2 className="text-3xl font-serif font-bold text-slate-900 mb-2">
                 Welcome back, {user?.firstName}! 👋
               </h2>
               <p className="text-gray-600">
@@ -349,7 +349,7 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="flex items-center">
               <div className="p-2 bg-green-100 rounded-lg">
@@ -361,7 +361,7 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="flex items-center">
               <div className="p-2 bg-purple-100 rounded-lg">
@@ -369,11 +369,11 @@ const Dashboard = () => {
               </div>
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-500">Total Spent</p>
-                <p className="text-2xl font-semibold text-gray-900">LKR {dashboardData.stats.totalSpent.toLocaleString()}</p>
+                <p className="text-2xl font-semibold text-gray-900">$ {dashboardData.stats.totalSpent.toLocaleString()}</p>
               </div>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="flex items-center">
               <div className="p-2 bg-orange-100 rounded-lg">
@@ -394,10 +394,10 @@ const Dashboard = () => {
             <div className="bg-white rounded-lg shadow-sm border border-gray-200">
               <div className="px-6 py-4 border-b border-gray-200">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-gray-900">Recent Bookings</h3>
+                  <h3 className="text-lg font-serif font-semibold text-slate-900">Recent Bookings</h3>
                   <Link
                     to="/my-bookings"
-                    className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center"
+                    className="text-[#E59B2C] hover:text-slate-900 text-sm font-medium flex items-center"
                   >
                     View All
                     <ArrowRight className="h-4 w-4 ml-1" />
@@ -425,7 +425,7 @@ const Dashboard = () => {
                           {getStatusIcon(booking.status)}
                           <span className="ml-1">{booking.status}</span>
                         </span>
-                        <p className="text-sm font-medium text-gray-900 mt-1">LKR {booking.price.toLocaleString()}</p>
+                        <p className="text-sm font-medium text-gray-900 mt-1">$ {booking.price.toLocaleString()}</p>
                       </div>
                     </div>
                   ))}
@@ -439,7 +439,7 @@ const Dashboard = () => {
             {/* Quick Actions */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200">
               <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900">Quick Actions</h3>
+                <h3 className="text-lg font-serif font-semibold text-slate-900">Quick Actions</h3>
               </div>
               <div className="p-6">
                 <div className="grid grid-cols-2 gap-4">
@@ -478,7 +478,7 @@ const Dashboard = () => {
             {/* Upcoming Trips */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200">
               <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900">Upcoming Trips</h3>
+                <h3 className="text-lg font-serif font-semibold text-slate-900">Upcoming Trips</h3>
               </div>
               <div className="p-6">
                 <div className="space-y-4">
@@ -508,8 +508,8 @@ const Dashboard = () => {
           <div className="bg-white rounded-lg shadow-sm border border-gray-200">
             <div className="px-6 py-4 border-b border-gray-200">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900">Recommended for You</h3>
-                <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                <h3 className="text-lg font-serif font-semibold text-slate-900">Recommended for You</h3>
+                <button className="text-[#E59B2C] hover:text-slate-900 text-sm font-medium">
                   View All Recommendations
                 </button>
               </div>
@@ -537,7 +537,7 @@ const Dashboard = () => {
                           <Star className="h-4 w-4 text-yellow-400 fill-current" />
                           <span className="text-sm font-medium text-gray-900">{item.rating}</span>
                         </div>
-                        <span className="text-sm font-semibold text-gray-900">LKR {item.price.toLocaleString()}</span>
+                        <span className="text-sm font-semibold text-gray-900">$ {item.price.toLocaleString()}</span>
                       </div>
                     </div>
                   </div>

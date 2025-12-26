@@ -604,7 +604,7 @@ const DriverVehicleManagement = () => {
                         <div>
                           <p className="text-sm text-gray-500">Daily Rate</p>
                           <p className="font-medium text-gray-900">
-                            LKR {selectedVehicle.pricing?.dailyRate?.toLocaleString() || 'Not set'}
+                            ${selectedVehicle.pricing?.dailyRate?.toLocaleString() || 'Not set'}
                           </p>
                         </div>
                       </div>
@@ -845,11 +845,11 @@ const DriverVehicleManagement = () => {
                     <div className="space-y-2">
                       <div className="flex justify-between">
                         <span className="text-gray-600">Daily Rate:</span>
-                        <span className="font-medium">LKR {reviewingVehicle.pricing?.dailyRate || 0}</span>
+                        <span className="font-medium">$ {reviewingVehicle.pricing?.dailyRate || 0}</span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-600">Hourly Rate:</span>
-                        <span className="font-medium">LKR {reviewingVehicle.pricing?.hourlyRate || 0}</span>
+                        <span className="font-medium">$ {reviewingVehicle.pricing?.hourlyRate || 0}</span>
                       </div>
                     </div>
                   </div>

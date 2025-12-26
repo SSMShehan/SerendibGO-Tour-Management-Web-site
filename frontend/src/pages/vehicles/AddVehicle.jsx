@@ -66,7 +66,7 @@ const AddVehicle = () => {
     // Pricing
     pricing: {
       basePrice: 0,
-      currency: 'LKR',
+      currency: 'USD',
       perKmRate: 0,
       hourlyRate: 0,
       dailyRate: 0
@@ -537,7 +537,7 @@ const AddVehicle = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Base Price (LKR) *
+                  Base Price (USD) *
                 </label>
                 <input
                   type="number"
@@ -573,7 +573,7 @@ const AddVehicle = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Per KM Rate (LKR)
+                  Per KM Rate (USD)
                 </label>
                 <input
                   type="number"
@@ -587,7 +587,7 @@ const AddVehicle = () => {
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Hourly Rate (LKR)
+                  Hourly Rate (USD)
                 </label>
                 <input
                   type="number"
@@ -601,7 +601,7 @@ const AddVehicle = () => {
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Daily Rate (LKR)
+                  Daily Rate (USD)
                 </label>
                 <input
                   type="number"

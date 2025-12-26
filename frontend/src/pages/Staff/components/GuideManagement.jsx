@@ -542,7 +542,7 @@ const GuideManagement = () => {
                           </div>
                           <div className="flex items-center space-x-1">
                             <DollarSign className="h-4 w-4" />
-                            <span>LKR {guide.pricePerDay?.toLocaleString() || 'N/A'}</span>
+                            <span>$ {guide.pricePerDay?.toLocaleString() || 'N/A'}</span>
                           </div>
                         </div>
 
@@ -637,7 +637,7 @@ const GuideManagement = () => {
                         <DollarSign className="h-5 w-5 text-gray-400" />
                         <div>
                           <p className="text-sm text-gray-500">Price per Day</p>
-                          <p className="font-medium text-gray-900">LKR {selectedGuide.pricePerDay?.toLocaleString() || 'Not set'}</p>
+                          <p className="font-medium text-gray-900">$ {selectedGuide.pricePerDay?.toLocaleString() || 'Not set'}</p>
                         </div>
                       </div>
                     </div>

@@ -56,7 +56,7 @@ export const vehicleAPI = {
   // Add new vehicle
   addVehicle: async (vehicleData) => {
     const formData = new FormData();
-    
+
     // Handle nested objects and files
     Object.keys(vehicleData).forEach(key => {
       if (key === 'images' && Array.isArray(vehicleData[key])) {
@@ -179,7 +179,7 @@ export const vehicleOwnerAPI = {
   // Register as vehicle owner
   register: async (ownerData) => {
     const formData = new FormData();
-    
+
     Object.keys(ownerData).forEach(key => {
       if (key === 'driverLicense' || key === 'ownershipProof' || key === 'emergencyContact' || key === 'bankDetails') {
         Object.keys(ownerData[key]).forEach(subKey => {
@@ -259,37 +259,37 @@ export const vehicleUtils = {
   // Calculate trip price
   calculateTripPrice: (vehicle, distance, duration, startDate, endDate) => {
     let totalPrice = 0;
-    
+
     // Base price
     totalPrice += vehicle.pricing.basePrice;
-    
+
     // Distance-based pricing
     if (vehicle.pricing.perKmRate > 0 && distance > 0) {
       totalPrice += distance * vehicle.pricing.perKmRate;
     }
-    
+
     // Time-based pricing
     if (vehicle.pricing.hourlyRate > 0 && duration > 0) {
       totalPrice += duration * vehicle.pricing.hourlyRate;
     }
-    
+
     // Check for seasonal rates
     const now = new Date();
-    const seasonalRate = vehicle.pricing.seasonalRates?.find(rate => 
-      rate.isActive && 
-      now >= new Date(rate.startDate) && 
+    const seasonalRate = vehicle.pricing.seasonalRates?.find(rate =>
+      rate.isActive &&
+      now >= new Date(rate.startDate) &&
       now <= new Date(rate.endDate)
     );
-    
+
     if (seasonalRate) {
       totalPrice *= seasonalRate.priceMultiplier;
     }
-    
+
     return totalPrice;
   },
 
   // Format price
-  formatPrice: (price, currency = 'LKR') => {
+  formatPrice: (price, currency = 'USD') => {
     return `${currency} ${price.toLocaleString()}`;
   },
 
@@ -323,11 +323,11 @@ export const vehicleUtils = {
     if (!vehicle.availability.isAvailable || vehicle.status !== 'active') {
       return false;
     }
-    
+
     // Check working hours and days
     const start = new Date(startDate);
     const end = new Date(endDate);
-    
+
     // Additional availability logic can be added here
     return true;
   },
@@ -337,7 +337,7 @@ export const vehicleUtils = {
     if (!vehicle.images || vehicle.images.length === 0) {
       return '/placeholder-vehicle.jpg';
     }
-    
+
     const primaryImg = vehicle.images.find(img => img.isPrimary);
     return primaryImg ? primaryImg.url : vehicle.images[0].url;
   },
@@ -345,7 +345,7 @@ export const vehicleUtils = {
   // Calculate vehicle rating
   calculateRating: (vehicle) => {
     if (!vehicle.ratings || vehicle.reviewCount === 0) return 0;
-    
+
     const { overall, cleanliness, comfort, driver, value } = vehicle.ratings;
     return (overall + cleanliness + comfort + driver + value) / 5;
   },

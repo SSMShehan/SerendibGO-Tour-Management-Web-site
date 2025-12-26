@@ -1,4 +1,17 @@
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+// Lazy initialization of Stripe client
+let stripeClient = null;
+
+const getStripeClient = () => {
+  if (!stripeClient) {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error('STRIPE_SECRET_KEY is not configured');
+    }
+    stripeClient = require('stripe')(process.env.STRIPE_SECRET_KEY);
+    console.log('✅ Stripe client initialized successfully');
+  }
+  return stripeClient;
+};
+
 const Booking = require('../models/Booking');
 const User = require('../models/User');
 const CustomTrip = require('../models/CustomTrip');
@@ -6,12 +19,10 @@ const HotelBooking = require('../models/hotels/HotelBooking');
 const VehicleBooking = require('../models/vehicles/VehicleBooking');
 const asyncHandler = require('express-async-handler');
 
-// Debug Stripe key
-console.log('Stripe Secret Key:', process.env.STRIPE_SECRET_KEY ? 'SET' : 'NOT SET');
-const { 
-  sendPaymentConfirmationEmail, 
-  sendPaymentFailureEmail, 
-  sendRefundConfirmationEmail 
+const {
+  sendPaymentConfirmationEmail,
+  sendPaymentFailureEmail,
+  sendRefundConfirmationEmail
 } = require('../services/paymentEmailService');
 
 // @desc    Create payment intent for guest booking
@@ -49,7 +60,29 @@ const createGuestPaymentIntent = asyncHandler(async (req, res) => {
     // Convert amount to cents (Stripe expects amounts in smallest currency unit)
     const amountInCents = Math.round(amount * 100);
 
+    // STRIPE MINIMUM AMOUNT VALIDATION
+    // Stripe requires minimum 50 cents USD
+    const STRIPE_MIN_USD = 0.50;
+    const LKR_TO_USD_RATE = 300;
+    const minLKRAmount = STRIPE_MIN_USD * LKR_TO_USD_RATE; // ~150 LKR
+
+    if (currency.toUpperCase() === 'LKR' && amount < minLKRAmount) {
+      const errorMsg = `Payment amount too low. Minimum required: ${minLKRAmount} LKR (Stripe requires at least $${STRIPE_MIN_USD} USD)`;
+      console.log('❌ Guest payment amount below minimum:', {
+        providedAmount: amount,
+        minimumRequired: minLKRAmount,
+        currency: currency
+      });
+      return res.status(400).json({
+        success: false,
+        message: errorMsg,
+        error: errorMsg,
+        minimumAmount: minLKRAmount
+      });
+    }
+
     // Create payment intent
+    const stripe = getStripeClient();
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amountInCents,
       currency: currency.toLowerCase(),
@@ -119,7 +152,7 @@ const createPaymentIntent = asyncHandler(async (req, res) => {
     let booking = null;
     let bookingType = 'main';
     let isMockBooking = false;
-    
+
     // Check if this is a mock booking ID
     if (bookingId.startsWith('mock-booking-')) {
       console.log('📋 Mock booking detected:', bookingId);
@@ -149,7 +182,7 @@ const createPaymentIntent = asyncHandler(async (req, res) => {
       // Try to find real booking in database
       try {
         booking = await Booking.findById(bookingId).populate('user guide');
-        
+
         if (!booking) {
           console.log('📋 Booking not found in main collection, checking vehicle bookings...');
           // Try VehicleBooking collection
@@ -165,7 +198,7 @@ const createPaymentIntent = asyncHandler(async (req, res) => {
             });
           }
         }
-        
+
         if (!booking) {
           console.log('📋 Booking not found in vehicle collection, checking hotel bookings...');
           // Try HotelBooking collection
@@ -207,7 +240,7 @@ const createPaymentIntent = asyncHandler(async (req, res) => {
         };
       }
     }
-    
+
     console.log('📋 Final booking result:', booking ? {
       id: booking._id,
       type: bookingType,
@@ -216,7 +249,7 @@ const createPaymentIntent = asyncHandler(async (req, res) => {
       paymentStatus: booking.paymentStatus,
       user: booking.user?.email
     } : 'NOT FOUND');
-    
+
     if (!booking) {
       console.log('❌ Booking not found for ID:', bookingId);
       return res.status(404).json({
@@ -250,6 +283,28 @@ const createPaymentIntent = asyncHandler(async (req, res) => {
     // Convert amount to cents (Stripe expects amounts in smallest currency unit)
     const amountInCents = Math.round(amount * 100);
 
+    // STRIPE MINIMUM AMOUNT VALIDATION
+    // Stripe requires minimum 50 cents USD
+    // LKR to USD approximate conversion: 1 USD ≈ 300 LKR (adjust as needed)
+    const STRIPE_MIN_USD = 0.50; // Stripe's minimum amount in USD
+    const LKR_TO_USD_RATE = 300; // Approximate conversion rate
+    const minLKRAmount = STRIPE_MIN_USD * LKR_TO_USD_RATE; // ~150 LKR
+
+    if (currency.toUpperCase() === 'LKR' && amount < minLKRAmount) {
+      const errorMsg = `Payment amount too low. Minimum required: ${minLKRAmount} LKR (Stripe requires at least $${STRIPE_MIN_USD} USD)`;
+      console.log('❌ Payment amount below minimum:', {
+        providedAmount: amount,
+        minimumRequired: minLKRAmount,
+        currency: currency
+      });
+      return res.status(400).json({
+        success: false,
+        message: errorMsg,
+        error: errorMsg,
+        minimumAmount: minLKRAmount
+      });
+    }
+
     // For testing purposes, limit amount to Stripe's test mode limit
     // In production, you would handle large amounts differently
     const maxTestAmount = 999999.99; // Stripe test mode limit
@@ -258,15 +313,18 @@ const createPaymentIntent = asyncHandler(async (req, res) => {
 
     console.log('Payment amount validation:', {
       originalAmount: amount,
+      minimumAmount: minLKRAmount,
       testAmount: testAmount,
       originalAmountInCents: amountInCents,
       testAmountInCents: testAmountInCents,
-      isTestMode: true
+      isTestMode: true,
+      meetsMinimum: amount >= minLKRAmount
     });
 
     // Create payment intent
     let paymentIntent;
     try {
+      const stripe = getStripeClient();
       paymentIntent = await stripe.paymentIntents.create({
         amount: testAmountInCents,
         currency: currency.toLowerCase(),
@@ -284,7 +342,7 @@ const createPaymentIntent = asyncHandler(async (req, res) => {
       });
     } catch (stripeError) {
       console.error('❌ Stripe API error:', stripeError.message);
-      
+
       // If Stripe API key is not set, return a mock payment intent for testing
       if (stripeError.type === 'StripeAuthenticationError') {
         console.log('📋 Stripe API key not set, creating mock payment intent for testing');
@@ -332,9 +390,9 @@ const createPaymentIntent = asyncHandler(async (req, res) => {
         currency: currency,
         isTestPayment: amount > maxTestAmount,
         isMockBooking: isMockBooking,
-        message: amount > maxTestAmount ? 'Payment amount capped for testing purposes' : 
-                isMockBooking ? 'Payment processed for mock booking (offline mode)' :
-                paymentIntent.id.startsWith('pi_mock_') ? 'Payment intent created (mock payment - Stripe API key not set)' : null
+        message: amount > maxTestAmount ? 'Payment amount capped for testing purposes' :
+          isMockBooking ? 'Payment processed for mock booking (offline mode)' :
+            paymentIntent.id.startsWith('pi_mock_') ? 'Payment intent created (mock payment - Stripe API key not set)' : null
       }
     });
 
@@ -365,6 +423,7 @@ const confirmPayment = asyncHandler(async (req, res) => {
     }
 
     // Retrieve payment intent from Stripe
+    const stripe = getStripeClient();
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
     console.log('💳 Stripe payment intent status:', paymentIntent.status);
 
@@ -378,26 +437,27 @@ const confirmPayment = asyncHandler(async (req, res) => {
     // Find booking by payment intent ID - handle both real and mock bookings
     let booking = null;
     let isMockBooking = false;
-    
+
     try {
       booking = await Booking.findOne({ paymentIntentId }).populate('user guide');
     } catch (dbError) {
       console.warn('⚠️ MongoDB not connected, checking for mock booking:', dbError.message);
     }
-    
+
     // If no booking found in database, check if this is a mock booking scenario
     if (!booking) {
       console.log('📋 Booking not found in database, checking payment intent metadata...');
-      
+
       // Retrieve payment intent from Stripe to get metadata
       try {
+        const stripe = getStripeClient();
         const paymentIntentDetails = await stripe.paymentIntents.retrieve(paymentIntentId);
         const metadata = paymentIntentDetails.metadata;
-        
+
         if (metadata.isMockBooking === 'true' || metadata.bookingId?.startsWith('mock-booking-')) {
           console.log('📋 Mock booking detected in payment intent metadata');
           isMockBooking = true;
-          
+
           // Create a mock booking object for confirmation
           booking = {
             _id: metadata.bookingId,
@@ -417,7 +477,7 @@ const confirmPayment = asyncHandler(async (req, res) => {
             status: 'pending',
             bookingReference: metadata.bookingReference || metadata.bookingId,
             totalAmount: parseFloat(metadata.originalAmount) || 0,
-            save: async function() {
+            save: async function () {
               console.log('📋 Mock booking save called (no-op)');
               return this;
             }
@@ -427,7 +487,7 @@ const confirmPayment = asyncHandler(async (req, res) => {
         console.error('Error retrieving payment intent from Stripe:', stripeError.message);
       }
     }
-    
+
     console.log('📋 Final booking result:', booking ? {
       id: booking._id,
       isMock: isMockBooking,
@@ -435,7 +495,7 @@ const confirmPayment = asyncHandler(async (req, res) => {
       paymentStatus: booking.paymentStatus,
       user: booking.user?.email
     } : 'NOT FOUND');
-    
+
     if (!booking) {
       console.log('❌ Booking not found for payment intent:', paymentIntentId);
       return res.status(404).json({
@@ -449,7 +509,7 @@ const confirmPayment = asyncHandler(async (req, res) => {
     booking.amountPaid = paymentIntent.amount / 100; // Convert from cents
     booking.paymentDate = new Date();
     booking.status = 'confirmed';
-    
+
     // Save booking (skip if mock booking)
     if (!isMockBooking) {
       try {
@@ -573,6 +633,7 @@ const confirmGuestPayment = asyncHandler(async (req, res) => {
     }
 
     // Retrieve payment intent from Stripe
+    const stripe = getStripeClient();
     const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
     console.log('💳 Stripe guest payment intent status:', paymentIntent.status);
 
@@ -586,7 +647,7 @@ const confirmGuestPayment = asyncHandler(async (req, res) => {
     // Find booking by payment intent ID
     const booking = await Booking.findOne({ paymentIntentId }).populate('user guide');
     console.log('📋 Found guest booking:', booking ? booking._id : 'NOT FOUND');
-    
+
     if (!booking) {
       return res.status(404).json({
         success: false,
@@ -659,6 +720,7 @@ const handleWebhook = asyncHandler(async (req, res) => {
   let event;
 
   try {
+    const stripe = getStripeClient();
     event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
   } catch (err) {
     console.error('Webhook signature verification failed:', err.message);
@@ -670,7 +732,7 @@ const handleWebhook = asyncHandler(async (req, res) => {
     case 'payment_intent.succeeded':
       const paymentIntent = event.data.object;
       console.log('PaymentIntent succeeded:', paymentIntent.id);
-      
+
       // Find and update booking
       const booking = await Booking.findOne({ paymentIntentId: paymentIntent.id }).populate('user');
       if (booking) {
@@ -679,7 +741,7 @@ const handleWebhook = asyncHandler(async (req, res) => {
         booking.paymentDate = new Date();
         booking.status = 'confirmed';
         await booking.save();
-        
+
         // If this is a custom trip booking, update the custom trip status
         if (booking.customTrip) {
           try {
@@ -694,14 +756,14 @@ const handleWebhook = asyncHandler(async (req, res) => {
             console.error('Failed to update custom trip status via webhook:', customTripError);
           }
         }
-        
+
         // Send payment confirmation email
         try {
           await sendPaymentConfirmationEmail(booking, booking.user);
         } catch (emailError) {
           console.error('Failed to send payment confirmation email:', emailError);
         }
-        
+
         console.log('Booking updated:', booking._id);
       }
       break;
@@ -709,13 +771,13 @@ const handleWebhook = asyncHandler(async (req, res) => {
     case 'payment_intent.payment_failed':
       const failedPayment = event.data.object;
       console.log('PaymentIntent failed:', failedPayment.id);
-      
+
       // Find and update booking
       const failedBooking = await Booking.findOne({ paymentIntentId: failedPayment.id });
       if (failedBooking) {
         failedBooking.paymentStatus = 'failed';
         await failedBooking.save();
-        
+
         console.log('Booking payment failed:', failedBooking._id);
       }
       break;
@@ -805,7 +867,8 @@ const processRefund = asyncHandler(async (req, res) => {
     }
 
     // Create refund in Stripe
-    const refundAmount = amount ? Math.round(amount * 100) : undefined; // Convert to cents
+    const refundAmount = amount ? Math.round(amount * 100) : undefined;    // Process refund through Stripe
+    const stripe = getStripeClient();
     const refund = await stripe.refunds.create({
       payment_intent: booking.paymentIntentId,
       amount: refundAmount,

@@ -67,11 +67,11 @@ const PaymentSuccess = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <CheckCircle className="mx-auto h-16 w-16 text-green-500" />
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-3xl font-serif font-extrabold text-slate-900">
             Payment Successful!
           </h2>
           <p className="mt-2 text-sm text-gray-600">
@@ -80,14 +80,14 @@ const PaymentSuccess = () => {
         </div>
 
         <div className="bg-white shadow rounded-lg p-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Booking Confirmation</h3>
-          
+          <h3 className="text-lg font-serif font-medium text-slate-900 mb-4">Booking Confirmation</h3>
+
           <div className="space-y-3">
             <div className="flex items-center">
               <Calendar className="h-5 w-5 text-gray-400 mr-3" />
               <span className="text-sm text-gray-600">Booking ID: {bookingId}</span>
             </div>
-            
+
             <div className="flex items-center">
               <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
               <span className="text-sm text-gray-600">Status: Confirmed</span>
@@ -98,7 +98,7 @@ const PaymentSuccess = () => {
             <p className="text-sm text-gray-500 mb-4">
               Your booking has been confirmed! You can download your confirmation or have it sent to your email.
             </p>
-            
+
             <div className="space-y-3">
               <div className="flex space-x-3">
                 <button
@@ -109,17 +109,17 @@ const PaymentSuccess = () => {
                   <Download className="h-4 w-4 mr-2" />
                   {downloadingPDF ? 'Downloading...' : 'Download PDF'}
                 </button>
-                
+
                 <button
                   onClick={handleSendEmail}
                   disabled={sendingEmail}
-                  className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  className="flex-1 bg-slate-900 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-[#E59B2C] focus:outline-none focus:ring-2 focus:ring-[#E59B2C] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                 >
                   <Mail className="h-4 w-4 mr-2" />
                   {sendingEmail ? 'Sending...' : 'Send Email'}
                 </button>
               </div>
-              
+
               <button
                 onClick={() => navigate('/my-bookings')}
                 className="w-full bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 flex items-center justify-center"
@@ -127,7 +127,7 @@ const PaymentSuccess = () => {
                 <FileText className="h-4 w-4 mr-2" />
                 View My Bookings
               </button>
-              
+
               <button
                 onClick={() => navigate('/')}
                 className="flex-1 bg-gray-200 text-gray-800 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"

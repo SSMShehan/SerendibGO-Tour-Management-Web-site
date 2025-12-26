@@ -400,7 +400,7 @@ const StaffManagement = () => {
                       <p><span className="text-gray-600">Department:</span> {selectedStaff.profile.department}</p>
                       {selectedStaff.profile.position && <p><span className="text-gray-600">Position:</span> {selectedStaff.profile.position}</p>}
                       {selectedStaff.profile.hireDate && <p><span className="text-gray-600">Hire Date:</span> {formatDate(selectedStaff.profile.hireDate)}</p>}
-                      {selectedStaff.profile.salary && <p><span className="text-gray-600">Salary:</span> LKR {selectedStaff.profile.salary.toLocaleString()}</p>}
+                      {selectedStaff.profile.salary && <p><span className="text-gray-600">Salary:</span> ${selectedStaff.profile.salary.toLocaleString()}</p>}
                     </div>
                   </div>
                 )}

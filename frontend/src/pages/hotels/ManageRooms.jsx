@@ -858,7 +858,7 @@ const ManageRooms = () => {
                         <div className="flex items-center space-x-2">
                           <DollarSign className="w-4 h-4 text-gray-400" />
                           <span className="text-gray-600">
-                            LKR {room.basePrice?.toLocaleString()}/night
+                            ${room.basePrice?.toLocaleString()}/night
                           </span>
                         </div>
                         

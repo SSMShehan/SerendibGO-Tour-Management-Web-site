@@ -229,7 +229,7 @@ const CustomTripApproval = () => {
               </div>
               <div className="flex items-center text-sm text-slate-600">
                 <DollarSign className="h-4 w-4 mr-2" />
-                LKR {trip.requestDetails?.budget?.toLocaleString() || 'Not specified'}
+                ${trip.requestDetails?.budget?.toLocaleString() || 'Not specified'}
               </div>
               <div className="flex items-center text-sm text-slate-600">
                 <Calendar className="h-4 w-4 mr-2" />
@@ -346,7 +346,7 @@ const CustomTripApproval = () => {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-600">Budget:</span>
-                      <span className="font-medium">LKR {selectedTrip.budget.toLocaleString()}</span>
+                      <span className="font-medium">$ {selectedTrip.budget.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-600">Requested Date:</span>
@@ -366,16 +366,16 @@ const CustomTripApproval = () => {
                   <div className="space-y-2">
                     <div className="flex justify-between">
                       <span className="text-slate-600">Customer Budget:</span>
-                      <span className="font-medium">LKR {selectedTrip.budget.toLocaleString()}</span>
+                      <span className="font-medium">$ {selectedTrip.budget.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-600">Estimated Cost:</span>
-                      <span className="font-medium">LKR {selectedTrip.estimatedCost.toLocaleString()}</span>
+                      <span className="font-medium">$ {selectedTrip.estimatedCost.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-600">Difference:</span>
                       <span className={`font-medium ${selectedTrip.estimatedCost > selectedTrip.budget ? 'text-red-600' : 'text-green-600'}`}>
-                        LKR {(selectedTrip.estimatedCost - selectedTrip.budget).toLocaleString()}
+                        ${(selectedTrip.estimatedCost - selectedTrip.budget).toLocaleString()}
                       </span>
                     </div>
                   </div>

@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import tripService from '../../services/vehicles/tripService';
-import { 
-  Car, 
-  Edit, 
-  Trash2, 
+import {
+  Car,
+  Edit,
+  Trash2,
   ArrowLeft,
   MapPin,
   DollarSign,
@@ -24,7 +24,7 @@ const VehicleDetails = () => {
   const { vehicleId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  
+
   // Determine the correct dashboard path based on user role
   const getDashboardPath = () => {
     if (user?.role === 'driver') {
@@ -34,20 +34,20 @@ const VehicleDetails = () => {
     }
     return '/vehicles'; // Default to vehicles list for public users
   };
-  
+
   // Check if user can edit/delete this vehicle
   const canEditVehicle = () => {
     if (!user) return false;
     if (!vehicle) return false;
-    
+
     // Get user ID - handle both _id and id fields
     const userId = user._id || user.id;
     if (!userId) return false;
-    
+
     // Check if user is the owner of this specific vehicle
     // Handle both cases: owner as object with _id or owner as string ID
     let isOwner = false;
-    
+
     if (vehicle.owner) {
       if (typeof vehicle.owner === 'object' && vehicle.owner._id) {
         // Owner is populated object
@@ -57,7 +57,7 @@ const VehicleDetails = () => {
         isOwner = vehicle.owner.toString() === userId.toString();
       }
     }
-    
+
     console.log('=== OWNERSHIP CHECK DEBUG ===');
     console.log('Vehicle owner:', vehicle.owner);
     console.log('Vehicle owner type:', typeof vehicle.owner);
@@ -67,19 +67,19 @@ const VehicleDetails = () => {
     console.log('Is owner:', isOwner);
     console.log('User role:', user.role);
     console.log('================================');
-    
+
     // Allow editing if user is admin, staff, or the actual owner
     return user.role === 'admin' || user.role === 'staff' || isOwner;
   };
-  
+
   const [vehicle, setVehicle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   useEffect(() => {
     fetchVehicle();
   }, [vehicleId]);
-  
+
   const fetchVehicle = async () => {
     try {
       setLoading(true);
@@ -88,7 +88,7 @@ const VehicleDetails = () => {
       console.log('Vehicle API response:', response); // Debug log
       console.log('Response success:', response.success, typeof response.success);
       console.log('Response data:', response.data);
-      
+
       if (response.success === true || response.success === 'success') {
         console.log('Setting vehicle data:', response.data);
         setVehicle(response.data); // Fixed: data contains the vehicle directly
@@ -105,7 +105,7 @@ const VehicleDetails = () => {
       setLoading(false);
     }
   };
-  
+
   const handleDelete = async () => {
     if (window.confirm(`Are you sure you want to delete "${vehicle.name}"? This action cannot be undone.`)) {
       try {
@@ -118,7 +118,7 @@ const VehicleDetails = () => {
       }
     }
   };
-  
+
   const getStatusBadge = (status) => {
     const statusConfig = {
       pending: { color: 'bg-yellow-100 text-yellow-800', icon: Clock },
@@ -128,10 +128,10 @@ const VehicleDetails = () => {
       rejected: { color: 'bg-red-100 text-red-800', icon: XCircle },
       maintenance: { color: 'bg-orange-100 text-orange-800', icon: AlertCircle }
     };
-    
+
     const config = statusConfig[status] || statusConfig.pending;
     const Icon = config.icon;
-    
+
     return (
       <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${config.color}`}>
         <Icon className="w-4 h-4 mr-1" />
@@ -139,14 +139,14 @@ const VehicleDetails = () => {
       </span>
     );
   };
-  
-  const formatPrice = (price, currency = 'LKR') => {
+
+  const formatPrice = (price, currency = 'USD') => {
     if (price === undefined || price === null) {
       return `${currency} 0`;
     }
     return `${currency} ${price.toLocaleString()}`;
   };
-  
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -154,7 +154,7 @@ const VehicleDetails = () => {
       day: 'numeric'
     });
   };
-  
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -162,7 +162,7 @@ const VehicleDetails = () => {
       </div>
     );
   }
-  
+
   if (error || !vehicle) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -183,7 +183,7 @@ const VehicleDetails = () => {
       </div>
     );
   }
-  
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -196,7 +196,7 @@ const VehicleDetails = () => {
             <ArrowLeft className="w-5 h-5 mr-2" />
             {user?.role === 'driver' || user?.role === 'vehicle_owner' ? 'Back to Dashboard' : 'Back to Vehicles'}
           </button>
-          
+
           <div className="flex items-start justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">{vehicle.name}</h1>
@@ -207,7 +207,7 @@ const VehicleDetails = () => {
                 {getStatusBadge(vehicle.status)}
               </div>
             </div>
-            
+
             <div className="flex space-x-3">
               {canEditVehicle() ? (
                 <>
@@ -226,7 +226,7 @@ const VehicleDetails = () => {
                     <Edit className="h-4 w-4 mr-2" />
                     Edit Vehicle
                   </button>
-                  
+
                   <button
                     onClick={handleDelete}
                     className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700"
@@ -246,14 +246,14 @@ const VehicleDetails = () => {
             </div>
           </div>
         </div>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
             {/* Images */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Vehicle Images</h2>
-              
+
               {vehicle.images && vehicle.images.length > 0 ? (
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {vehicle.images.map((image, index) => (
@@ -279,7 +279,7 @@ const VehicleDetails = () => {
                 </div>
               )}
             </div>
-            
+
             {/* Description */}
             {vehicle.description && (
               <div className="bg-white rounded-lg shadow-sm p-6">
@@ -287,11 +287,11 @@ const VehicleDetails = () => {
                 <p className="text-gray-600">{vehicle.description}</p>
               </div>
             )}
-            
+
             {/* Amenities */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Amenities</h2>
-              
+
               {vehicle.features ? (
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {Object.entries(vehicle.features).map(([feature, available]) => (
@@ -301,9 +301,8 @@ const VehicleDetails = () => {
                       ) : (
                         <XCircle className="h-4 w-4 text-gray-300 mr-2" />
                       )}
-                      <span className={`text-sm capitalize ${
-                        available ? 'text-gray-700' : 'text-gray-400'
-                      }`}>
+                      <span className={`text-sm capitalize ${available ? 'text-gray-700' : 'text-gray-400'
+                        }`}>
                         {feature.replace(/([A-Z])/g, ' $1').trim()}
                       </span>
                     </div>
@@ -313,15 +312,15 @@ const VehicleDetails = () => {
                 <p className="text-gray-500">No amenities information available</p>
               )}
             </div>
-            
+
           </div>
-          
+
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Basic Info */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h3>
-              
+
               <div className="space-y-3">
                 <div className="flex items-center">
                   <Car className="h-4 w-4 text-gray-400 mr-3" />
@@ -330,7 +329,7 @@ const VehicleDetails = () => {
                     <p className="text-sm text-gray-600">{vehicle.vehicleType}</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center">
                   <Users className="h-4 w-4 text-gray-400 mr-3" />
                   <div>
@@ -341,7 +340,7 @@ const VehicleDetails = () => {
                     </p>
                   </div>
                 </div>
-                
+
                 {vehicle.color && (
                   <div className="flex items-center">
                     <div className="h-4 w-4 bg-gray-400 rounded mr-3"></div>
@@ -351,7 +350,7 @@ const VehicleDetails = () => {
                     </div>
                   </div>
                 )}
-                
+
                 <div className="flex items-center">
                   <div className="h-4 w-4 text-gray-400 mr-3">📋</div>
                   <div>
@@ -361,11 +360,11 @@ const VehicleDetails = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Pricing */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Pricing</h3>
-              
+
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Base Price</span>
@@ -373,7 +372,7 @@ const VehicleDetails = () => {
                     {formatPrice(vehicle.pricing?.basePrice, vehicle.pricing?.currency)}
                   </span>
                 </div>
-                
+
                 {vehicle.pricing?.perKmRate > 0 && (
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Per KM</span>
@@ -382,7 +381,7 @@ const VehicleDetails = () => {
                     </span>
                   </div>
                 )}
-                
+
                 {vehicle.pricing?.hourlyRate > 0 && (
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Hourly</span>
@@ -391,7 +390,7 @@ const VehicleDetails = () => {
                     </span>
                   </div>
                 )}
-                
+
                 {vehicle.pricing?.dailyRate > 0 && (
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Daily</span>
@@ -402,11 +401,11 @@ const VehicleDetails = () => {
                 )}
               </div>
             </div>
-            
+
             {/* Availability */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Availability</h3>
-              
+
               <div className="space-y-3">
                 <div className="flex items-center">
                   <Calendar className="h-4 w-4 text-gray-400 mr-3" />
@@ -417,19 +416,19 @@ const VehicleDetails = () => {
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center">
                   <Clock className="h-4 w-4 text-gray-400 mr-3" />
                   <div>
                     <p className="text-sm font-medium text-gray-900">Working Days</p>
                     <p className="text-sm text-gray-600">
-                      {vehicle.availability?.workingDays?.map(day => 
+                      {vehicle.availability?.workingDays?.map(day =>
                         day.charAt(0).toUpperCase() + day.slice(1)
                       ).join(', ') || 'N/A'}
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center">
                   <AlertCircle className="h-4 w-4 text-gray-400 mr-3" />
                   <div>
@@ -441,11 +440,11 @@ const VehicleDetails = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Statistics */}
             <div className="bg-white rounded-lg shadow-sm p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Statistics</h3>
-              
+
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Total Trips</span>
@@ -453,14 +452,14 @@ const VehicleDetails = () => {
                     {vehicle.stats?.totalTrips || 0}
                   </span>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Total Earnings</span>
                   <span className="text-sm font-medium text-gray-900">
                     {formatPrice(vehicle.stats?.totalEarnings || 0)}
                   </span>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Average Rating</span>
                   <div className="flex items-center">
@@ -470,7 +469,7 @@ const VehicleDetails = () => {
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Reviews</span>
                   <span className="text-sm font-medium text-gray-900">
@@ -479,12 +478,12 @@ const VehicleDetails = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Approval Details */}
             {vehicle.approvalDetails && (
               <div className="bg-white rounded-lg shadow-sm p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Approval Details</h3>
-                
+
                 <div className="space-y-3">
                   {vehicle.approvalDetails.approvedAt && (
                     <div>
@@ -494,7 +493,7 @@ const VehicleDetails = () => {
                       </p>
                     </div>
                   )}
-                  
+
                   {vehicle.approvalDetails.rejectionReason && (
                     <div>
                       <p className="text-sm font-medium text-gray-900">Rejection Reason</p>
@@ -503,7 +502,7 @@ const VehicleDetails = () => {
                       </p>
                     </div>
                   )}
-                  
+
                   {vehicle.approvalDetails.adminNotes && (
                     <div>
                       <p className="text-sm font-medium text-gray-900">Admin Notes</p>

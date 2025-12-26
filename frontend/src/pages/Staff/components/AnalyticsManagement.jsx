@@ -176,7 +176,7 @@ const AnalyticsManagement = () => {
           </div>
           <div className="text-right">
             <p className="text-purple-100 text-sm">Total Revenue</p>
-            <p className="text-2xl font-bold">LKR {analytics.overview.totalRevenue.toLocaleString()}</p>
+            <p className="text-2xl font-bold">$ {analytics.overview.totalRevenue.toLocaleString()}</p>
           </div>
         </div>
         <div className="flex items-center text-purple-100 text-sm">
@@ -213,7 +213,7 @@ const AnalyticsManagement = () => {
             </div>
             <div className="text-right">
               <p className="text-sm text-slate-600">Monthly Revenue</p>
-              <p className="text-xl font-bold text-slate-900">LKR {analytics.revenue.monthly.toLocaleString()}</p>
+              <p className="text-xl font-bold text-slate-900">$ {analytics.revenue.monthly.toLocaleString()}</p>
             </div>
           </div>
           <div className="flex items-center text-sm">
@@ -232,7 +232,7 @@ const AnalyticsManagement = () => {
             </div>
             <div className="text-right">
               <p className="text-sm text-slate-600">Weekly Revenue</p>
-              <p className="text-xl font-bold text-slate-900">LKR {analytics.revenue.weekly.toLocaleString()}</p>
+              <p className="text-xl font-bold text-slate-900">$ {analytics.revenue.weekly.toLocaleString()}</p>
             </div>
           </div>
           <div className="flex items-center text-sm">
@@ -251,7 +251,7 @@ const AnalyticsManagement = () => {
             </div>
             <div className="text-right">
               <p className="text-sm text-slate-600">Daily Revenue</p>
-              <p className="text-xl font-bold text-slate-900">LKR {analytics.revenue.daily.toLocaleString()}</p>
+              <p className="text-xl font-bold text-slate-900">$ {analytics.revenue.daily.toLocaleString()}</p>
             </div>
           </div>
           <div className="flex items-center text-sm">
@@ -272,7 +272,7 @@ const AnalyticsManagement = () => {
               <MapPin className="h-8 w-8 text-blue-600" />
             </div>
             <h4 className="font-semibold text-slate-900">Tours</h4>
-            <p className="text-2xl font-bold text-blue-600">LKR {analytics.revenue.breakdown.tours.toLocaleString()}</p>
+            <p className="text-2xl font-bold text-blue-600">$ {analytics.revenue.breakdown.tours.toLocaleString()}</p>
             <p className="text-sm text-slate-600">68% of total revenue</p>
           </div>
           <div className="text-center">
@@ -280,7 +280,7 @@ const AnalyticsManagement = () => {
               <Building className="h-8 w-8 text-green-600" />
             </div>
             <h4 className="font-semibold text-slate-900">Hotels</h4>
-            <p className="text-2xl font-bold text-green-600">LKR {analytics.revenue.breakdown.hotels.toLocaleString()}</p>
+            <p className="text-2xl font-bold text-green-600">$ {analytics.revenue.breakdown.hotels.toLocaleString()}</p>
             <p className="text-sm text-slate-600">20% of total revenue</p>
           </div>
           <div className="text-center">
@@ -288,7 +288,7 @@ const AnalyticsManagement = () => {
               <Car className="h-8 w-8 text-purple-600" />
             </div>
             <h4 className="font-semibold text-slate-900">Vehicles</h4>
-            <p className="text-2xl font-bold text-purple-600">LKR {analytics.revenue.breakdown.vehicles.toLocaleString()}</p>
+            <p className="text-2xl font-bold text-purple-600">$ {analytics.revenue.breakdown.vehicles.toLocaleString()}</p>
             <p className="text-sm text-slate-600">12% of total revenue</p>
           </div>
         </div>

@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import tripService from '../../services/vehicles/tripService';
-import { 
-  Car, 
-  Save, 
+import {
+  Car,
+  Save,
   ArrowLeft,
   AlertCircle,
   CheckCircle,
@@ -19,7 +19,7 @@ const VehicleEdit = () => {
   const { vehicleId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  
+
   // Determine the correct dashboard path based on user role
   const getDashboardPath = () => {
     if (user.role === 'driver') {
@@ -29,7 +29,7 @@ const VehicleEdit = () => {
     }
     return '/dashboard';
   };
-  
+
   const [vehicle, setVehicle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -58,23 +58,23 @@ const VehicleEdit = () => {
       perKmRate: '',
       hourlyRate: '',
       dailyRate: '',
-      currency: 'LKR'
+      currency: 'USD'
     }
   });
-  
+
   useEffect(() => {
     fetchVehicle();
   }, [vehicleId]);
-  
+
   const fetchVehicle = async () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       console.log('Fetching vehicle with ID:', vehicleId);
       const response = await tripService.vehicleService.getVehicleById(vehicleId);
       console.log('Vehicle API response:', response);
-      
+
       if (response.success === true) {
         const vehicleData = response.data;
         console.log('Vehicle data received:', vehicleData);
@@ -99,7 +99,7 @@ const VehicleEdit = () => {
             perKmRate: vehicleData.pricing?.perKmRate || '',
             hourlyRate: vehicleData.pricing?.hourlyRate || '',
             dailyRate: vehicleData.pricing?.dailyRate || '',
-            currency: vehicleData.pricing?.currency || 'LKR'
+            currency: vehicleData.pricing?.currency || 'USD'
           }
         });
         toast.success('Vehicle details loaded successfully');
@@ -110,7 +110,7 @@ const VehicleEdit = () => {
       }
     } catch (error) {
       console.error('Error fetching vehicle:', error);
-      
+
       // Provide more specific error messages
       if (error.code === 'ECONNABORTED') {
         setError('Request timed out. Please check your connection and try again.');
@@ -125,7 +125,7 @@ const VehicleEdit = () => {
         setError('Failed to load vehicle details. Please try again.');
         toast.error('Failed to load vehicle details.');
       }
-      
+
       // Auto-retry for timeout errors (max 2 retries)
       if (error.code === 'ECONNABORTED' && retryCount < 2) {
         console.log(`Retrying fetchVehicle (attempt ${retryCount + 1}/2)...`);
@@ -138,7 +138,7 @@ const VehicleEdit = () => {
       setLoading(false);
     }
   };
-  
+
   const handleInputChange = (field, value) => {
     if (field.includes('.')) {
       const [parent, child] = field.split('.');
@@ -156,7 +156,7 @@ const VehicleEdit = () => {
       }));
     }
   };
-  
+
   const handleImageUpload = async (files) => {
     setUploadingImages(true);
     try {
@@ -164,7 +164,7 @@ const VehicleEdit = () => {
       Array.from(files).forEach(file => {
         formData.append('images', file);
       });
-      
+
       const response = await tripService.vehicleService.uploadVehicleImages(vehicleId, formData);
       if (response.success) {
         setImages(prev => [...prev, ...response.data.images]);
@@ -179,7 +179,7 @@ const VehicleEdit = () => {
       setUploadingImages(false);
     }
   };
-  
+
   const handleImageDelete = async (imageId) => {
     try {
       const response = await tripService.vehicleService.deleteVehicleImage(vehicleId, imageId);
@@ -229,11 +229,11 @@ const VehicleEdit = () => {
       setAddingUrlImage(false);
     }
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-    
+
     try {
       // Clean images data - remove temporary IDs for URL images
       const cleanedImages = images.map(image => {
@@ -265,7 +265,7 @@ const VehicleEdit = () => {
       setSaving(false);
     }
   };
-  
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -276,7 +276,7 @@ const VehicleEdit = () => {
       </div>
     );
   }
-  
+
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -306,7 +306,7 @@ const VehicleEdit = () => {
       </div>
     );
   }
-  
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -319,7 +319,7 @@ const VehicleEdit = () => {
             <ArrowLeft className="w-5 h-5 mr-2" />
             Back to Vehicle Details
           </button>
-          
+
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">Edit Vehicle</h1>
@@ -329,7 +329,7 @@ const VehicleEdit = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Edit Form */}
         <div className="bg-white shadow rounded-lg">
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
@@ -346,7 +346,7 @@ const VehicleEdit = () => {
                     className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Make</label>
                   <input
@@ -356,7 +356,7 @@ const VehicleEdit = () => {
                     className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Model</label>
                   <input
@@ -366,7 +366,7 @@ const VehicleEdit = () => {
                     className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Year</label>
                   <input
@@ -376,7 +376,7 @@ const VehicleEdit = () => {
                     className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Color</label>
                   <input
@@ -386,7 +386,7 @@ const VehicleEdit = () => {
                     className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700">License Plate</label>
                   <input
@@ -398,7 +398,7 @@ const VehicleEdit = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Vehicle Details */}
             <div>
               <h3 className="text-lg font-medium text-gray-900 mb-4">Vehicle Details</h3>
@@ -418,7 +418,7 @@ const VehicleEdit = () => {
                     <option value="Minibus">Minibus</option>
                   </select>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Fuel Type</label>
                   <select
@@ -433,7 +433,7 @@ const VehicleEdit = () => {
                     <option value="electric">Electric</option>
                   </select>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Transmission</label>
                   <select
@@ -446,7 +446,7 @@ const VehicleEdit = () => {
                     <option value="automatic">Automatic</option>
                   </select>
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Seating Capacity</label>
                   <input
@@ -458,13 +458,13 @@ const VehicleEdit = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Pricing */}
             <div>
               <h3 className="text-lg font-medium text-gray-900 mb-4">Pricing</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Base Rate (LKR)</label>
+                  <label className="block text-sm font-medium text-gray-700">Base Rate (USD)</label>
                   <input
                     type="number"
                     value={formData.pricing.baseRate}
@@ -472,9 +472,9 @@ const VehicleEdit = () => {
                     className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
-                
+
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Per KM Rate (LKR)</label>
+                  <label className="block text-sm font-medium text-gray-700">Per KM Rate (USD)</label>
                   <input
                     type="number"
                     value={formData.pricing.perKmRate}
@@ -482,9 +482,9 @@ const VehicleEdit = () => {
                     className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
-                
+
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Hourly Rate (LKR)</label>
+                  <label className="block text-sm font-medium text-gray-700">Hourly Rate (USD)</label>
                   <input
                     type="number"
                     value={formData.pricing.hourlyRate}
@@ -492,9 +492,9 @@ const VehicleEdit = () => {
                     className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
-                
+
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Daily Rate (LKR)</label>
+                  <label className="block text-sm font-medium text-gray-700">Daily Rate (USD)</label>
                   <input
                     type="number"
                     value={formData.pricing.dailyRate}
@@ -504,11 +504,11 @@ const VehicleEdit = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Vehicle Images */}
             <div>
               <h3 className="text-lg font-medium text-gray-900 mb-4">Vehicle Images</h3>
-              
+
               {/* Upload Section */}
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -582,7 +582,7 @@ const VehicleEdit = () => {
                   Enter a direct link to an image (JPG, PNG, GIF)
                 </p>
               </div>
-              
+
               {/* Image Gallery */}
               {images.length > 0 && (
                 <div>
@@ -606,7 +606,7 @@ const VehicleEdit = () => {
                   </div>
                 </div>
               )}
-              
+
               {images.length === 0 && (
                 <div className="text-center py-8 text-gray-500">
                   <ImageIcon className="mx-auto h-12 w-12 text-gray-300 mb-2" />
@@ -615,7 +615,7 @@ const VehicleEdit = () => {
                 </div>
               )}
             </div>
-            
+
             {/* Description */}
             <div>
               <label className="block text-sm font-medium text-gray-700">Description</label>
@@ -626,7 +626,7 @@ const VehicleEdit = () => {
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
-            
+
             {/* Submit Button */}
             <div className="flex justify-end space-x-3">
               <button

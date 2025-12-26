@@ -14,7 +14,7 @@ const getUserBookings = async (req, res) => {
     console.log('=== GET USER BOOKINGS ===');
     console.log('User ID:', req.user?._id);
     console.log('User email:', req.user?.email);
-    
+
     const { status, type, page = 1, limit = 10 } = req.query;
 
     // Build query for regular bookings
@@ -50,7 +50,7 @@ const getUserBookings = async (req, res) => {
 
     console.log('Found custom trips:', customTrips.length);
     console.log('Custom trip query:', customTripQuery);
-    
+
     // Debug: Log populated data for first custom trip
     if (customTrips.length > 0) {
       console.log('=== FIRST CUSTOM TRIP POPULATED DATA ===');
@@ -67,7 +67,7 @@ const getUserBookings = async (req, res) => {
         console.log('Vehicle Data:', customTrips[0].staffAssignment.assignedVehicles[0].vehicleId);
       }
     }
-    
+
     // Debug: Check all custom trips in database
     const allCustomTrips = await CustomTrip.find({}).populate('customer', 'email firstName lastName');
     console.log('=== ALL CUSTOM TRIPS IN DATABASE ===');
@@ -331,7 +331,7 @@ const cancelBooking = async (req, res) => {
       // Check if user owns this booking OR if user is the guide for this booking
       const isOwner = booking.user.toString() === req.user._id.toString();
       const isGuide = booking.guide && booking.guide.toString() === req.user._id.toString();
-      
+
       if (!isOwner && !isGuide) {
         return res.status(403).json({
           success: false,
@@ -684,8 +684,8 @@ const updateBookingStatus = async (req, res) => {
     }
 
     // Check if user owns this booking or is admin/guide
-    if (booking.user.toString() !== req.user._id.toString() && 
-        !['admin', 'guide', 'staff'].includes(req.user.role)) {
+    if (booking.user.toString() !== req.user._id.toString() &&
+      !['admin', 'guide', 'staff'].includes(req.user.role)) {
       return res.status(403).json({
         success: false,
         message: 'Access denied'
@@ -811,7 +811,7 @@ const createGuideBooking = async (req, res) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
     const daysDiff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-    
+
     // Base price per person per day (you can make this configurable)
     const basePricePerPersonPerDay = 50; // $50 per person per day
     const totalAmount = basePricePerPersonPerDay * groupSize * daysDiff;
@@ -943,14 +943,14 @@ const createGuestGuideBooking = async (req, res) => {
     const start = new Date(startDate);
     const end = new Date(endDate);
     const daysDiff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-    
+
     // Base price per person per day (you can make this configurable)
     const basePricePerPersonPerDay = 50; // $50 per person per day
     const totalAmount = basePricePerPersonPerDay * groupSize * daysDiff;
 
     // Check if user already exists, if not create one
     let guestUser = await User.findOne({ email: guestInfo.email });
-    
+
     if (!guestUser) {
       // Create a temporary user record for the guest
       guestUser = new User({
@@ -1143,6 +1143,62 @@ const downloadBookingPDF = async (req, res) => {
       return;
     }
 
+    // Try to find hotel booking
+    const hotelBooking = await HotelBooking.findById(id)
+      .populate('user', 'firstName lastName email phone')
+      .populate('hotel', 'name location starRating amenities contactInfo')
+      .populate('room', 'name type price amenities');
+
+    if (hotelBooking) {
+      // Check if user owns this hotel booking
+      if (hotelBooking.user._id.toString() !== req.user._id.toString()) {
+        return res.status(403).json({
+          success: false,
+          message: 'Not authorized to download this booking'
+        });
+      }
+
+      const pdfBuffer = await pdfService.generateHotelBookingPDF({
+        hotelBooking,
+        user: hotelBooking.user,
+        hotel: hotelBooking.hotel,
+        room: hotelBooking.room
+      });
+
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="hotel-booking-${hotelBooking._id}.pdf"`);
+      res.send(pdfBuffer);
+      return;
+    }
+
+    // Try to find vehicle booking
+    const vehicleBooking = await VehicleBooking.findById(id)
+      .populate('user', 'firstName lastName email phone')
+      .populate('vehicle', 'type model capacity pricePerDay features images')
+      .populate('driver', 'firstName lastName phone licenseNumber');
+
+    if (vehicleBooking) {
+      // Check if user owns this vehicle booking
+      if (vehicleBooking.user._id.toString() !== req.user._id.toString()) {
+        return res.status(403).json({
+          success: false,
+          message: 'Not authorized to download this booking'
+        });
+      }
+
+      const pdfBuffer = await pdfService.generateVehicleBookingPDF({
+        vehicleBooking,
+        user: vehicleBooking.user,
+        vehicle: vehicleBooking.vehicle,
+        driver: vehicleBooking.driver
+      });
+
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="vehicle-booking-${vehicleBooking._id}.pdf"`);
+      res.send(pdfBuffer);
+      return;
+    }
+
     // Booking not found
     res.status(404).json({
       success: false,
@@ -1237,6 +1293,64 @@ const sendConfirmationEmail = async (req, res) => {
         customTrip,
         user: customTrip.customer,
         guide: customTrip.staffAssignment?.assignedGuide
+      });
+
+      res.json({
+        success: true,
+        message: 'Confirmation email sent successfully'
+      });
+      return;
+    }
+
+    // Try to find hotel booking
+    const hotelBooking = await HotelBooking.findById(id)
+      .populate('user', 'firstName lastName email phone')
+      .populate('hotel', 'name location starRating amenities contactInfo')
+      .populate('room', 'name type price amenities');
+
+    if (hotelBooking) {
+      // Check if user owns this hotel booking
+      if (hotelBooking.user._id.toString() !== req.user._id.toString()) {
+        return res.status(403).json({
+          success: false,
+          message: 'Not authorized to send email for this booking'
+        });
+      }
+
+      await emailService.sendHotelBookingConfirmationEmail({
+        hotelBooking,
+        user: hotelBooking.user,
+        hotel: hotelBooking.hotel,
+        room: hotelBooking.room
+      });
+
+      res.json({
+        success: true,
+        message: 'Confirmation email sent successfully'
+      });
+      return;
+    }
+
+    // Try to find vehicle booking
+    const vehicleBooking = await VehicleBooking.findById(id)
+      .populate('user', 'firstName lastName email phone')
+      .populate('vehicle', 'type model capacity pricePerDay features images')
+      .populate('driver', 'firstName lastName phone licenseNumber');
+
+    if (vehicleBooking) {
+      // Check if user owns this vehicle booking
+      if (vehicleBooking.user._id.toString() !== req.user._id.toString()) {
+        return res.status(403).json({
+          success: false,
+          message: 'Not authorized to send email for this booking'
+        });
+      }
+
+      await emailService.sendVehicleBookingConfirmationEmail({
+        vehicleBooking,
+        user: vehicleBooking.user,
+        vehicle: vehicleBooking.vehicle,
+        driver: vehicleBooking.driver
       });
 
       res.json({

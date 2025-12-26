@@ -5,11 +5,11 @@ import { StripeProvider } from '../context/StripeContext'
 import PaymentForm from '../components/PaymentForm'
 import { toast } from 'react-hot-toast'
 import paymentService from '../services/payments/paymentService'
-import { 
-  CreditCard, 
-  CheckCircle, 
-  Calendar, 
-  Users, 
+import {
+  CreditCard,
+  CheckCircle,
+  Calendar,
+  Users,
   MapPin,
   Bed,
   DollarSign,
@@ -29,7 +29,7 @@ const Payment = () => {
   const [clientSecret, setClientSecret] = useState(null)
   const [initializing, setInitializing] = useState(true)
   const [paymentIntentCreated, setPaymentIntentCreated] = useState(false)
-  
+
   useEffect(() => {
     // Get booking data from navigation state
     if (location.state && !paymentIntentCreated) {
@@ -52,20 +52,20 @@ const Payment = () => {
   const createPaymentIntent = async (bookingData) => {
     try {
       setInitializing(true)
-      
+
       console.log('=== CREATE PAYMENT INTENT DEBUG ===')
       console.log('Booking data received:', bookingData)
       console.log('Booking ID:', bookingData?.bookingId)
       console.log('Amount:', bookingData?.amount)
       console.log('Currency:', bookingData?.currency)
-      
+
       // Validate required fields
       if (!bookingData?.bookingId) {
         console.warn('⚠️ Booking ID is missing, generating a mock booking ID for payment');
         // Generate a mock booking ID if missing (for cases where booking creation failed but we still want to process payment)
         bookingData.bookingId = `mock-booking-${Date.now()}`;
         console.log('Generated mock booking ID:', bookingData.bookingId);
-        
+
         // Update the payment data state with the generated booking ID
         setPaymentData(prev => ({
           ...prev,
@@ -75,16 +75,16 @@ const Payment = () => {
       if (!bookingData?.amount || bookingData.amount <= 0) {
         throw new Error('Valid amount is required for payment')
       }
-      
+
       // Debug authentication state
       console.log('Auth Debug:', {
         isAuthenticated,
         user: user ? `${user.firstName} ${user.lastName}` : 'No user',
         hasToken: !!localStorage.getItem('token')
       })
-      
+
       let response;
-      
+
       if (isAuthenticated && user) {
         try {
           // Use authenticated payment endpoint
@@ -97,14 +97,14 @@ const Payment = () => {
         } catch (authError) {
           console.warn('Authenticated payment failed, falling back to guest payment:', authError.response?.status)
           console.log('Auth error details:', authError.response?.data)
-          
+
           // If authenticated payment fails (403, 401, 400), fall back to guest payment
           if (authError.response?.status === 403 || authError.response?.status === 401 || authError.response?.status === 400) {
             console.log('Falling back to guest payment endpoint due to auth failure')
             response = await paymentService.createGuestPaymentIntent(
               bookingData.amount,
               bookingData.currency,
-              { 
+              {
                 bookingId: bookingData.bookingId,
                 customerEmail: user?.email || bookingData.customerEmail || 'guest@example.com',
                 customerName: user ? `${user.firstName} ${user.lastName}` : bookingData.customerName || 'Guest User'
@@ -122,14 +122,14 @@ const Payment = () => {
         response = await paymentService.createGuestPaymentIntent(
           bookingData.amount,
           bookingData.currency,
-          { 
+          {
             bookingId: bookingData.bookingId,
             customerEmail: bookingData.customerEmail || 'guest@example.com',
             customerName: bookingData.customerName || 'Guest User'
           }
         )
       }
-      
+
       setClientSecret(response.data.clientSecret)
       setPaymentIntentCreated(true)
       console.log('Payment intent created:', response.data.clientSecret)
@@ -144,8 +144,8 @@ const Payment = () => {
   const handlePaymentSuccess = (paymentIntent) => {
     console.log('Payment successful:', paymentIntent)
     toast.success('Payment completed successfully!')
-    navigate('/payment-success', { 
-      state: { 
+    navigate('/payment-success', {
+      state: {
         message: 'Payment completed successfully!',
         bookingId: paymentData.bookingId,
         bookingData: paymentData
@@ -176,9 +176,9 @@ const Payment = () => {
 
   if (!paymentData) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Loading payment details...</h2>
+          <h2 className="text-2xl font-serif font-bold text-slate-900 mb-4">Loading payment details...</h2>
         </div>
       </div>
     )
@@ -187,38 +187,38 @@ const Payment = () => {
   // Show loading while checking authentication
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Loading payment details...</h2>
+          <h2 className="text-2xl font-serif font-bold text-slate-900 mb-4">Loading payment details...</h2>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-white py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center text-blue-600 hover:text-blue-800 mb-4"
+            className="flex items-center text-[#E59B2C] hover:text-slate-900 mb-4"
           >
             <ArrowLeft className="w-5 h-5 mr-2" />
             Back to Room Details
           </button>
-          <h1 className="text-3xl font-bold text-gray-900">Complete Your Payment</h1>
+          <h1 className="text-3xl font-serif font-bold text-slate-900">Complete Your Payment</h1>
           <p className="text-gray-600 mt-2">Review your booking details and complete the payment</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Booking Summary */}
           <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold mb-4 flex items-center">
+            <h2 className="text-xl font-serif font-semibold mb-4 flex items-center">
               <CheckCircle className="w-6 h-6 text-green-600 mr-2" />
               Booking Summary
             </h2>
-            
+
             <div className="space-y-4">
               {/* Booking Type Specific Information */}
               {paymentData.bookingType === 'hotel' && (
@@ -230,7 +230,7 @@ const Payment = () => {
                       <p className="text-sm text-gray-600">{paymentData.roomName}</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center">
                     <Calendar className="w-5 h-5 text-gray-400 mr-3" />
                     <div>
@@ -238,7 +238,7 @@ const Payment = () => {
                       <p className="text-sm text-gray-600">Check-out: {paymentData.checkOut}</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center">
                     <Users className="w-5 h-5 text-gray-400 mr-3" />
                     <div>
@@ -257,7 +257,7 @@ const Payment = () => {
                       <p className="text-sm text-gray-600">{paymentData.guideEmail}</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center">
                     <Calendar className="w-5 h-5 text-gray-400 mr-3" />
                     <div>
@@ -265,7 +265,7 @@ const Payment = () => {
                       <p className="text-sm text-gray-600">End: {paymentData.endDate}</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center">
                     <Users className="w-5 h-5 text-gray-400 mr-3" />
                     <div>
@@ -285,7 +285,7 @@ const Payment = () => {
                       <p className="text-sm text-gray-600">{paymentData.tourDescription}</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center">
                     <Calendar className="w-5 h-5 text-gray-400 mr-3" />
                     <div>
@@ -293,7 +293,7 @@ const Payment = () => {
                       <p className="text-sm text-gray-600">End: {paymentData.endDate}</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center">
                     <Users className="w-5 h-5 text-gray-400 mr-3" />
                     <div>
@@ -312,7 +312,7 @@ const Payment = () => {
                       <p className="text-sm text-gray-600">{paymentData.vehicleType}</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center">
                     <MapPin className="w-5 h-5 text-gray-400 mr-3" />
                     <div>
@@ -320,7 +320,7 @@ const Payment = () => {
                       <p className="text-sm text-gray-600">Dropoff: {paymentData.dropoffLocation}</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center">
                     <Calendar className="w-5 h-5 text-gray-400 mr-3" />
                     <div>
@@ -328,7 +328,7 @@ const Payment = () => {
                       <p className="text-sm text-gray-600">Dropoff: {new Date(paymentData.dropoffDateTime).toLocaleString()}</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center">
                     <Users className="w-5 h-5 text-gray-400 mr-3" />
                     <div>
@@ -347,7 +347,7 @@ const Payment = () => {
                       <p className="text-sm text-gray-600">{paymentData.tripDescription}</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center">
                     <Calendar className="w-5 h-5 text-gray-400 mr-3" />
                     <div>
@@ -355,7 +355,7 @@ const Payment = () => {
                       <p className="text-sm text-gray-600">End: {paymentData.endDate}</p>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center">
                     <Users className="w-5 h-5 text-gray-400 mr-3" />
                     <div>
@@ -363,7 +363,7 @@ const Payment = () => {
                       <p className="text-sm text-gray-600">Guide: {paymentData.guideName}</p>
                     </div>
                   </div>
-                  
+
                   {paymentData.interests && (
                     <div className="flex items-center">
                       <User className="w-5 h-5 text-gray-400 mr-3" />
@@ -383,8 +383,8 @@ const Payment = () => {
                   <div className="flex items-center">
                     <User className="w-4 h-4 text-gray-400 mr-2" />
                     <span className="text-sm">
-                      {isAuthenticated && user 
-                        ? `${user.firstName} ${user.lastName}` 
+                      {isAuthenticated && user
+                        ? `${user.firstName} ${user.lastName}`
                         : paymentData.customerName || 'Guest User'
                       }
                     </span>
@@ -392,8 +392,8 @@ const Payment = () => {
                   <div className="flex items-center">
                     <Mail className="w-4 h-4 text-gray-400 mr-2" />
                     <span className="text-sm">
-                      {isAuthenticated && user 
-                        ? user.email 
+                      {isAuthenticated && user
+                        ? user.email
                         : paymentData.customerEmail || 'guest@example.com'
                       }
                     </span>
@@ -402,8 +402,8 @@ const Payment = () => {
                     <div className="flex items-center">
                       <Phone className="w-4 h-4 text-gray-400 mr-2" />
                       <span className="text-sm">
-                        {isAuthenticated && user 
-                          ? user.phone 
+                        {isAuthenticated && user
+                          ? user.phone
                           : paymentData.customerPhone
                         }
                       </span>
@@ -411,17 +411,17 @@ const Payment = () => {
                   ) : null}
                 </div>
               </div>
-              
+
               {/* Pricing Breakdown */}
               <div className="border-t pt-4">
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>
-                      {paymentData.bookingType === 'hotel' ? 'Room Price:' : 
-                       paymentData.bookingType === 'tour' ? 'Tour Price:' : 
-                       paymentData.bookingType === 'vehicle' ? 'Vehicle Rental:' :
-                       paymentData.bookingType === 'custom-trip' ? 'Custom Trip Price:' :
-                       'Service Price:'}
+                      {paymentData.bookingType === 'hotel' ? 'Room Price:' :
+                        paymentData.bookingType === 'tour' ? 'Tour Price:' :
+                          paymentData.bookingType === 'vehicle' ? 'Vehicle Rental:' :
+                            paymentData.bookingType === 'custom-trip' ? 'Custom Trip Price:' :
+                              'Service Price:'}
                     </span>
                     <span>{paymentData.currency} {paymentData.amount}</span>
                   </div>
@@ -431,7 +431,7 @@ const Payment = () => {
                   </div>
                   <div className="flex justify-between text-lg font-semibold border-t pt-2">
                     <span>Total Amount:</span>
-                    <span className="text-2xl font-bold text-blue-600">
+                    <span className="text-2xl font-bold text-[#E59B2C]">
                       {paymentData.currency} {Math.round(paymentData.amount * 1.15)}
                     </span>
                   </div>
@@ -445,7 +445,7 @@ const Payment = () => {
                         </div>
                         <div className="ml-3">
                           <p className="text-sm text-yellow-800">
-                            <strong>Test Mode:</strong> Payment amount capped at LKR 999,999.99 for testing purposes.
+                            <strong>Test Mode:</strong> Payment amount capped at $999,999.99 for testing purposes.
                           </p>
                         </div>
                       </div>
@@ -461,58 +461,58 @@ const Payment = () => {
             </div>
           </div>
 
-              {/* Payment Form */}
-              {initializing ? (
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                  <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                    <span className="ml-3 text-gray-600">Initializing payment...</span>
-                  </div>
+          {/* Payment Form */}
+          {initializing ? (
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#E59B2C]"></div>
+                <span className="ml-3 text-slate-600">Initializing payment...</span>
+              </div>
+            </div>
+          ) : clientSecret ? (
+            <StripeProvider clientSecret={clientSecret}>
+              <PaymentForm
+                bookingData={{
+                  bookingId: paymentData.bookingId,
+                  amount: Math.round(paymentData.amount * 1.15), // Include taxes
+                  currency: paymentData.currency,
+                  customerName: isAuthenticated && user
+                    ? `${user.firstName} ${user.lastName}`
+                    : paymentData.customerName || 'Guest User',
+                  customerEmail: isAuthenticated && user
+                    ? user.email
+                    : paymentData.customerEmail || 'guest@example.com',
+                  clientSecret: clientSecret,
+                  isGuestPayment: paymentData.isGuestPayment || !isAuthenticated || !user
+                }}
+                onPaymentSuccess={handlePaymentSuccess}
+                onPaymentError={handlePaymentError}
+                onRetry={handleRetryPayment}
+              />
+            </StripeProvider>
+          ) : (
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <div className="text-center text-red-600">
+                <p>Failed to initialize payment. Please try again.</p>
+                <div className="mt-4 space-x-2">
+                  <button
+                    onClick={handleRetryPayment}
+                    className="px-4 py-2 bg-slate-900 text-white rounded hover:bg-[#E59B2C]"
+                  >
+                    Retry Payment
+                  </button>
+                  {isAuthenticated && (
+                    <button
+                      onClick={handleAuthFailure}
+                      className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                    >
+                      Clear Session & Login
+                    </button>
+                  )}
                 </div>
-              ) : clientSecret ? (
-                <StripeProvider clientSecret={clientSecret}>
-                  <PaymentForm
-                    bookingData={{
-                      bookingId: paymentData.bookingId,
-                      amount: Math.round(paymentData.amount * 1.15), // Include taxes
-                    currency: paymentData.currency,
-                    customerName: isAuthenticated && user 
-                      ? `${user.firstName} ${user.lastName}` 
-                      : paymentData.customerName || 'Guest User',
-                    customerEmail: isAuthenticated && user 
-                      ? user.email 
-                      : paymentData.customerEmail || 'guest@example.com',
-                    clientSecret: clientSecret,
-                    isGuestPayment: paymentData.isGuestPayment || !isAuthenticated || !user
-                    }}
-                    onPaymentSuccess={handlePaymentSuccess}
-                    onPaymentError={handlePaymentError}
-                    onRetry={handleRetryPayment}
-                  />
-                </StripeProvider>
-              ) : (
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                  <div className="text-center text-red-600">
-                    <p>Failed to initialize payment. Please try again.</p>
-                    <div className="mt-4 space-x-2">
-                      <button 
-                        onClick={handleRetryPayment} 
-                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                      >
-                        Retry Payment
-                      </button>
-                      {isAuthenticated && (
-                        <button 
-                          onClick={handleAuthFailure} 
-                          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                        >
-                          Clear Session & Login
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

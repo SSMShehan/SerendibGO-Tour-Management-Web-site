@@ -80,6 +80,7 @@ export const PAYMENT_STATUS_LABELS = {
 };
 
 export const CURRENCIES = {
+  USD: { code: 'USD', symbol: '$', name: 'US Dollar' },
   LKR: { code: 'LKR', symbol: 'Rs.', name: 'Sri Lankan Rupee' },
   USD: { code: 'USD', symbol: '$', name: 'US Dollar' },
   EUR: { code: 'EUR', symbol: '€', name: 'Euro' },

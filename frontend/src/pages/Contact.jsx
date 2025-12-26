@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
-import { 
-  Headphones, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  MessageSquare, 
-  Send, 
-  Clock, 
+import {
+  Headphones,
+  Mail,
+  Phone,
+  MapPin,
+  MessageSquare,
+  Send,
+  Clock,
   CheckCircle,
   AlertCircle,
   Info
@@ -41,7 +41,7 @@ const Contact = () => {
     try {
       // Simulate API call - replace with actual API endpoint
       await new Promise(resolve => setTimeout(resolve, 1000))
-      
+
       toast.success('Your message has been sent successfully! We\'ll get back to you soon.')
       setFormData(prev => ({
         ...prev,
@@ -64,11 +64,11 @@ const Contact = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-white py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Contact Support</h1>
+          <h1 className="text-4xl font-serif font-bold text-slate-900 mb-4">Contact Support</h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             We're here to help! Get in touch with our support team for any questions or assistance.
           </p>
@@ -78,12 +78,12 @@ const Contact = () => {
           {/* Contact Information */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Get in Touch</h2>
-              
+              <h2 className="text-2xl font-serif font-bold text-slate-900 mb-6">Get in Touch</h2>
+
               <div className="space-y-6">
                 <div className="flex items-start space-x-4">
                   <div className="flex-shrink-0">
-                    <Phone className="h-6 w-6 text-blue-600" />
+                    <Phone className="h-6 w-6 text-[#E59B2C]" />
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">Phone</h3>
@@ -94,7 +94,7 @@ const Contact = () => {
 
                 <div className="flex items-start space-x-4">
                   <div className="flex-shrink-0">
-                    <Mail className="h-6 w-6 text-blue-600" />
+                    <Mail className="h-6 w-6 text-[#E59B2C]" />
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">Email</h3>
@@ -105,7 +105,7 @@ const Contact = () => {
 
                 <div className="flex items-start space-x-4">
                   <div className="flex-shrink-0">
-                    <MapPin className="h-6 w-6 text-blue-600" />
+                    <MapPin className="h-6 w-6 text-[#E59B2C]" />
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">Address</h3>
@@ -116,7 +116,7 @@ const Contact = () => {
 
                 <div className="flex items-start space-x-4">
                   <div className="flex-shrink-0">
-                    <Clock className="h-6 w-6 text-blue-600" />
+                    <Clock className="h-6 w-6 text-[#E59B2C]" />
                   </div>
                   <div>
                     <h3 className="text-lg font-semibold text-gray-900">Business Hours</h3>
@@ -130,7 +130,7 @@ const Contact = () => {
 
             {/* FAQ Section */}
             <div className="bg-white rounded-lg shadow p-6 mt-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Quick Help</h2>
+              <h2 className="text-2xl font-serif font-bold text-slate-900 mb-4">Quick Help</h2>
               <div className="space-y-4">
                 <div>
                   <h3 className="font-semibold text-gray-900">How do I book a tour?</h3>
@@ -151,8 +151,8 @@ const Contact = () => {
           {/* Contact Form */}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Send us a Message</h2>
-              
+              <h2 className="text-2xl font-serif font-bold text-slate-900 mb-6">Send us a Message</h2>
+
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
@@ -253,7 +253,7 @@ const Contact = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="bg-blue-600 text-white px-6 py-3 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+                    className="bg-slate-900 text-white px-6 py-3 rounded-md hover:bg-[#E59B2C] focus:outline-none focus:ring-2 focus:ring-[#E59B2C] disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
                   >
                     {loading ? (
                       <>

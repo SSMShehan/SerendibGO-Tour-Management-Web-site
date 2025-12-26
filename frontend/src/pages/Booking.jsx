@@ -10,7 +10,7 @@ const Booking = () => {
   const navigate = useNavigate()
   const { user, isAuthenticated } = useAuth()
   const vehicleId = searchParams.get('vehicle')
-  
+
   const [vehicle, setVehicle] = useState(null)
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
@@ -34,18 +34,18 @@ const Booking = () => {
     endDate: '',
     startTime: '',
     endTime: '',
-    
+
     // Passengers
     adults: 1,
     children: 0,
     infants: 0,
-    
+
     // Guest Details
     firstName: '',
     lastName: '',
     email: '',
     phone: '',
-    
+
     // Special Requests
     specialRequests: ''
   })
@@ -58,7 +58,7 @@ const Booking = () => {
         navigate('/vehicles')
         return
       }
-      
+
       try {
         const response = await api.get(`/vehicles/${vehicleId}`)
         setVehicle(response.data.data)
@@ -123,7 +123,7 @@ const Booking = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
-    
+
     if (name.includes('.')) {
       const [parent, child] = name.split('.')
       setFormData(prev => ({
@@ -158,27 +158,27 @@ const Booking = () => {
 
   const calculatePrice = () => {
     if (!vehicle?.pricing) return 0
-    
+
     const startDate = new Date(formData.startDate)
     const endDate = new Date(formData.endDate)
     const hours = Math.ceil((endDate - startDate) / (1000 * 60 * 60))
-    
+
     const basePrice = vehicle.pricing.basePrice || 0
     const hourlyRate = vehicle.pricing.hourlyRate || 0
     const dailyRate = vehicle.pricing.dailyRate || 0
-    
+
     // Use daily rate if more than 8 hours, otherwise hourly
     const durationPrice = hours > 8 ? dailyRate : (hours * hourlyRate)
     const subtotal = basePrice + durationPrice
     const taxes = subtotal * 0.1 // 10% tax
     const serviceCharge = subtotal * 0.05 // 5% service charge
-    
+
     return subtotal + taxes + serviceCharge
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    
+
     if (!vehicle) {
       toast.error('Vehicle not found')
       return
@@ -187,7 +187,7 @@ const Booking = () => {
     // Validate email and phone
     const emailError = validateEmail(formData.email)
     const phoneError = validatePhone(formData.phone)
-    
+
     if (emailError || phoneError) {
       setValidationErrors({
         email: emailError,
@@ -198,7 +198,7 @@ const Booking = () => {
     }
 
     setSubmitting(true)
-    
+
     try {
       const bookingData = {
         vehicle: vehicleId,
@@ -225,24 +225,24 @@ const Booking = () => {
       }
 
       const response = await api.post('/vehicle-bookings', bookingData)
-      
+
       if (response.data.status === 'success') {
         const booking = response.data.data.booking || response.data.data
         const totalAmount = calculatePrice()
-        
+
         console.log('=== VEHICLE BOOKING CREATED ===')
         console.log('Response data:', response.data)
         console.log('Booking object:', booking)
         console.log('Booking ID:', booking?._id)
         console.log('Total amount:', totalAmount)
-        
+
         // Navigate to payment page
         navigate('/payment', {
           state: {
             bookingId: booking._id,
             bookingType: 'vehicle',
             amount: totalAmount,
-            currency: 'LKR',
+            currency: 'USD',
             vehicleName: vehicle.make + ' ' + vehicle.model,
             vehicleType: vehicle.type,
             pickupLocation: formData.pickupLocation.address,
@@ -256,7 +256,7 @@ const Booking = () => {
       } else {
         toast.error(response.data.message || 'Failed to create booking')
       }
-      
+
     } catch (error) {
       console.error('Booking error:', error)
       console.error('Error response:', error.response?.data)
@@ -268,21 +268,21 @@ const Booking = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <span className="ml-2 text-gray-600">Loading vehicle details...</span>
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-[#E59B2C]" />
+        <span className="ml-2 text-slate-600">Loading vehicle details...</span>
       </div>
     )
   }
 
   if (!vehicle) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Vehicle not found</h2>
-          <button 
+          <h2 className="text-xl font-serif font-semibold text-slate-900 mb-2">Vehicle not found</h2>
+          <button
             onClick={() => navigate('/vehicles')}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+            className="px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-[#E59B2C] font-medium"
           >
             Back to Vehicles
           </button>
@@ -292,10 +292,10 @@ const Booking = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-white py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Book Vehicle</h1>
+          <h1 className="text-3xl font-serif font-bold text-slate-900 mb-2">Book Vehicle</h1>
           <p className="text-gray-600">Complete your vehicle rental booking</p>
         </div>
 
@@ -303,29 +303,29 @@ const Booking = () => {
           {/* Vehicle Summary */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sticky top-8">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Booking Summary</h3>
-              
+              <h3 className="text-lg font-serif font-semibold text-slate-900 mb-4">Booking Summary</h3>
+
               <div className="space-y-4">
                 <div>
                   <h4 className="font-medium text-gray-900">{vehicle.name}</h4>
                   <p className="text-sm text-gray-500">{vehicle.vehicleType}</p>
                 </div>
-                
+
                 {vehicle.images && vehicle.images.length > 0 && (
                   <div className="h-32 bg-gray-200 rounded-lg overflow-hidden">
-                    <img 
-                      src={vehicle.images[0].url || vehicle.images[0]} 
+                    <img
+                      src={vehicle.images[0].url || vehicle.images[0]}
                       alt={vehicle.name}
                       className="w-full h-full object-cover"
                     />
                   </div>
                 )}
-                
+
                 <div className="border-t pt-4">
                   <div className="flex justify-between items-center">
                     <span className="text-sm text-gray-600">Estimated Total:</span>
                     <span className="text-lg font-semibold text-primary">
-                      LKR {calculatePrice().toLocaleString()}
+                      ${calculatePrice().toLocaleString()}
                     </span>
                   </div>
                 </div>
@@ -339,11 +339,11 @@ const Booking = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Trip Details */}
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <h3 className="text-lg font-serif font-semibold text-slate-900 mb-4 flex items-center">
                     <Calendar className="h-5 w-5 mr-2" />
                     Trip Details
                   </h3>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -358,7 +358,7 @@ const Booking = () => {
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
                       />
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         End Date
@@ -372,7 +372,7 @@ const Booking = () => {
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
                       />
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Start Time
@@ -386,7 +386,7 @@ const Booking = () => {
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
                       />
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         End Time
@@ -405,11 +405,11 @@ const Booking = () => {
 
                 {/* Pickup Location */}
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <h3 className="text-lg font-serif font-semibold text-slate-900 mb-4 flex items-center">
                     <MapPin className="h-5 w-5 mr-2" />
                     Pickup Location
                   </h3>
-                  
+
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -425,7 +425,7 @@ const Booking = () => {
                         placeholder="Enter pickup address"
                       />
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -441,7 +441,7 @@ const Booking = () => {
                           placeholder="City"
                         />
                       </div>
-                      
+
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           District
@@ -462,8 +462,8 @@ const Booking = () => {
 
                 {/* Dropoff Location */}
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Dropoff Location</h3>
-                  
+                  <h3 className="text-lg font-serif font-semibold text-slate-900 mb-4">Dropoff Location</h3>
+
                   <div className="space-y-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -479,7 +479,7 @@ const Booking = () => {
                         placeholder="Enter dropoff address"
                       />
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -495,7 +495,7 @@ const Booking = () => {
                           placeholder="City"
                         />
                       </div>
-                      
+
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                           District
@@ -516,11 +516,11 @@ const Booking = () => {
 
                 {/* Passengers */}
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <h3 className="text-lg font-serif font-semibold text-slate-900 mb-4 flex items-center">
                     <Users className="h-5 w-5 mr-2" />
                     Passengers
                   </h3>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -536,7 +536,7 @@ const Booking = () => {
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
                       />
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Children
@@ -550,7 +550,7 @@ const Booking = () => {
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
                       />
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Infants
@@ -569,8 +569,8 @@ const Booking = () => {
 
                 {/* Guest Details */}
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Contact Information</h3>
-                  
+                  <h3 className="text-lg font-serif font-semibold text-slate-900 mb-4">Contact Information</h3>
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -585,7 +585,7 @@ const Booking = () => {
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
                       />
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Last Name
@@ -599,7 +599,7 @@ const Booking = () => {
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
                       />
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Email
@@ -610,15 +610,14 @@ const Booking = () => {
                         value={formData.email}
                         onChange={handleInputChange}
                         required
-                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary ${
-                          validationErrors.email ? 'border-red-500' : 'border-gray-300'
-                        }`}
+                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary ${validationErrors.email ? 'border-red-500' : 'border-gray-300'
+                          }`}
                       />
                       {validationErrors.email && (
                         <p className="mt-1 text-sm text-red-600">{validationErrors.email}</p>
                       )}
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Phone
@@ -631,9 +630,8 @@ const Booking = () => {
                         placeholder="Enter 10-digit phone number"
                         maxLength="10"
                         required
-                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary ${
-                          validationErrors.phone ? 'border-red-500' : 'border-gray-300'
-                        }`}
+                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary ${validationErrors.phone ? 'border-red-500' : 'border-gray-300'
+                          }`}
                       />
                       {validationErrors.phone && (
                         <p className="mt-1 text-sm text-red-600">{validationErrors.phone}</p>
@@ -666,11 +664,11 @@ const Booking = () => {
                   >
                     Cancel
                   </button>
-                  
+
                   <button
                     type="submit"
                     disabled={submitting}
-                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center"
+                    className="px-6 py-2 bg-slate-900 text-white rounded-lg hover:bg-[#E59B2C] disabled:opacity-50 flex items-center"
                   >
                     {submitting ? (
                       <>

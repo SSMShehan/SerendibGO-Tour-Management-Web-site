@@ -7,19 +7,19 @@ const roomAvailabilitySchema = new mongoose.Schema({
     ref: 'Room',
     required: [true, 'Room reference is required']
   },
-  
+
   hotel: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Hotel',
     required: [true, 'Hotel reference is required']
   },
-  
+
   // Date and time
   date: {
     type: Date,
     required: [true, 'Date is required']
   },
-  
+
   // Availability state
   status: {
     type: String,
@@ -33,21 +33,21 @@ const roomAvailabilitySchema = new mongoose.Schema({
     ],
     default: 'available'
   },
-  
+
   // Number of rooms available (for rooms with multiple units)
   availableRooms: {
     type: Number,
     default: 0,
     min: [0, 'Available rooms cannot be negative']
   },
-  
+
   // Total rooms for this date
   totalRooms: {
     type: Number,
     required: [true, 'Total rooms is required'],
     min: [1, 'Total rooms must be at least 1']
   },
-  
+
   // Pricing for this date (can override room base price)
   pricing: {
     basePrice: {
@@ -56,15 +56,15 @@ const roomAvailabilitySchema = new mongoose.Schema({
     },
     currency: {
       type: String,
-      enum: ['LKR', 'USD', 'EUR', 'GBP'],
-      default: 'LKR'
+      enum: ['USD', 'LKR', 'EUR', 'GBP'],
+      default: 'USD'
     },
     isOverride: {
       type: Boolean,
       default: false
     }
   },
-  
+
   // Booking details (for offline bookings)
   offlineBooking: {
     guestName: {
@@ -90,7 +90,7 @@ const roomAvailabilitySchema = new mongoose.Schema({
       trim: true
     }
   },
-  
+
   // Maintenance details
   maintenance: {
     reason: {
@@ -114,7 +114,7 @@ const roomAvailabilitySchema = new mongoose.Schema({
       default: 'medium'
     }
   },
-  
+
   // Blocking details
   blocking: {
     reason: {
@@ -130,25 +130,25 @@ const roomAvailabilitySchema = new mongoose.Schema({
       ref: 'User'
     }
   },
-  
+
   // Metadata
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: [true, 'Created by is required']
   },
-  
+
   lastModifiedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
-  
+
   // Timestamps
   createdAt: {
     type: Date,
     default: Date.now
   },
-  
+
   updatedAt: {
     type: Date,
     default: Date.now
@@ -164,52 +164,52 @@ roomAvailabilitySchema.index({ date: 1, status: 1 });
 roomAvailabilitySchema.index({ status: 1 });
 
 // Update updatedAt field on save
-roomAvailabilitySchema.pre('save', function(next) {
+roomAvailabilitySchema.pre('save', function (next) {
   this.updatedAt = Date.now();
   next();
 });
 
 // Virtual for checking if room is available for booking
-roomAvailabilitySchema.virtual('isAvailableForBooking').get(function() {
+roomAvailabilitySchema.virtual('isAvailableForBooking').get(function () {
   return this.status === 'available' && this.availableRooms > 0;
 });
 
 // Virtual for checking if room is in maintenance
-roomAvailabilitySchema.virtual('isInMaintenance').get(function() {
+roomAvailabilitySchema.virtual('isInMaintenance').get(function () {
   return this.status === 'maintenance';
 });
 
 // Virtual for checking if room is blocked
-roomAvailabilitySchema.virtual('isBlocked').get(function() {
+roomAvailabilitySchema.virtual('isBlocked').get(function () {
   return this.status === 'blocked' || this.status === 'out_of_order';
 });
 
 // Method to check if date is in the past
-roomAvailabilitySchema.methods.isPastDate = function() {
+roomAvailabilitySchema.methods.isPastDate = function () {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   return this.date < today;
 };
 
 // Method to check if date is today
-roomAvailabilitySchema.methods.isToday = function() {
+roomAvailabilitySchema.methods.isToday = function () {
   const today = new Date();
   const recordDate = new Date(this.date);
   return today.toDateString() === recordDate.toDateString();
 };
 
 // Method to check if date is in the future
-roomAvailabilitySchema.methods.isFutureDate = function() {
+roomAvailabilitySchema.methods.isFutureDate = function () {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   return this.date > today;
 };
 
 // Static method to get availability for date range
-roomAvailabilitySchema.statics.getAvailabilityForRange = async function(roomId, startDate, endDate) {
+roomAvailabilitySchema.statics.getAvailabilityForRange = async function (roomId, startDate, endDate) {
   const start = new Date(startDate);
   const end = new Date(endDate);
-  
+
   return await this.find({
     room: roomId,
     date: {
@@ -220,10 +220,10 @@ roomAvailabilitySchema.statics.getAvailabilityForRange = async function(roomId, 
 };
 
 // Static method to check for conflicts
-roomAvailabilitySchema.statics.checkConflicts = async function(roomId, startDate, endDate, excludeId = null) {
+roomAvailabilitySchema.statics.checkConflicts = async function (roomId, startDate, endDate, excludeId = null) {
   const start = new Date(startDate);
   const end = new Date(endDate);
-  
+
   const query = {
     room: roomId,
     date: {
@@ -234,20 +234,20 @@ roomAvailabilitySchema.statics.checkConflicts = async function(roomId, startDate
       $in: ['booked', 'offline_booked', 'maintenance', 'blocked', 'out_of_order']
     }
   };
-  
+
   if (excludeId) {
     query._id = { $ne: excludeId };
   }
-  
+
   return await this.find(query);
 };
 
 // Static method to create default availability for a room
-roomAvailabilitySchema.statics.createDefaultAvailability = async function(roomId, hotelId, startDate, endDate, createdBy) {
+roomAvailabilitySchema.statics.createDefaultAvailability = async function (roomId, hotelId, startDate, endDate, createdBy) {
   const start = new Date(startDate);
   const end = new Date(endDate);
   const availabilities = [];
-  
+
   for (let date = new Date(start); date <= end; date.setDate(date.getDate() + 1)) {
     availabilities.push({
       room: roomId,
@@ -259,7 +259,7 @@ roomAvailabilitySchema.statics.createDefaultAvailability = async function(roomId
       createdBy: createdBy
     });
   }
-  
+
   return await this.insertMany(availabilities);
 };
 

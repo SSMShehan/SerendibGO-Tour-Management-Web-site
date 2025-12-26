@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
-import { 
-  Bell, 
-  CheckCircle, 
-  AlertCircle, 
-  Info, 
-  Calendar, 
-  User, 
-  DollarSign, 
-  MessageSquare, 
-  Star, 
-  Filter, 
-  Check, 
-  Trash2, 
-  Eye, 
-  EyeOff 
+import {
+  Bell,
+  CheckCircle,
+  AlertCircle,
+  Info,
+  Calendar,
+  User,
+  DollarSign,
+  MessageSquare,
+  Star,
+  Filter,
+  Check,
+  Trash2,
+  Eye,
+  EyeOff
 } from 'lucide-react'
 import { notificationService } from '../services/notificationService'
 
@@ -37,9 +37,9 @@ const Notifications = () => {
         type: filter === 'all' ? undefined : filter,
         limit: 50
       }
-      
+
       const response = await notificationService.getNotifications(params)
-      
+
       if (response.success) {
         setNotifications(response.data.notifications)
         setStats({
@@ -75,7 +75,7 @@ const Notifications = () => {
     if (priority === 'high') return 'text-red-600'
     if (priority === 'medium') return 'text-yellow-600'
     if (priority === 'low') return 'text-blue-600'
-    
+
     switch (type) {
       case 'booking':
         return 'text-green-600'
@@ -95,9 +95,9 @@ const Notifications = () => {
   const markAsRead = async (notificationId) => {
     try {
       await notificationService.markAsRead(notificationId)
-      setNotifications(prev => 
-        prev.map(notif => 
-          notif._id === notificationId 
+      setNotifications(prev =>
+        prev.map(notif =>
+          notif._id === notificationId
             ? { ...notif, isRead: true }
             : notif
         )
@@ -116,16 +116,16 @@ const Notifications = () => {
     }
   }
 
-  const filteredNotifications = notifications.filter(notif => 
+  const filteredNotifications = notifications.filter(notif =>
     showRead || !notif.isRead
   )
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-white py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Notifications</h1>
+          <h1 className="text-3xl font-serif font-bold text-slate-900 mb-2">Notifications</h1>
           <p className="text-gray-600">Stay updated with your latest activities</p>
         </div>
 
@@ -133,7 +133,7 @@ const Notifications = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex items-center">
-              <Bell className="h-8 w-8 text-blue-600" />
+              <Bell className="h-8 w-8 text-[#E59B2C]" />
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-500">Total</p>
                 <p className="text-2xl font-semibold text-gray-900">{stats.total}</p>
@@ -181,9 +181,8 @@ const Notifications = () => {
             <div className="flex items-center space-x-2">
               <button
                 onClick={() => setShowRead(!showRead)}
-                className={`flex items-center space-x-2 px-3 py-2 rounded-md ${
-                  showRead ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'
-                }`}
+                className={`flex items-center space-x-2 px-3 py-2 rounded-md ${showRead ? 'bg-[#E59B2C]/10 text-[#E59B2C]' : 'bg-gray-100 text-gray-700'
+                  }`}
               >
                 {showRead ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                 <span>{showRead ? 'Show Read' : 'Hide Read'}</span>
@@ -196,7 +195,7 @@ const Notifications = () => {
         <div className="bg-white rounded-lg shadow">
           {loading ? (
             <div className="p-8 text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#E59B2C] mx-auto"></div>
               <p className="mt-2 text-gray-500">Loading notifications...</p>
             </div>
           ) : filteredNotifications.length === 0 ? (
@@ -210,13 +209,12 @@ const Notifications = () => {
               {filteredNotifications.map((notification) => {
                 const IconComponent = getNotificationIcon(notification.type)
                 const iconColor = getNotificationColor(notification.type, notification.priority)
-                
+
                 return (
                   <div
                     key={notification._id}
-                    className={`p-6 hover:bg-gray-50 transition-colors ${
-                      !notification.isRead ? 'bg-blue-50' : ''
-                    }`}
+                    className={`p-6 hover:bg-gray-50 transition-colors ${!notification.isRead ? 'bg-[#E59B2C]/5' : ''
+                      }`}
                   >
                     <div className="flex items-start space-x-4">
                       <div className={`flex-shrink-0 ${iconColor}`}>
@@ -224,16 +222,15 @@ const Notifications = () => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
-                          <h3 className={`text-sm font-medium ${
-                            !notification.isRead ? 'text-gray-900' : 'text-gray-700'
-                          }`}>
+                          <h3 className={`text-sm font-medium ${!notification.isRead ? 'text-gray-900' : 'text-gray-700'
+                            }`}>
                             {notification.title}
                           </h3>
                           <div className="flex items-center space-x-2">
                             {!notification.isRead && (
                               <button
                                 onClick={() => markAsRead(notification._id)}
-                                className="text-blue-600 hover:text-blue-800"
+                                className="text-[#E59B2C] hover:text-slate-900"
                                 title="Mark as read"
                               >
                                 <Check className="h-4 w-4" />

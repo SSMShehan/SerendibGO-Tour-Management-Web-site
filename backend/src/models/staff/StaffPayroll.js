@@ -6,7 +6,7 @@ const StaffPayrollSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
-  
+
   // Salary Information
   salary: {
     baseSalary: {
@@ -16,8 +16,8 @@ const StaffPayrollSchema = new mongoose.Schema({
     },
     currency: {
       type: String,
-      default: 'LKR',
-      enum: ['LKR', 'USD', 'EUR']
+      default: 'USD',
+      enum: ['USD', 'LKR', 'EUR']
     },
     payFrequency: {
       type: String,
@@ -132,17 +132,17 @@ const StaffPayrollSchema = new mongoose.Schema({
     type: Boolean,
     default: true
   },
-  
+
   effectiveDate: {
     type: Date,
     default: Date.now
   },
-  
+
   lastUpdated: {
     type: Date,
     default: Date.now
   },
-  
+
   updatedBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
@@ -150,7 +150,7 @@ const StaffPayrollSchema = new mongoose.Schema({
 
   // Additional Information
   notes: String,
-  
+
   // Performance Bonuses
   bonuses: [{
     amount: Number,
@@ -195,31 +195,31 @@ StaffPayrollSchema.index({ 'paymentHistory.status': 1 });
 StaffPayrollSchema.index({ isActive: 1 });
 
 // Virtual for calculating total allowances
-StaffPayrollSchema.virtual('totalAllowances').get(function() {
+StaffPayrollSchema.virtual('totalAllowances').get(function () {
   const allowances = this.allowances;
-  return allowances.housing + allowances.transport + allowances.medical + 
-         allowances.meal + allowances.other;
+  return allowances.housing + allowances.transport + allowances.medical +
+    allowances.meal + allowances.other;
 });
 
 // Virtual for calculating total deductions
-StaffPayrollSchema.virtual('totalDeductions').get(function() {
+StaffPayrollSchema.virtual('totalDeductions').get(function () {
   const deductions = this.deductions;
-  return deductions.tax + deductions.epf + deductions.etf + 
-         deductions.loan + deductions.other;
+  return deductions.tax + deductions.epf + deductions.etf +
+    deductions.loan + deductions.other;
 });
 
 // Virtual for calculating gross salary
-StaffPayrollSchema.virtual('grossSalary').get(function() {
+StaffPayrollSchema.virtual('grossSalary').get(function () {
   return this.salary.baseSalary + this.totalAllowances;
 });
 
 // Virtual for calculating net salary
-StaffPayrollSchema.virtual('netSalary').get(function() {
+StaffPayrollSchema.virtual('netSalary').get(function () {
   return this.grossSalary - this.totalDeductions;
 });
 
 // Method to add payment record
-StaffPayrollSchema.methods.addPayment = function(paymentData) {
+StaffPayrollSchema.methods.addPayment = function (paymentData) {
   this.paymentHistory.push({
     ...paymentData,
     grossSalary: this.grossSalary,
@@ -232,17 +232,17 @@ StaffPayrollSchema.methods.addPayment = function(paymentData) {
 };
 
 // Method to calculate salary for a specific period
-StaffPayrollSchema.methods.calculatePeriodSalary = function(startDate, endDate, overtimeHours = 0) {
+StaffPayrollSchema.methods.calculatePeriodSalary = function (startDate, endDate, overtimeHours = 0) {
   const baseSalary = this.salary.baseSalary;
   const allowances = this.totalAllowances;
   const deductions = this.totalDeductions;
-  
+
   // Calculate overtime pay
   const overtimePay = overtimeHours * this.overtimeSettings.hourlyRate;
-  
+
   const grossSalary = baseSalary + allowances + overtimePay;
   const netSalary = grossSalary - deductions;
-  
+
   return {
     baseSalary,
     allowances,

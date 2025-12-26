@@ -332,7 +332,7 @@ const VehicleOwnerDashboard = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-medium text-gray-900">
-                      LKR {booking.totalPrice?.toLocaleString()}
+                      ${booking.totalPrice?.toLocaleString()}
                     </p>
                     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                       booking.status === 'confirmed' ? 'bg-green-100 text-green-800' :
@@ -634,7 +634,7 @@ const VehicleOwnerDashboard = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
-                        LKR {booking.totalPrice?.toLocaleString()}
+                        ${booking.totalPrice?.toLocaleString()}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -709,7 +709,7 @@ const VehicleOwnerDashboard = () => {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">Total Earnings</p>
-              <p className="text-2xl font-semibold text-gray-900">LKR {stats.totalEarnings.toLocaleString()}</p>
+              <p className="text-2xl font-semibold text-gray-900">$ {stats.totalEarnings.toLocaleString()}</p>
             </div>
           </div>
         </div>
@@ -721,7 +721,7 @@ const VehicleOwnerDashboard = () => {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-600">This Month</p>
-              <p className="text-2xl font-semibold text-gray-900">LKR {stats.monthlyEarnings.toLocaleString()}</p>
+              <p className="text-2xl font-semibold text-gray-900">$ {stats.monthlyEarnings.toLocaleString()}</p>
             </div>
           </div>
         </div>

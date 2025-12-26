@@ -236,14 +236,20 @@ export const bookingAPI = {
 // Utility functions
 export const hotelUtils = {
   // Format price
-  formatPrice: (price, currency = 'LKR') => {
+  formatPrice: (price, currency = 'USD') => {
+    const currencySymbol = {
+      'USD': '$',
+      'LKR': 'Rs.',
+      'EUR': '€',
+      'GBP': '£'
+    };
     if (!price || price === null || price === undefined || price === 0) {
       return null; // Return null instead of "Price not available"
     }
-    if (currency === 'LKR') {
-      return `Rs. ${price.toLocaleString()}`;
+    if (currency === 'USD') {
+      return `$${price.toLocaleString()}`;
     }
-    return `${currency} ${price.toLocaleString()}`;
+    return `${currencySymbol[currency] || currency} ${price.toLocaleString()}`;
   },
 
   // Calculate number of nights
@@ -335,10 +341,10 @@ export const hotelUtils = {
     const R = 6371; // Earth's radius in kilometers
     const dLat = (lat2 - lat1) * Math.PI / 180;
     const dLng = (lng2 - lng1) * Math.PI / 180;
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
       Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-      Math.sin(dLng/2) * Math.sin(dLng/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      Math.sin(dLng / 2) * Math.sin(dLng / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
   }
 };
