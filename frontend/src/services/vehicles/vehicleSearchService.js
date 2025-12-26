@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.MODE === 'production' ? '/api' : 'http://127.0.0.1:5000/api');
 
 // Create axios instance with default config
 const api = axios.create({
@@ -41,7 +41,7 @@ export const vehicleSearchService = {
   searchVehicles: async (filters = {}) => {
     try {
       const queryParams = new URLSearchParams();
-      
+
       // Add filters to query params
       Object.entries(filters).forEach(([key, value]) => {
         if (value !== null && value !== undefined && value !== '') {
@@ -52,7 +52,7 @@ export const vehicleSearchService = {
           }
         }
       });
-      
+
       const response = await api.get(`/api/vehicles/search?${queryParams}`);
       return response.data;
     } catch (error) {

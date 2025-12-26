@@ -15,11 +15,10 @@ console.log('   JWT_SECRET:', process.env.JWT_SECRET ? '✅ SET' : '❌ NOT SET'
 console.log('   STRIPE_SECRET_KEY:', process.env.STRIPE_SECRET_KEY ? '✅ SET' : '❌ NOT SET');
 
 // Set fallback values for production if not defined
-// This ensures Vercel deployment works even without environment variables configured
 if (!process.env.MONGODB_URI) {
-  console.warn('\n⚠️  WARNING: MONGODB_URI is not set! Using fallback...');
-  console.warn('📝 For better security, set MONGODB_URI in Vercel environment variables\n');
-  process.env.MONGODB_URI = 'mongodb+srv://admin:admin123@serandibgo.izvdsyx.mongodb.net/serendibgo?retryWrites=true&w=majority';
+  console.error('\n❌ ERROR: MONGODB_URI is not set!');
+  console.error('📝 Please set MONGODB_URI in Vercel environment variables');
+  console.error('   Go to: Vercel Dashboard → Settings → Environment Variables\n');
 }
 
 // Set fallback for other critical environment variables
@@ -274,11 +273,18 @@ const startServer = async () => {
 };
 
 // Initialize database connection
-let dbConnected = false;
+let dbInitialized = false;
+
 const initDB = async () => {
-  if (!dbConnected) {
-    await connectDB();
-    dbConnected = true;
+  if (!dbInitialized) {
+    try {
+      await connectDB();
+      dbInitialized = true;
+      console.log('✅ Database initialized for serverless');
+    } catch (err) {
+      console.error('❌ Failed to initialize database:', err.message);
+      dbInitialized = false;
+    }
   }
 };
 
@@ -286,10 +292,8 @@ if (require.main === module) {
   // Running locally
   startServer();
 } else {
-  // Running on Vercel - connect to DB immediately
-  initDB().catch(err => {
-    console.error('Failed to initialize database:', err);
-  });
+  // Running on Vercel - connect to DB immediately on cold start
+  initDB();
 }
 
 module.exports = app;

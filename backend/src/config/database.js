@@ -1,8 +1,26 @@
 const mongoose = require('mongoose');
 
+// Cache connection for serverless functions (Vercel)
+let cachedConnection = null;
+
 const connectDB = async () => {
+  // If we have a cached connection and it's connected, reuse it
+  if (cachedConnection && mongoose.connection.readyState === 1) {
+    console.log('✅ Using cached MongoDB connection');
+    return cachedConnection;
+  }
+
+  // If connection exists but is in a bad state, close it
+  if (mongoose.connection.readyState !== 0) {
+    await mongoose.connection.close();
+  }
+
   try {
     console.log('🔄 Attempting to connect to MongoDB...');
+
+    if (!process.env.MONGODB_URI) {
+      throw new Error('MONGODB_URI environment variable is not set');
+    }
 
     const conn = await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
@@ -10,12 +28,16 @@ const connectDB = async () => {
       serverSelectionTimeoutMS: 10000, // 10 second timeout
       socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
       maxPoolSize: 10, // Maintain up to 10 socket connections
+      minPoolSize: 2, // Minimum connections for serverless
       retryWrites: true,
       w: 'majority'
     });
 
     console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
     console.log(`📊 Database: ${conn.connection.name}`);
+
+    // Cache the connection
+    cachedConnection = conn;
 
     return conn;
   } catch (error) {
@@ -40,10 +62,8 @@ const connectDB = async () => {
     console.error('   2. Or copy .env.example to .env and configure (for local dev)');
     console.error('   3. Ensure your IP is whitelisted in MongoDB Atlas');
 
-    // Don't exit - let the app continue to run
-    // This allows Vercel to show error logs instead of crashing
-    console.warn('\n⚠️  Server will continue without database connection');
-    console.warn('⚠️  Some features will not work properly\n');
+    // Re-throw the error so routes can handle it
+    throw error;
   }
 };
 

@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api',
+  baseURL: import.meta.env.VITE_API_URL || (import.meta.env.MODE === 'production' ? '/api' : 'http://127.0.0.1:5000/api'),
   timeout: 10000,
 });
 
@@ -126,11 +126,11 @@ export const gpsService = {
     const R = 6371; // Earth's radius in kilometers
     const dLat = (point2.latitude - point1.latitude) * Math.PI / 180;
     const dLon = (point2.longitude - point1.longitude) * Math.PI / 180;
-    const a = 
-      Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(point1.latitude * Math.PI / 180) * Math.cos(point2.latitude * Math.PI / 180) * 
-      Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(point1.latitude * Math.PI / 180) * Math.cos(point2.latitude * Math.PI / 180) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c; // Distance in kilometers
   },
 
@@ -169,7 +169,7 @@ export const gpsService = {
       // For now, return a simple response
       const distance = gpsService.calculateDistance(origin, destination);
       const bearing = gpsService.calculateBearing(origin, destination);
-      
+
       return {
         distance: distance,
         duration: distance * 2, // Rough estimate: 2 minutes per km
@@ -199,7 +199,7 @@ export const gpsService = {
 
   // Get nearby points
   getNearbyPoints: (center, points, radiusKm) => {
-    return points.filter(point => 
+    return points.filter(point =>
       gpsService.isWithinRadius(center, point, radiusKm)
     );
   }

@@ -125,7 +125,7 @@ export const VehicleProvider = ({ children }) => {
   const [state, dispatch] = useReducer(vehicleReducer, initialState);
 
   // API Base URL
-  const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+  const API_BASE_URL = import.meta.env.VITE_API_URL || (import.meta.env.MODE === 'production' ? '/api' : 'http://127.0.0.1:5000/api');
 
   // Get auth token
   const getAuthToken = () => {
