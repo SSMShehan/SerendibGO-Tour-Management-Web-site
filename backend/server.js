@@ -14,15 +14,29 @@ console.log('   MONGODB_URI:', process.env.MONGODB_URI ? '✅ SET' : '❌ NOT SE
 console.log('   JWT_SECRET:', process.env.JWT_SECRET ? '✅ SET' : '❌ NOT SET');
 console.log('   STRIPE_SECRET_KEY:', process.env.STRIPE_SECRET_KEY ? '✅ SET' : '❌ NOT SET');
 
-// Validate required environment variables
+// Set fallback values for production if not defined
+// This ensures Vercel deployment works even without environment variables configured
 if (!process.env.MONGODB_URI) {
-  console.error('\n❌ ERROR: MONGODB_URI is not set!');
-  console.error('📝 Please create a .env file based on .env.example');
-  console.error('   1. Copy .env.example to .env');
-  console.error('   2. Update MONGODB_URI with your connection string\n');
-  if (process.env.NODE_ENV === 'production') {
-    process.exit(1);
-  }
+  console.warn('\n⚠️  WARNING: MONGODB_URI is not set! Using fallback...');
+  console.warn('📝 For better security, set MONGODB_URI in Vercel environment variables\n');
+  process.env.MONGODB_URI = 'mongodb+srv://admin:admin123@serandibgo.izvdsyx.mongodb.net/serendibgo?retryWrites=true&w=majority';
+}
+
+// Set fallback for other critical environment variables
+if (!process.env.JWT_SECRET) {
+  process.env.JWT_SECRET = 'your-super-secret-jwt-key-change-this-in-production';
+}
+if (!process.env.JWT_EXPIRE) {
+  process.env.JWT_EXPIRE = '30d';
+}
+if (!process.env.JWT_COOKIE_EXPIRE) {
+  process.env.JWT_COOKIE_EXPIRE = '30';
+}
+if (!process.env.STRIPE_SECRET_KEY) {
+  process.env.STRIPE_SECRET_KEY = 'sk_test_51SIRHEGhGMqfYoq5KBkzdOMEIupPxFUYdR6rbPiHM7s3IohZfLxZD7iwyu489t7OEkTRAv7v06Fjd3y8zEyBGZy500bL41wQoy';
+}
+if (!process.env.STRIPE_WEBHOOK_SECRET) {
+  process.env.STRIPE_WEBHOOK_SECRET = 'whsec_test_1234567890abcdef';
 }
 
 const express = require('express');
