@@ -146,6 +146,16 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+app.get('/api/debug-connection', (req, res) => {
+  res.status(200).json({
+    status: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+    readyState: mongoose.connection.readyState,
+    dbError: global.dbError || 'No error recorded',
+    mongoUri: process.env.MONGODB_URI ? 'Set (Hidden)' : 'Using Fallback',
+    env: process.env.NODE_ENV
+  });
+});
+
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -225,6 +235,7 @@ const connectDB = async () => {
     return conn;
   } catch (atlasError) {
     console.error('Atlas connection failed:', atlasError.message);
+    global.dbError = atlasError.message; // Store Atlas error
 
     // Try alternative connection method if SRV fails
     if (atlasError.code === 'ENOTFOUND' && process.env.MONGODB_URI && process.env.MONGODB_URI.includes('mongodb+srv://')) {
@@ -270,9 +281,11 @@ const connectDB = async () => {
       console.log('   3. Or check your MongoDB Atlas connection');
 
       // Don't exit in development, allow server to start without DB
-      if (process.env.NODE_ENV === 'production') {
-        process.exit(1);
-      }
+      global.dbError = localError.message; // Store error for debugging
+      console.log('Continuing without DB for debugging...');
+      // if (process.env.NODE_ENV === 'production') {
+      //   process.exit(1);
+      // }
     }
   }
 };
