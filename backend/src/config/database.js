@@ -32,6 +32,10 @@ const connectDB = async () => {
 
   try {
     console.log('🔄 Attempting to connect to MongoDB...');
+    console.log('📋 Connection details:');
+    console.log('   - URI length:', process.env.MONGODB_URI?.length || 0);
+    console.log('   - URI starts with:', process.env.MONGODB_URI?.substring(0, 30) || 'none');
+    console.log('   - Server selection timeout:', 10000, 'ms');
     // #region agent log
     if (typeof fetch !== 'undefined') {
       fetch('http://127.0.0.1:7242/ingest/7c6e8849-56f1-4e76-b71f-22ff13d2ad7f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'database.js:21',message:'Before connection check',data:{hasMongoUri:!!process.env.MONGODB_URI,mongoUriPrefix:process.env.MONGODB_URI?.substring(0,20)||'none',mongoUriLength:process.env.MONGODB_URI?.length||0},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A,C'})}).catch(()=>{});
@@ -84,7 +88,12 @@ const connectDB = async () => {
     }
     // #endregion
     console.error('❌ Database connection failed!');
-    console.error('Error:', error.message);
+    console.error('Error name:', error.name);
+    console.error('Error message:', error.message);
+    console.error('Error code:', error.code);
+    if (error.stack) {
+      console.error('Error stack (first 500 chars):', error.stack.substring(0, 500));
+    }
 
     // Provide helpful debugging information
     if (error.message.includes('bad auth')) {
