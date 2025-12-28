@@ -168,6 +168,66 @@ if (process.env.NODE_ENV === 'development') {
 // Static files
 app.use('/uploads', express.static('uploads'));
 
+// Initialize database connection
+let dbInitialized = false;
+let dbInitPromise = null;
+
+const initDB = async () => {
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/7c6e8849-56f1-4e76-b71f-22ff13d2ad7f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'server.js:278',message:'initDB called',data:{dbInitialized,isMainModule:require.main===module,nodeEnv:process.env.NODE_ENV,vercelEnv:process.env.VERCEL_ENV},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B,F'})}).catch(()=>{});
+  // #endregion
+  if (!dbInitialized) {
+    try {
+      // #region agent log
+      const initStartTime = Date.now();
+      fetch('http://127.0.0.1:7242/ingest/7c6e8849-56f1-4e76-b71f-22ff13d2ad7f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'server.js:281',message:'Calling connectDB in initDB',data:{initStartTime},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B,F'})}).catch(()=>{});
+      // #endregion
+      await connectDB();
+      // #region agent log
+      const initEndTime = Date.now();
+      fetch('http://127.0.0.1:7242/ingest/7c6e8849-56f1-4e76-b71f-22ff13d2ad7f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'server.js:282',message:'connectDB completed in initDB',data:{initDuration:initEndTime-initStartTime,readyState:mongoose.connection.readyState},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B,F'})}).catch(()=>{});
+      // #endregion
+      dbInitialized = true;
+      console.log('✅ Database initialized for serverless');
+    } catch (err) {
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/7c6e8849-56f1-4e76-b71f-22ff13d2ad7f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'server.js:285',message:'initDB error',data:{errorMessage:err.message,errorName:err.name},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B,F'})}).catch(()=>{});
+      // #endregion
+      console.error('❌ Failed to initialize database:', err.message);
+      dbInitialized = false;
+    }
+  }
+};
+
+// Middleware to ensure DB is connected before handling requests
+app.use(async (req, res, next) => {
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/7c6e8849-56f1-4e76-b71f-22ff13d2ad7f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'server.js:middleware',message:'Request middleware - checking DB',data:{path:req.path,method:req.method,dbInitialized,readyState:mongoose.connection.readyState},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B,F'})}).catch(()=>{});
+  // #endregion
+  // Skip health check endpoints
+  if (req.path === '/api/health' || req.path === '/api/debug-connection') {
+    return next();
+  }
+  
+  // If DB not initialized, wait for it
+  if (!dbInitialized && mongoose.connection.readyState !== 1) {
+    if (!dbInitPromise) {
+      dbInitPromise = initDB();
+    }
+    try {
+      await dbInitPromise;
+    } catch (err) {
+      // #region agent log
+      fetch('http://127.0.0.1:7242/ingest/7c6e8849-56f1-4e76-b71f-22ff13d2ad7f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'server.js:middleware-error',message:'DB init failed in middleware',data:{errorMessage:err.message,readyState:mongoose.connection.readyState},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B,F'})}).catch(()=>{});
+      // #endregion
+    }
+  }
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/7c6e8849-56f1-4e76-b71f-22ff13d2ad7f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'server.js:middleware-end',message:'Request middleware - after DB check',data:{readyState:mongoose.connection.readyState,dbInitialized},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B,F'})}).catch(()=>{});
+  // #endregion
+  next();
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.status(200).json({
@@ -272,28 +332,15 @@ const startServer = async () => {
   }
 };
 
-// Initialize database connection
-let dbInitialized = false;
-
-const initDB = async () => {
-  if (!dbInitialized) {
-    try {
-      await connectDB();
-      dbInitialized = true;
-      console.log('✅ Database initialized for serverless');
-    } catch (err) {
-      console.error('❌ Failed to initialize database:', err.message);
-      dbInitialized = false;
-    }
-  }
-};
-
 if (require.main === module) {
   // Running locally
   startServer();
 } else {
   // Running on Vercel - connect to DB immediately on cold start
-  initDB();
+  // #region agent log
+  fetch('http://127.0.0.1:7242/ingest/7c6e8849-56f1-4e76-b71f-22ff13d2ad7f',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'server.js:296',message:'Vercel mode - calling initDB',data:{isMainModule:false},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B,F'})}).catch(()=>{});
+  // #endregion
+  dbInitPromise = initDB();
 }
 
 module.exports = app;
