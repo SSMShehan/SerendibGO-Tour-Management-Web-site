@@ -1,5 +1,17 @@
+// Top-level error handler for module initialization
+process.on('uncaughtException', (err) => {
+  console.error('❌ Uncaught Exception during module initialization:', err.message);
+  console.error('Stack:', err.stack);
+  // Don't exit - let Vercel handle it
+});
+
 // Load environment variables first
-require('dotenv').config();
+try {
+  require('dotenv').config();
+} catch (err) {
+  console.error('❌ Error loading dotenv:', err.message);
+  // Continue - environment variables might be set by Vercel
+}
 
 // Set NODE_ENV default
 if (!process.env.NODE_ENV) {
@@ -49,44 +61,48 @@ const mongoSanitize = require('express-mongo-sanitize');
 const hpp = require('hpp');
 const cookieParser = require('cookie-parser');
 
-// Import routes
-const authRoutes = require('./src/routes/auth');
-const userRoutes = require('./src/routes/users');
-const tourRoutes = require('./src/routes/tours');
-const bookingRoutes = require('./src/routes/bookings');
-const paymentRoutes = require('./src/routes/payments');
-const reviewRoutes = require('./src/routes/reviews');
-const adminRoutes = require('./src/routes/admin');
-const guideRoutes = require('./src/routes/guides');
-const earningsRoutes = require('./src/routes/earnings');
+// Import routes with error handling
+let authRoutes, userRoutes, tourRoutes, bookingRoutes, paymentRoutes, reviewRoutes;
+let adminRoutes, guideRoutes, earningsRoutes, staffRoutes;
+let hotelRoutes, roomRoutes, hotelBookingRoutes, roomAvailabilityRoutes, hotelReviewRoutes;
+let customTripRoutes, notificationRoutes;
+let vehicleRoutes, vehicleBookingRoutes, vehicleAvailabilityRoutes, vehiclePricingRoutes;
+let vehicleIntegrationRoutes, vehicleBookingRequestRoutes, tripRoutes, driverRoutes;
+let maintenanceRoutes, revenueRoutes;
 
-// Staff routes
-const staffRoutes = require('./src/routes/staff');
-
-// Hotel routes
-const hotelRoutes = require('./src/routes/hotels/hotels');
-const roomRoutes = require('./src/routes/hotels/rooms');
-const hotelBookingRoutes = require('./src/routes/hotels/hotelBookingRoutes');
-const roomAvailabilityRoutes = require('./src/routes/hotels/roomAvailabilityRoutes');
-const hotelReviewRoutes = require('./src/routes/hotels/hotelReviewRoutes');
-
-// Custom trip routes
-const customTripRoutes = require('./src/routes/customTrips');
-
-// Notification routes
-const notificationRoutes = require('./src/routes/notifications');
-
-// Vehicle routes
-const vehicleRoutes = require('./src/routes/vehicles');
-const vehicleBookingRoutes = require('./src/routes/vehicles/vehicleBookings');
-const vehicleAvailabilityRoutes = require('./src/routes/vehicles/availability');
-const vehiclePricingRoutes = require('./src/routes/vehicles/pricing');
-const vehicleIntegrationRoutes = require('./src/routes/vehicles/integrations');
-const vehicleBookingRequestRoutes = require('./src/routes/vehicles/bookingRequests');
-const tripRoutes = require('./src/routes/vehicles/trips');
-const driverRoutes = require('./src/routes/vehicles/drivers');
-const maintenanceRoutes = require('./src/routes/vehicles/maintenance');
-const revenueRoutes = require('./src/routes/vehicles/revenue');
+try {
+  authRoutes = require('./src/routes/auth');
+  userRoutes = require('./src/routes/users');
+  tourRoutes = require('./src/routes/tours');
+  bookingRoutes = require('./src/routes/bookings');
+  paymentRoutes = require('./src/routes/payments');
+  reviewRoutes = require('./src/routes/reviews');
+  adminRoutes = require('./src/routes/admin');
+  guideRoutes = require('./src/routes/guides');
+  earningsRoutes = require('./src/routes/earnings');
+  staffRoutes = require('./src/routes/staff');
+  hotelRoutes = require('./src/routes/hotels/hotels');
+  roomRoutes = require('./src/routes/hotels/rooms');
+  hotelBookingRoutes = require('./src/routes/hotels/hotelBookingRoutes');
+  roomAvailabilityRoutes = require('./src/routes/hotels/roomAvailabilityRoutes');
+  hotelReviewRoutes = require('./src/routes/hotels/hotelReviewRoutes');
+  customTripRoutes = require('./src/routes/customTrips');
+  notificationRoutes = require('./src/routes/notifications');
+  vehicleRoutes = require('./src/routes/vehicles');
+  vehicleBookingRoutes = require('./src/routes/vehicles/vehicleBookings');
+  vehicleAvailabilityRoutes = require('./src/routes/vehicles/availability');
+  vehiclePricingRoutes = require('./src/routes/vehicles/pricing');
+  vehicleIntegrationRoutes = require('./src/routes/vehicles/integrations');
+  vehicleBookingRequestRoutes = require('./src/routes/vehicles/bookingRequests');
+  tripRoutes = require('./src/routes/vehicles/trips');
+  driverRoutes = require('./src/routes/vehicles/drivers');
+  maintenanceRoutes = require('./src/routes/vehicles/maintenance');
+  revenueRoutes = require('./src/routes/vehicles/revenue');
+} catch (err) {
+  console.error('❌ Error loading routes:', err.message);
+  console.error('Stack:', err.stack);
+  // Continue - some routes might still work
+}
 
 // Import middleware
 const { errorHandler } = require('./src/middleware/errorHandler');
@@ -274,52 +290,63 @@ app.get('/api/debug-connection', (req, res) => {
   });
 });
 
-// API routes
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/tours', tourRoutes);
-app.use('/api/bookings', bookingRoutes);
-app.use('/api/payments', paymentRoutes);
-app.use('/api/reviews', reviewRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/guides', guideRoutes);
-app.use('/api/earnings', earningsRoutes);
+// API routes - only mount if routes were loaded successfully
+if (authRoutes) app.use('/api/auth', authRoutes);
+if (userRoutes) app.use('/api/users', userRoutes);
+if (tourRoutes) app.use('/api/tours', tourRoutes);
+if (bookingRoutes) app.use('/api/bookings', bookingRoutes);
+if (paymentRoutes) app.use('/api/payments', paymentRoutes);
+if (reviewRoutes) app.use('/api/reviews', reviewRoutes);
+if (adminRoutes) app.use('/api/admin', adminRoutes);
+if (guideRoutes) app.use('/api/guides', guideRoutes);
+if (earningsRoutes) app.use('/api/earnings', earningsRoutes);
 
 // Staff API routes
-app.use('/api/staff', staffRoutes);
+if (staffRoutes) app.use('/api/staff', staffRoutes);
 
 // Hotel API routes
-app.use('/api/hotels', hotelRoutes);
-app.use('/api/hotels', roomRoutes); // Mount room routes under /api/hotels
-app.use('/api', roomAvailabilityRoutes); // Mount room availability routes under /api
-app.use('/api/hotel-bookings', hotelBookingRoutes); // Mount hotel booking routes under /api/hotel-bookings
-app.use('/api/hotel-reviews', hotelReviewRoutes); // Mount hotel review routes under /api/hotel-reviews
+if (hotelRoutes) app.use('/api/hotels', hotelRoutes);
+if (roomRoutes) app.use('/api/hotels', roomRoutes);
+if (roomAvailabilityRoutes) app.use('/api', roomAvailabilityRoutes);
+if (hotelBookingRoutes) app.use('/api/hotel-bookings', hotelBookingRoutes);
+if (hotelReviewRoutes) app.use('/api/hotel-reviews', hotelReviewRoutes);
 
 // Vehicle API routes
-app.use('/api/vehicles', vehicleRoutes);
-app.use('/api/vehicles', vehicleAvailabilityRoutes);
-app.use('/api/vehicles', vehiclePricingRoutes);
-app.use('/api/vehicles', vehicleIntegrationRoutes);
+if (vehicleRoutes) app.use('/api/vehicles', vehicleRoutes);
+if (vehicleAvailabilityRoutes) app.use('/api/vehicles', vehicleAvailabilityRoutes);
+if (vehiclePricingRoutes) app.use('/api/vehicles', vehiclePricingRoutes);
+if (vehicleIntegrationRoutes) app.use('/api/vehicles', vehicleIntegrationRoutes);
 
 // Sample vehicles route (fallback when database is not available)
-const sampleVehiclesRoute = require('./src/routes/sampleVehicles');
-app.use('/api/sample-vehicles', sampleVehiclesRoute);
-app.use('/api/vehicle-bookings', vehicleBookingRoutes);
-app.use('/api/vehicle-booking-requests', vehicleBookingRequestRoutes);
-app.use('/api/trips', tripRoutes);
-app.use('/api/drivers', driverRoutes);
-app.use('/api/maintenance', maintenanceRoutes);
-app.use('/api/revenue', revenueRoutes);
+let sampleVehiclesRoute;
+try {
+  sampleVehiclesRoute = require('./src/routes/sampleVehicles');
+  if (sampleVehiclesRoute) app.use('/api/sample-vehicles', sampleVehiclesRoute);
+} catch (err) {
+  console.error('❌ Error loading sampleVehicles route:', err.message);
+}
+
+if (vehicleBookingRoutes) app.use('/api/vehicle-bookings', vehicleBookingRoutes);
+if (vehicleBookingRequestRoutes) app.use('/api/vehicle-booking-requests', vehicleBookingRequestRoutes);
+if (tripRoutes) app.use('/api/trips', tripRoutes);
+if (driverRoutes) app.use('/api/drivers', driverRoutes);
+if (maintenanceRoutes) app.use('/api/maintenance', maintenanceRoutes);
+if (revenueRoutes) app.use('/api/revenue', revenueRoutes);
 
 // Custom trip API routes
-app.use('/api/custom-trips', customTripRoutes);
+if (customTripRoutes) app.use('/api/custom-trips', customTripRoutes);
 
 // Notification API routes
-app.use('/api/notifications', notificationRoutes);
+if (notificationRoutes) app.use('/api/notifications', notificationRoutes);
 
 // Support API routes
-const supportRoutes = require('./src/routes/support');
-app.use('/api/support', supportRoutes);
+let supportRoutes;
+try {
+  supportRoutes = require('./src/routes/support');
+  if (supportRoutes) app.use('/api/support', supportRoutes);
+} catch (err) {
+  console.error('❌ Error loading support routes:', err.message);
+}
 
 // 404 handler
 app.all('*', (req, res) => {
